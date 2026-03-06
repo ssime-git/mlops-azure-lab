@@ -3,6 +3,7 @@
 ## Objectifs
 - Comprendre Azure Pipelines et GitHub Actions (theorie)
 - Lire et comprendre les 3 workflows GitHub Actions du repo
+- Relier ce qui a ete teste en notebook J1 avec son execution automatisee en CI
 - Declencher un CI reel (commit -> AML pipeline)
 - Observer le deploiement AKS end-to-end
 
@@ -62,6 +63,7 @@ Ouvrir `.github/workflows/` et repondre :
 - Pourquoi `train-pipeline` a `environment: dev` ?
 - Que font les 3 commandes `sed` dans `cd-deploy-dev.yml` ?
 - Pourquoi `cd-deploy-prod.yml` necessite `environment: production` ?
+- Quelles etapes du notebook J1 sont reprises dans les scripts `prep.py`, `train.py`, `evaluate.py` ?
 
 ### 2. Premier push sur dev (10 min)
 ```bash

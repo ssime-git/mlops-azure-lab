@@ -29,3 +29,4 @@ tests/             -> Tests unitaires Python
 
 ## Demarrage rapide
 Voir `lab/lab0-setup.md` pour les prerequis et la mise en place initiale.
+Premier support notebook pour J1 : `mlops/data-science/notebooks/iris-walkthrough.ipynb`.

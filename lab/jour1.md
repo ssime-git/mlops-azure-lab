@@ -3,6 +3,7 @@
 ## Objectifs
 - Comprendre DevOps vs MLOps
 - Naviguer dans les services Azure cles (AML, ACR, AKS)
+- Demarrer par un notebook pour visualiser le flux dans l'interface AML
 - Lancer le pipeline ML localement de bout en bout
 
 ## Prerequis
@@ -43,7 +44,15 @@ az group create --name rg-mlopslab-dev --location westeurope
 # RG: rg-mlopslab-dev | Name: aml-mlopslab-dev
 ```
 
-### 4. Lancer le pipeline localement (25 min)
+### 4. Notebook first (15 min)
+Ouvrir `mlops/data-science/notebooks/iris-walkthrough.ipynb` dans Azure ML Studio (ou local Jupyter) et executer toutes les cellules.
+
+Points a observer:
+- split train/test cree par `prep`
+- modele `model.joblib` cree par `train`
+- quality gate dans `evaluate`
+
+### 5. Passage notebook -> scripts (15 min)
 ```bash
 python mlops/data-science/src/prep.py --output_dir /tmp/iris
 python mlops/data-science/src/train.py --data_dir /tmp/iris --model_dir /tmp/model
@@ -52,6 +61,7 @@ pytest tests/ -v
 ```
 
 ## Checkpoint J1
+- [ ] Notebook Iris execute de bout en bout
 - [ ] Pipeline local (prep -> train -> evaluate) sans erreur
 - [ ] Workspace AML dev visible sur le portail
 - [ ] `pytest tests/ -v` : 3 tests PASSED
