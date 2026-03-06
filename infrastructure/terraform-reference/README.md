@@ -2,7 +2,8 @@
 
 Ce dossier contient la version Terraform de l'infrastructure deployeee en Bicep dans `../bicep/`.
 
-**Ne pas executer en lab.** Objectif : comparer Bicep (Azure-native, pas de state) vs Terraform (multi-cloud, state file backend).
+Le code Terraform **operationnel** du lab est dans `../terraform/`.
+Ce dossier `terraform-reference/` reste volontairement simplifie pour la comparaison pedagogique.
 
 Points cles a retenir :
 - Terraform necessite un backend (etat distant sur Azure Storage ou Terraform Cloud)

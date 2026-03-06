@@ -35,7 +35,7 @@ Questions de comprehension :
 ### 5. Checklist Standards Equipe (20 min)
 
 **Infrastructure**
-- [ ] Toute ressource creee via Bicep (0 clic portail)
+- [ ] Toute ressource creee via Terraform (0 clic portail)
 - [ ] Tags `environment`, `project`, `managed_by` sur toutes les ressources
 - [ ] Budget alert configuree sur le subscription
 
