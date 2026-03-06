@@ -28,4 +28,4 @@ tests/             -> Tests unitaires Python
 ```
 
 ## Demarrage rapide
-Voir `lab/jour1.md` pour les prerequis et la mise en place initiale.
+Voir `lab/lab0-setup.md` pour les prerequis et la mise en place initiale.
