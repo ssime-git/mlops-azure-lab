@@ -3,8 +3,8 @@ import sys
 import tempfile
 
 sys.path.insert(0, "mlops/data-science/src")
-from prep import main as prep_main
-from train import main as train_main
+from prep import main as prep_main  # noqa: E402
+from train import main as train_main  # noqa: E402
 
 
 class PA:

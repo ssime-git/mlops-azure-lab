@@ -32,6 +32,10 @@ Voir `lab/lab0-setup.md` pour les prerequis et la mise en place initiale.
 Premier support notebook pour J1 : `mlops/data-science/notebooks/iris-walkthrough.ipynb`.
 Pour le setup local rapide: `uv venv --python 3.10 && source .venv/bin/activate && uv pip install -r requirements.txt`.
 
+## Dépendances Python
+- `requirements.in` : dépendances directes (source humaine)
+- `requirements.txt` : lock déterministe généré via uv (`uv pip compile requirements.in --python-version 3.10 -o requirements.txt`)
+
 ## Workflows cles
 - `CI — Lint + Tests + AML Training Pipeline`
 - `CD — Deploy to Dev (ACR build + AKS deploy)`

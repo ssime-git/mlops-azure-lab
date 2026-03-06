@@ -51,6 +51,7 @@ Questions de comprehension :
 
 **Securite**
 - [ ] OIDC pour GitHub -> Azure (pas de secret SP)
+- [ ] Pas de `Contributor` au scope subscription pour le pipeline (scope RG uniquement)
 - [ ] Secrets dans Key Vault
 - [ ] RBAC minimal (principe du moindre privilege)
 

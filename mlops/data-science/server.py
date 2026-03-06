@@ -4,7 +4,7 @@ import sys
 from flask import Flask, request
 
 sys.path.insert(0, "src")
-from score import init, run
+from score import init, run  # noqa: E402
 
 app = Flask(__name__)
 init()

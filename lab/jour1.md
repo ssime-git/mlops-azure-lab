@@ -70,4 +70,4 @@ pytest tests/ -v
 - [ ] Notebook Iris execute de bout en bout
 - [ ] Pipeline local (prep -> train -> evaluate) sans erreur
 - [ ] Workspace AML dev visible sur le portail
-- [ ] `pytest tests/ -v` : 3 tests PASSED
+- [ ] `pytest tests/ -v` : 5 tests PASSED

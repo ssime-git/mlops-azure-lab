@@ -75,16 +75,31 @@ az account show --query id -o tsv
 # → copier cette valeur, c'est ton AZURE_SUBSCRIPTION_ID
 ```
 
-### 2c. Donner les permissions Azure à cette identité
+### 2c. Donner les permissions Azure à cette identité (least privilege)
 
-1. Dans le portail Azure → **Subscriptions** → cliquer sur ton subscription
-2. Menu gauche → **Access control (IAM)** → **Add role assignment**
-3. Onglet **Role** → chercher **Contributor** → sélectionner → **Next**
-4. Onglet **Members** → *Assign access to: User, group, or service principal*
-5. **Select members** → chercher `github-mlops-lab` → sélectionner → **Next** → **Review + assign**
+> Objectif : éviter `Contributor` au scope subscription.
+> On donne des droits au **niveau Resource Group** uniquement.
 
-> ⚠️ Note : Contributor donne accès large. En production réelle on utilise des rôles plus fins
-> (AzureML Data Scientist, AKS Cluster User...). C'est ce qu'on verra en J5.
+1. Créer les Resource Groups cibles (si non existants) :
+
+```bash
+az group create --name rg-mlopslab-dev  --location westeurope
+az group create --name rg-mlopslab-prod --location westeurope
+az group create --name rg-tfstate       --location westeurope
+```
+
+2. Dans le portail Azure, faire 3 attributions du rôle **Contributor** à l'app `github-mlops-lab` :
+   - scope `rg-mlopslab-dev`
+   - scope `rg-mlopslab-prod`
+   - scope `rg-tfstate`
+
+3. Ajouter le rôle **User Access Administrator** sur :
+   - scope `rg-mlopslab-dev`
+   - scope `rg-mlopslab-prod`
+
+> Pourquoi ce rôle ? Terraform/Bicep crée l'assignation `AcrPull` entre AKS et ACR.
+> Sans `User Access Administrator` (ou Owner), la création de `roleAssignments` échoue.
+> Ici le scope reste limité aux RG du lab.
 
 ---
 
@@ -224,15 +239,15 @@ az ad app list --display-name "github-mlops-lab" --query "[].{name:displayName, 
 # Test 3 : Role assignment présent
 az role assignment list \
   --assignee $(az ad app list --display-name "github-mlops-lab" --query "[0].appId" -o tsv) \
-  --query "[].{role:roleDefinitionName}" -o table
-# → Contributor affiché
+  --query "[].{role:roleDefinitionName, scope:scope}" -o table
+# → Contributor + User Access Administrator sur les RG du lab
 
 # Test 4 : Pipeline Python local
 python mlops/data-science/src/prep.py --output_dir /tmp/iris-check
 python mlops/data-science/src/train.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
 python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
 pytest tests/ -v
-# → 3 tests PASSED
+# → 5 tests PASSED
 
 # Test 5 : GitHub Secrets (vérification visuelle seulement)
 # GitHub > Settings > Secrets > vérifier que les 9 secrets apparaissent dans la liste
@@ -265,5 +280,5 @@ Alternative GitHub Actions:
 | App Registration créée mais rôle refusé | Propagation IAM lente | Attendre 2-3 min, réessayer |
 | GitHub Actions : `AADSTS70021: No matching federated identity record found` | Federated Credential mal configuré (mauvais repo, org, ou entity type) | Vérifier les 3 credentials : org/repo exact, entity type exact |
 | GitHub Actions : `ClientSecretCredentialAuthenticationError` | AZURE_CLIENT_ID ou AZURE_TENANT_ID incorrect | Revérifier les secrets GitHub vs l'App Registration |
-| GitHub Actions : `AuthorizationFailed` | Role Contributor pas assigné | Vérifier IAM sur le subscription |
+| GitHub Actions : `AuthorizationFailed` sur `roleAssignments` | Rôle `User Access Administrator` manquant | Ajouter `User Access Administrator` sur `rg-mlopslab-dev` et `rg-mlopslab-prod` |
 | `pytest` : `ModuleNotFoundError` | dépendances non installées | `uv pip install -r requirements.txt` |
