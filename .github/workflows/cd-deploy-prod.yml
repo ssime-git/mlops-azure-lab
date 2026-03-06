@@ -1,0 +1,59 @@
+name: CD — Deploy to Prod (Manual Approval Required)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type CONFIRM to deploy to production"
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation
+        if: ${{ github.event.inputs.confirm != 'CONFIRM' }}
+        run: echo "Must type CONFIRM" && exit 1
+
+  deploy-prod:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get AKS credentials (prod)
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ secrets.AML_RESOURCE_GROUP_PROD }} \
+            --name ${{ secrets.AKS_CLUSTER_PROD }} \
+            --overwrite-existing
+
+      - name: Get latest image from ACR prod
+        id: image
+        run: |
+          NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_PROD }} --query "[0].name" -o tsv)
+          SERVER=$(az acr show --name $NAME --query loginServer -o tsv)
+          TAG=$(az acr repository show-tags --name $NAME --repository iris-classifier --orderby time_desc --top 1 -o tsv)
+          echo "server=$SERVER" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy to AKS prod
+        run: |
+          cp mlops/pipelines/aks-deployment.yml /tmp/aks-prod.yml
+          sed -i "s|ACR_LOGIN_SERVER_PLACEHOLDER|${{ steps.image.outputs.server }}|g" /tmp/aks-prod.yml
+          sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ steps.image.outputs.tag }}|g" /tmp/aks-prod.yml
+          sed -i "s|ENVIRONMENT_PLACEHOLDER|prod|g" /tmp/aks-prod.yml
+          kubectl apply -f /tmp/aks-prod.yml
+          kubectl rollout status deployment/iris-classifier --timeout=600s

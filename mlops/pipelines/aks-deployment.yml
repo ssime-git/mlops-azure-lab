@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iris-classifier
+  labels:
+    app: iris-classifier
+    environment: ENVIRONMENT_PLACEHOLDER
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: iris-classifier
+  template:
+    metadata:
+      labels:
+        app: iris-classifier
+    spec:
+      containers:
+      - name: iris-classifier
+        image: ACR_LOGIN_SERVER_PLACEHOLDER/iris-classifier:IMAGE_TAG_PLACEHOLDER
+        ports:
+        - containerPort: 5001
+        env:
+        - name: AZUREML_MODEL_DIR
+          value: /app/model
+        resources:
+          requests: { memory: "256Mi", cpu: "250m" }
+          limits: { memory: "512Mi", cpu: "500m" }
+        livenessProbe:
+          httpGet: { path: /health, port: 5001 }
+          initialDelaySeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iris-classifier-svc
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5001
+  selector:
+    app: iris-classifier

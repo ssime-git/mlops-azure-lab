@@ -1,0 +1,89 @@
+name: CD — Deploy to Dev (ACR build + AKS deploy)
+
+on:
+  workflow_run:
+    workflows: ["CI — Lint + Tests + AML Training Pipeline"]
+    types: [completed]
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  check-ci:
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CI passed — starting CD"
+
+  build-push:
+    needs: check-ci
+    runs-on: ubuntu-latest
+    environment: dev
+    outputs:
+      acr_server: ${{ steps.acr.outputs.server }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get ACR login server
+        id: acr
+        run: |
+          NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} --query "[0].name" -o tsv)
+          SERVER=$(az acr show --name $NAME --query loginServer -o tsv)
+          echo "server=$SERVER" >> $GITHUB_OUTPUT
+
+      - name: Build and push to ACR
+        run: |
+          az acr build \
+            --registry ${{ steps.acr.outputs.server }} \
+            --image iris-classifier:${{ env.IMAGE_TAG }} \
+            --file mlops/data-science/Dockerfile \
+            mlops/data-science/
+
+  deploy-aks:
+    needs: build-push
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get AKS credentials (dev)
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} \
+            --name ${{ secrets.AKS_CLUSTER_DEV }} \
+            --overwrite-existing
+
+      - name: Substitute placeholders in manifest
+        run: |
+          sed -i "s|ACR_LOGIN_SERVER_PLACEHOLDER|${{ needs.build-push.outputs.acr_server }}|g" mlops/pipelines/aks-deployment.yml
+          sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ env.IMAGE_TAG }}|g" mlops/pipelines/aks-deployment.yml
+          sed -i "s|ENVIRONMENT_PLACEHOLDER|dev|g" mlops/pipelines/aks-deployment.yml
+
+      - name: Apply manifest
+        run: kubectl apply -f mlops/pipelines/aks-deployment.yml
+
+      - name: Verify rollout
+        run: |
+          kubectl rollout status deployment/iris-classifier --timeout=300s
+          kubectl get pods -l app=iris-classifier
+          kubectl get svc iris-classifier-svc

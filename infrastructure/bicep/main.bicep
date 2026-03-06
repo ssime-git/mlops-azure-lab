@@ -1,93 +1,95 @@
-targetScope = 'subscription'
+// ============================================================
+// main.bicep - Orchestrateur MLOps Lab
+// Deploie : Storage, Key Vault, ACR, App Insights, AML, AKS
+// ============================================================
 
-param location string = 'westus2'
-param prefix string
-param postfix string
-param env string 
+@description('Environnement de deploiement')
+@allowed(['dev', 'prod'])
+param environment string
 
-param tags object = {
-  Owner: 'mlops-v2'
-  Project: 'mlops-v2'
-  Environment: env
-  Toolkit: 'bicep'
-  Name: prefix
+@description('Region Azure')
+param location string = resourceGroup().location
+
+@description('Nom de base du projet')
+param projectName string = 'mlopslab'
+
+@description('Nombre de noeuds AKS')
+param aksNodeCount int = 1
+
+@description('Taille des VMs AKS')
+param aksVmSize string = 'Standard_D2s_v3'
+
+var baseName = '${projectName}-${environment}'
+var commonTags = {
+  environment: environment
+  project: projectName
+  managedBy: 'bicep'
 }
 
-var baseName  = '${prefix}-${postfix}${env}'
-var resourceGroupName = 'rg-${baseName}'
-
-resource rg 'Microsoft.Resources/resourceGroups@2020-06-01' = {
-  name: resourceGroupName
-  location: location
-
-  tags: tags
-}
-
-// Storage Account
-module st './modules/storage_account.bicep' = {
-  name: 'st'
-  scope: resourceGroup(rg.name)
+module storage 'modules/storage-account.bicep' = {
+  name: 'deploy-storage'
   params: {
-    baseName: '${uniqueString(rg.id)}${env}'
+    name: 'sa${replace(baseName, '-', '')}ml'
     location: location
-    tags: tags
+    tags: commonTags
   }
 }
 
-// Key Vault
-module kv './modules/key_vault.bicep' = {
-  name: 'kv'
-  scope: resourceGroup(rg.name)
+module keyVault 'modules/key-vault.bicep' = {
+  name: 'deploy-keyvault'
   params: {
-    baseName: baseName
+    name: 'kv-${baseName}'
     location: location
-    tags: tags
+    tags: commonTags
   }
 }
 
-// App Insights
-module appi './modules/application_insights.bicep' = {
-  name: 'appi'
-  scope: resourceGroup(rg.name)
+module acr 'modules/container-registry.bicep' = {
+  name: 'deploy-acr'
   params: {
-    baseName: baseName
+    name: 'acr${replace(baseName, '-', '')}'
     location: location
-    tags: tags
+    sku: environment == 'prod' ? 'Premium' : 'Basic'
+    tags: commonTags
   }
 }
 
-// Container Registry
-module cr './modules/container_registry.bicep' = {
-  name: 'cr'
-  scope: resourceGroup(rg.name)
+module appInsights 'modules/application-insights.bicep' = {
+  name: 'deploy-appinsights'
   params: {
-    baseName: '${uniqueString(rg.id)}${env}'
+    name: 'appi-${baseName}'
     location: location
-    tags: tags
+    tags: commonTags
   }
 }
 
-// AML workspace
-module mlw './modules/aml_workspace.bicep' = {
-  name: 'mlw'
-  scope: resourceGroup(rg.name)
+module amlWorkspace 'modules/aml-workspace.bicep' = {
+  name: 'deploy-aml'
   params: {
-    baseName: baseName
+    name: 'aml-${baseName}'
     location: location
-    stoacctid: st.outputs.stoacctOut
-    kvid: kv.outputs.kvOut
-    appinsightid: appi.outputs.appinsightOut
-    crid: cr.outputs.crOut
-    tags: tags
+    storageAccountId: storage.outputs.id
+    keyVaultId: keyVault.outputs.id
+    containerRegistryId: acr.outputs.id
+    applicationInsightsId: appInsights.outputs.id
+    tags: commonTags
   }
 }
 
-// AML compute cluster
-module mlwcc './modules/aml_computecluster.bicep' = {
-  name: 'mlwcc'
-  scope: resourceGroup(rg.name)
+module aks 'modules/aks.bicep' = {
+  name: 'deploy-aks'
   params: {
+    name: 'aks-${baseName}'
     location: location
-    workspaceName: mlw.outputs.amlsName
+    nodeCount: aksNodeCount
+    vmSize: aksVmSize
+    acrId: acr.outputs.id
+    tags: commonTags
   }
 }
+
+output resourceGroupName string = resourceGroup().name
+output amlWorkspaceName string = amlWorkspace.outputs.name
+output aksClusterName string = aks.outputs.name
+output acrLoginServer string = acr.outputs.loginServer
+output keyVaultUri string = keyVault.outputs.vaultUri

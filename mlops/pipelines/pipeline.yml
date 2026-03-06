@@ -1,0 +1,38 @@
+$schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
+type: pipeline
+experiment_name: iris-classification
+description: End-to-end Iris classification pipeline
+
+settings:
+  default_compute: azureml:cpu-cluster
+  default_datastore: azureml:workspaceblobstore
+
+jobs:
+  prep_data:
+    type: command
+    code: ../data-science/src
+    command: python prep.py --output_dir ${{outputs.processed_data}}
+    environment: azureml:iris-train-env@latest
+    outputs:
+      processed_data:
+        type: uri_folder
+
+  train_model:
+    type: command
+    code: ../data-science/src
+    command: python train.py --data_dir ${{inputs.data_dir}} --model_dir ${{outputs.model_dir}} --max_iter 200
+    environment: azureml:iris-train-env@latest
+    inputs:
+      data_dir: ${{parent.jobs.prep_data.outputs.processed_data}}
+    outputs:
+      model_dir:
+        type: uri_folder
+
+  evaluate_model:
+    type: command
+    code: ../data-science/src
+    command: python evaluate.py --data_dir ${{inputs.data_dir}} --model_dir ${{inputs.model_dir}} --min_accuracy 0.90
+    environment: azureml:iris-train-env@latest
+    inputs:
+      data_dir: ${{parent.jobs.prep_data.outputs.processed_data}}
+      model_dir: ${{parent.jobs.train_model.outputs.model_dir}}

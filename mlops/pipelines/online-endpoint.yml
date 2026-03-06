@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/managedOnlineEndpoint.schema.json
+name: iris-endpoint
+description: AML managed online endpoint for Iris classifier (backup - prefer AKS)
+auth_mode: key
+tags:
+  project: mlopslab
