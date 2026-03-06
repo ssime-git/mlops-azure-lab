@@ -1,5 +1,9 @@
 # Infographie — MLOps Azure Lab (Themes, Notions, Technos)
 
+Sources visuelles:
+- Editable Excalidraw: `docs/infographie-mlops-lab.excalidraw`
+- Export PNG: `docs/infographie-mlops-lab.png`
+
 ## 1) Vue d'Ensemble Architecture
 ```mermaid
 flowchart LR

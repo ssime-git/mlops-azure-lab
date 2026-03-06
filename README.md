@@ -87,3 +87,5 @@ tests/                 tests unitaires + integration
 - Jour 4: `lab/jour4.md`
 - Jour 5: `lab/jour5.md`
 - Infographie complete: `docs/infographie-mlops-lab.md`
+- Infographie Excalidraw (source editable): `docs/infographie-mlops-lab.excalidraw`
+- Infographie PNG (export): `docs/infographie-mlops-lab.png`
