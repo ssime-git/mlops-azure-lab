@@ -6,7 +6,7 @@ param containerRegistryId string
 param applicationInsightsId string
 param tags object = {}
 
-resource amlWorkspace 'Microsoft.MachineLearningServices/workspaces@2024-01-01-preview' = {
+resource amlWorkspace 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {
   name: name
   location: location
   tags: tags
