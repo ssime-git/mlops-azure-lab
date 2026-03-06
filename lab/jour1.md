@@ -28,7 +28,10 @@ GitHub Actions (CI/CD)
 ### 1. Setup (5 min)
 ```bash
 git clone https://github.com/TON_ORG/mlops-azure-lab.git
-cd mlops-azure-lab && pip install -r requirements.txt
+cd mlops-azure-lab
+uv venv --python 3.10
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 ### 2. Convention de branches (5 min)

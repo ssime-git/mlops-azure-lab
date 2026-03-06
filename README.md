@@ -30,6 +30,7 @@ tests/             -> Tests unitaires Python
 ## Demarrage rapide
 Voir `lab/lab0-setup.md` pour les prerequis et la mise en place initiale.
 Premier support notebook pour J1 : `mlops/data-science/notebooks/iris-walkthrough.ipynb`.
+Pour le setup local rapide: `uv venv --python 3.10 && source .venv/bin/activate && uv pip install -r requirements.txt`.
 
 ## Workflows cles
 - `CI — Lint + Tests + AML Training Pipeline`

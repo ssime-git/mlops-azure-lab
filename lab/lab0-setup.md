@@ -28,10 +28,16 @@ az account show --query "{name:name, id:id, state:state}"
 az extension add -n ml --yes
 az ml --version    # doit afficher une version
 
+# Installer uv (gestionnaire Python rapide)
+# Voir: https://docs.astral.sh/uv/getting-started/installation/
+uv --version
+
 # Cloner le repo
 git clone https://github.com/TON_ORG/mlops-azure-lab.git
 cd mlops-azure-lab
-pip install -r requirements.txt
+uv venv --python 3.10
+source .venv/bin/activate
+uv pip install -r requirements.txt
 ```
 
 ---
@@ -260,4 +266,4 @@ Alternative GitHub Actions:
 | GitHub Actions : `AADSTS70021: No matching federated identity record found` | Federated Credential mal configuré (mauvais repo, org, ou entity type) | Vérifier les 3 credentials : org/repo exact, entity type exact |
 | GitHub Actions : `ClientSecretCredentialAuthenticationError` | AZURE_CLIENT_ID ou AZURE_TENANT_ID incorrect | Revérifier les secrets GitHub vs l'App Registration |
 | GitHub Actions : `AuthorizationFailed` | Role Contributor pas assigné | Vérifier IAM sur le subscription |
-| `pytest` : `ModuleNotFoundError` | `pip install` pas fait | `pip install -r requirements.txt` |
+| `pytest` : `ModuleNotFoundError` | dépendances non installées | `uv pip install -r requirements.txt` |
