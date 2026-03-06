@@ -58,14 +58,19 @@ jobs:
             group=${{ secrets.AML_RESOURCE_GROUP_DEV }} \
             workspace=${{ secrets.AML_WORKSPACE_DEV }}
 
+      - name: Create or update AML environment
+        run: az ml environment create --file mlops/data-science/environment/train-env.yml
+
       - name: Create compute cluster if not exists
         run: |
-          az ml compute create \
-            --name cpu-cluster \
-            --type amlcompute \
-            --min-instances 0 \
-            --max-instances 4 \
-            --size Standard_DS3_v2 || true
+          if ! az ml compute show --name cpu-cluster >/dev/null 2>&1; then
+            az ml compute create \
+              --name cpu-cluster \
+              --type amlcompute \
+              --min-instances 0 \
+              --max-instances 4 \
+              --size Standard_DS3_v2
+          fi
 
       - name: Submit AML training pipeline
         id: submit

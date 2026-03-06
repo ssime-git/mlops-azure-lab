@@ -19,8 +19,10 @@ venv/
 outputs/
 logs/
 mlruns/
+mlflow.db
 
 # Misc
 .DS_Store
 *.log
 *.tmp
+.pytest_cache/

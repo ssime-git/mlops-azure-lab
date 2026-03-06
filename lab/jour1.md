@@ -42,6 +42,9 @@ az login
 az group create --name rg-mlopslab-dev --location westeurope
 # Portal > Azure Machine Learning > Create
 # RG: rg-mlopslab-dev | Name: aml-mlopslab-dev
+
+# Bootstrap AML assets (environment + compute + health-check)
+bash scripts/bootstrap-aml.sh dev rg-mlopslab-dev aml-mlopslab-dev true
 ```
 
 ### 4. Notebook first (15 min)

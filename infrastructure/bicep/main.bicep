@@ -13,6 +13,9 @@ param location string = resourceGroup().location
 @description('Nom de base du projet')
 param projectName string = 'mlopslab'
 
+@description('Mode full = AML + AKS, mode lite = infra de base pour demo')
+param deployFullStack bool = true
+
 @description('Nombre de noeuds AKS')
 param aksNodeCount int = 1
 
@@ -20,6 +23,7 @@ param aksNodeCount int = 1
 param aksVmSize string = 'Standard_D2s_v3'
 
 var baseName = '${projectName}-${environment}'
+var uniqueSuffix = toLower(substring(uniqueString(subscription().id, resourceGroup().id), 0, 5))
 var commonTags = {
   environment: environment
   project: projectName
@@ -29,7 +33,7 @@ var commonTags = {
 module storage 'modules/storage-account.bicep' = {
   name: 'deploy-storage'
   params: {
-    name: 'sa${replace(baseName, '-', '')}ml'
+    name: 'sa${replace(baseName, '-', '')}${uniqueSuffix}ml'
     location: location
     tags: commonTags
   }
@@ -38,7 +42,7 @@ module storage 'modules/storage-account.bicep' = {
 module keyVault 'modules/key-vault.bicep' = {
   name: 'deploy-keyvault'
   params: {
-    name: 'kv-${baseName}'
+    name: 'kv-${baseName}-${uniqueSuffix}'
     location: location
     tags: commonTags
   }
@@ -47,14 +51,14 @@ module keyVault 'modules/key-vault.bicep' = {
 module acr 'modules/container-registry.bicep' = {
   name: 'deploy-acr'
   params: {
-    name: 'acr${replace(baseName, '-', '')}'
+    name: 'acr${replace(baseName, '-', '')}${uniqueSuffix}'
     location: location
     sku: environment == 'prod' ? 'Premium' : 'Basic'
     tags: commonTags
   }
 }
 
-module appInsights 'modules/application-insights.bicep' = {
+module appInsights 'modules/application-insights.bicep' = if (deployFullStack) {
   name: 'deploy-appinsights'
   params: {
     name: 'appi-${baseName}'
@@ -63,7 +67,7 @@ module appInsights 'modules/application-insights.bicep' = {
   }
 }
 
-module amlWorkspace 'modules/aml-workspace.bicep' = {
+module amlWorkspace 'modules/aml-workspace.bicep' = if (deployFullStack) {
   name: 'deploy-aml'
   params: {
     name: 'aml-${baseName}'
@@ -76,7 +80,7 @@ module amlWorkspace 'modules/aml-workspace.bicep' = {
   }
 }
 
-module aks 'modules/aks.bicep' = {
+module aks 'modules/aks.bicep' = if (deployFullStack) {
   name: 'deploy-aks'
   params: {
     name: 'aks-${baseName}'
@@ -89,7 +93,8 @@ module aks 'modules/aks.bicep' = {
 }
 
 output resourceGroupName string = resourceGroup().name
-output amlWorkspaceName string = amlWorkspace.outputs.name
-output aksClusterName string = aks.outputs.name
+output deploymentMode string = deployFullStack ? 'full' : 'lite'
+output amlWorkspaceName string = deployFullStack ? amlWorkspace.outputs.name : ''
+output aksClusterName string = deployFullStack ? aks.outputs.name : ''
 output acrLoginServer string = acr.outputs.loginServer
 output keyVaultUri string = keyVault.outputs.vaultUri

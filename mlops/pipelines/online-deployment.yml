@@ -3,7 +3,7 @@ name: iris-deployment
 endpoint_name: iris-endpoint
 model: azureml:iris-classifier@latest
 code_configuration:
-  code: ../../data-science/src
+  code: ../data-science/src
   scoring_script: score.py
 environment: azureml:iris-train-env@latest
 instance_type: Standard_DS2_v2

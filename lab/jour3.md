@@ -2,7 +2,7 @@
 
 ## Objectifs
 - Comprendre Azure Pipelines et GitHub Actions (theorie)
-- Lire et comprendre les 3 workflows GitHub Actions du repo
+- Lire et comprendre les 3 workflows CI/CD principaux du repo
 - Relier ce qui a ete teste en notebook J1 avec son execution automatisee en CI
 - Declencher un CI reel (commit -> AML pipeline)
 - Observer le deploiement AKS end-to-end
@@ -89,7 +89,14 @@ curl -X POST http://EXTERNAL_IP/score \
 # Attendu : [{"prediction": "setosa", ...}]
 ```
 
-### 5. Tester le quality gate (5 min)
+### 5. Deployer le Managed Endpoint AML (backup fonctionnel, 10 min)
+Dans GitHub Actions, lancer le workflow manuel:
+- `CD — Deploy AML Managed Endpoint`
+- `target_env=dev`
+
+Puis verifier l'invocation smoke-test dans les logs du workflow.
+
+### 6. Tester le quality gate (5 min)
 ```bash
 # Dans evaluate.py, passer min_accuracy a 0.99
 # Pousser -> observer le CI echouer sur evaluate_model
@@ -99,4 +106,5 @@ curl -X POST http://EXTERNAL_IP/score \
 ## Checkpoint J3
 - [ ] CI vert (lint + tests + AML pipeline)
 - [ ] Endpoint AKS repond a curl
+- [ ] Managed Endpoint AML deploye et invoque avec succes
 - [ ] Quality gate teste : echec a 0.99, succes a 0.90

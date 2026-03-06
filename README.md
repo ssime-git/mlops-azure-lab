@@ -21,12 +21,19 @@ Cas fil rouge : classification Iris deployee sur Azure ML + AKS via CI/CD GitHub
 ```
 infrastructure/    -> Bicep (demo) + Terraform (operationnel) + Terraform reference (lecture)
 mlops/             -> Code ML + pipelines AML + Dockerfile
-.github/workflows/ -> CI/CD GitHub Actions (inlines, sans dependance externe)
+.github/workflows/ -> CI/CD GitHub Actions (CI/CD + ops bootstrap + endpoint AML)
 lab/               -> Instructions pratiques J1 a J5
-scripts/           -> Utilitaires (drift, RBAC)
+scripts/           -> Utilitaires (drift, RBAC, bootstrap AML, deploiement Bicep guide)
 tests/             -> Tests unitaires Python
 ```
 
 ## Demarrage rapide
 Voir `lab/lab0-setup.md` pour les prerequis et la mise en place initiale.
 Premier support notebook pour J1 : `mlops/data-science/notebooks/iris-walkthrough.ipynb`.
+
+## Workflows cles
+- `CI — Lint + Tests + AML Training Pipeline`
+- `CD — Deploy to Dev (ACR build + AKS deploy)`
+- `CD — Deploy to Prod (Manual Approval Required)`
+- `Ops — Bootstrap AML Assets`
+- `CD — Deploy AML Managed Endpoint`

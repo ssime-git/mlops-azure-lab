@@ -11,19 +11,24 @@
 ### 1. Demo Bicep rapide (15 min)
 ```bash
 az login
-az group create --name rg-mlopslab-bicep-demo --location westeurope
-az deployment group create \
-  --resource-group rg-mlopslab-bicep-demo \
-  --template-file infrastructure/bicep/main.bicep \
-  --parameters infrastructure/bicep/parameters/dev.bicepparam
+bash scripts/deploy-bicep-demo.sh rg-mlopslab-bicep-demo westeurope
 ```
-Objectif: voir le flux Bicep de bout en bout en 1 commande.
+Objectif: voir le flux Bicep en mode **lite** (cout + temps reduits) sans impacter les environnements Terraform.
+
+Option avancee (full Bicep avec garde-fous):
+```bash
+# Garde-fous integres: project_name unique obligatoire + RG reservees bloquees
+bash scripts/deploy-bicep-full.sh dev mlopsteam01 rg-mlopsteam01-dev westeurope
+```
 
 ### 2. Preparer le backend Terraform (10 min)
 ```bash
+TFSTATE_SUFFIX=$(whoami | tr -cd 'a-z0-9' | cut -c1-8)
+TFSTATE_SA="satfstate${TFSTATE_SUFFIX}"
+
 az group create --name rg-tfstate --location westeurope
-az storage account create --name satfstatemlops --resource-group rg-tfstate --sku Standard_LRS
-az storage container create --name tfstate --account-name satfstatemlops
+az storage account create --name "$TFSTATE_SA" --resource-group rg-tfstate --sku Standard_LRS
+az storage container create --name tfstate --account-name "$TFSTATE_SA"
 ```
 
 ### 3. Terraform dev (25 min)
@@ -31,7 +36,7 @@ az storage container create --name tfstate --account-name satfstatemlops
 cd infrastructure/terraform
 terraform init \
   -backend-config="resource_group_name=rg-tfstate" \
-  -backend-config="storage_account_name=satfstatemlops" \
+  -backend-config="storage_account_name=$TFSTATE_SA" \
   -backend-config="container_name=tfstate" \
   -backend-config="key=mlopslab-dev.tfstate"
 
@@ -43,7 +48,7 @@ terraform apply -var-file="environments/dev.tfvars"
 ```bash
 terraform init -reconfigure \
   -backend-config="resource_group_name=rg-tfstate" \
-  -backend-config="storage_account_name=satfstatemlops" \
+  -backend-config="storage_account_name=$TFSTATE_SA" \
   -backend-config="container_name=tfstate" \
   -backend-config="key=mlopslab-prod.tfstate"
 

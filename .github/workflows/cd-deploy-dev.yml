@@ -13,6 +13,7 @@ permissions:
 
 env:
   IMAGE_TAG: ${{ github.sha }}
+  PYTHON_VERSION: "3.10"
 
 jobs:
   check-ci:
@@ -29,6 +30,14 @@ jobs:
       acr_server: ${{ steps.acr.outputs.server }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ env.PYTHON_VERSION }}" }
+      - name: Build local model artifact for container image
+        run: |
+          pip install -r requirements.txt
+          rm -rf outputs/model
+          python mlops/data-science/src/prep.py --output_dir /tmp/iris-image
+          python mlops/data-science/src/train.py --data_dir /tmp/iris-image --model_dir outputs/model
 
       - name: Azure Login (OIDC)
         uses: azure/login@v2
@@ -50,7 +59,7 @@ jobs:
             --registry ${{ steps.acr.outputs.server }} \
             --image iris-classifier:${{ env.IMAGE_TAG }} \
             --file mlops/data-science/Dockerfile \
-            mlops/data-science/
+            .
 
   deploy-aks:
     needs: build-push

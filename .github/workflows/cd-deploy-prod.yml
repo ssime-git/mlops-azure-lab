@@ -40,13 +40,24 @@ jobs:
             --name ${{ secrets.AKS_CLUSTER_PROD }} \
             --overwrite-existing
 
-      - name: Get latest image from ACR prod
+      - name: Promote latest image from dev ACR to prod ACR
         id: image
         run: |
-          NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_PROD }} --query "[0].name" -o tsv)
-          SERVER=$(az acr show --name $NAME --query loginServer -o tsv)
-          TAG=$(az acr repository show-tags --name $NAME --repository iris-classifier --orderby time_desc --top 1 -o tsv)
-          echo "server=$SERVER" >> $GITHUB_OUTPUT
+          DEV_NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} --query "[0].name" -o tsv)
+          DEV_SERVER=$(az acr show --name $DEV_NAME --query loginServer -o tsv)
+          TAG=$(az acr repository show-tags --name $DEV_NAME --repository iris-classifier --orderby time_desc --top 1 -o tsv)
+          [ -n "$TAG" ] || { echo "No image tag found in dev ACR"; exit 1; }
+
+          PROD_NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_PROD }} --query "[0].name" -o tsv)
+          PROD_SERVER=$(az acr show --name $PROD_NAME --query loginServer -o tsv)
+
+          az acr import \
+            --name $PROD_NAME \
+            --source ${DEV_SERVER}/iris-classifier:${TAG} \
+            --image iris-classifier:${TAG} \
+            --force
+
+          echo "server=$PROD_SERVER" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
       - name: Deploy to AKS prod
