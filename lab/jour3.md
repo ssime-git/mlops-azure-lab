@@ -165,6 +165,17 @@ git push origin dev
 ```
 Observer GitHub Actions : les 3 jobs de `ci-train.yml`.
 
+Si tu veux relancer la CI avec le **dernier contenu du repo**:
+- eviter de seulement cliquer sur `Re-run jobs` d'un ancien workflow si des fichiers ont change depuis
+- un rerun relance le workflow sur le meme commit SHA
+- pour forcer un nouveau run sur l'etat courant de `dev`, tu peux pousser un commit vide
+
+Exemple:
+```bash
+git commit --allow-empty -m "chore: rerun ci"
+git push origin dev
+```
+
 Ce que fait concretement ce push:
 ```mermaid
 sequenceDiagram
