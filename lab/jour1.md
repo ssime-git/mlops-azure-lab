@@ -6,6 +6,20 @@
 - Demarrer par un notebook pour visualiser le flux dans l'interface AML
 - Lancer le pipeline ML localement de bout en bout
 
+## Positionnement de J1 par rapport a J2
+
+Le Jour 1 est une journee de **prise en main**:
+- on decouvre les concepts
+- on execute le pipeline ML en local
+- on comprend comment AML va etre utilise ensuite
+
+La creation "officielle" de l'infrastructure Azure `dev` du lab est faite au **Jour 2** avec Terraform.
+
+Important:
+- ne pas creer manuellement `rg-mlopslab-dev` au Jour 1
+- ne pas creer manuellement `aml-mlopslab-dev` si tu veux ensuite laisser Terraform gerer l'infra
+- sinon le `terraform apply` du Jour 2 echouera car les ressources existeront deja
+
 ## Prerequis
 - Compte Azure actif avec acces au subscription de lab
 - git, Python 3.10, Azure CLI installes
@@ -39,19 +53,33 @@ uv pip install -r requirements.txt
 - `dev`  -> CI + CD dev automatique
 - `feature/*` -> CI seulement
 
-### 3. Creer le workspace AML dev (portail, 15 min)
+### 3. Comprendre le futur workspace AML dev (15 min)
 ```bash
 az login
-az group create --name rg-mlopslab-dev --location westeurope
-# Portal > Azure Machine Learning > Create
-# RG: rg-mlopslab-dev | Name: aml-mlopslab-dev
-
-# Bootstrap AML assets (environment + compute + health-check)
-bash scripts/bootstrap-aml.sh dev rg-mlopslab-dev aml-mlopslab-dev true
 ```
+
+Ce que l'on fait ici:
+- verifier l'acces Azure
+- comprendre a quoi servira le workspace AML dev
+- preparer mentalement la suite du lab
+
+Ce que l'on **ne fait pas** ici:
+- creer `rg-mlopslab-dev`
+- creer `aml-mlopslab-dev`
+
+Ces ressources seront creees au Jour 2 par Terraform.
+
+Si le formateur fournit deja un workspace AML dev existant pour la demo:
+- l'utiliser en lecture / exploration
+- ne pas le recreer a la main
 
 ### 4. Notebook first (15 min)
 Ouvrir `mlops/data-science/notebooks/iris-walkthrough.ipynb` dans Azure ML Studio (ou local Jupyter) et executer toutes les cellules.
+
+Si le workspace AML dev n'existe pas encore a ce stade:
+- faire la lecture du notebook localement
+- se concentrer sur la logique `prep -> train -> evaluate`
+- la partie Azure AML operationnelle sera reprise apres creation de l'infra au Jour 2
 
 Points a observer:
 - split train/test cree par `prep`
@@ -69,5 +97,7 @@ uv run pytest tests/ -v
 ## Checkpoint J1
 - [ ] Notebook Iris execute de bout en bout
 - [ ] Pipeline local (prep -> train -> evaluate) sans erreur
-- [ ] Workspace AML dev visible sur le portail
 - [ ] `uv run pytest tests/ -v` : 5 tests PASSED
+
+Checkpoint optionnel si un workspace de demo existe deja:
+- [ ] Workspace AML dev visible sur le portail

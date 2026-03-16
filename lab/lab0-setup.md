@@ -272,20 +272,6 @@ Si tous les tests passent → prêt pour J1.
 
 ---
 
-## Après création du workspace (J1) — Bootstrap automatisé recommandé
-
-Une fois `rg-mlopslab-dev` et `aml-mlopslab-dev` créés, lancer:
-
-```bash
-bash scripts/bootstrap-aml.sh dev rg-mlopslab-dev aml-mlopslab-dev true
-```
-
-Alternative GitHub Actions:
-- Workflow manuel `Ops — Bootstrap AML Assets`
-- Inputs: `target_env=dev`, `run_health_check=true`
-
----
-
 ## Tableau de dépannage
 
 | Symptôme | Cause probable | Solution |

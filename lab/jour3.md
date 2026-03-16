@@ -57,6 +57,73 @@ et le modifient directement sans naviguer vers un portail supplementaire.
 
 ## Apres-midi — Atelier : GitHub Actions en pratique
 
+## Ce qui se passe derriere les workflows
+
+Le point important du Jour 3 est que le `git push` ne lance pas "juste des tests Python".
+Il declenche une chaine complete entre GitHub, Azure ML, ACR et AKS.
+
+Vue d'ensemble:
+```mermaid
+flowchart TD
+    A[Push sur dev] --> B[GitHub Actions - CI]
+    B --> C[Lint + unit tests]
+    B --> D[Azure Login via OIDC]
+    D --> E[Create/Update AML environment]
+    E --> F[Create/Update AML compute]
+    F --> G[Submit AML pipeline]
+    G --> H[prep_data]
+    H --> I[train_model]
+    I --> J[evaluate_model]
+    J --> K[CI vert]
+    K --> L[GitHub Actions - CD dev]
+    L --> M[Build image et push vers ACR]
+    M --> N[Deploy sur AKS]
+    N --> O[Test curl sur endpoint AKS]
+```
+
+Pourquoi cela peut prendre du temps:
+- GitHub doit d'abord demarrer un runner
+- Azure Login via OIDC doit obtenir un token
+- AML doit preparer ou mettre a jour l'environnement d'execution
+- le compute `cpu-cluster` peut devoir sortir de veille si `min-instances = 0`
+- AML doit tirer l'image Docker depuis l'ACR
+- le pipeline AML enchaine ensuite `prep_data`, `train_model`, `evaluate_model`
+- seulement apres un CI vert, le workflow CD construit l'image applicative et la deploie sur AKS
+
+En pratique, le script Python `prep.py` est tres rapide.
+Si l'etape `prep_data` semble longue, le temps est souvent consomme par:
+- le reveil du compute AML
+- la preparation du conteneur
+- le pull de l'image
+- les operations d'infrastructure AML avant l'execution du code
+
+Schema du pipeline AML:
+```mermaid
+flowchart LR
+    A[AML Environment] --> B[AML Compute cpu-cluster]
+    B --> C[prep_data]
+    C --> D[train_model]
+    D --> E[evaluate_model]
+    E --> F[Metrics + artifacts + status]
+```
+
+Ce qu'il faut observer dans AML Studio:
+- `Queued` ou `Preparing` = AML prepare l'infra, pas encore ton code
+- `Running` sur `prep_data` = le conteneur du step est lance
+- `Completed` = le step est termine
+- `Failed` = regarder les logs du child job concerne
+
+Regle pratique:
+- premier run apres creation du compute: plus lent
+- runs suivants: souvent plus rapides grace au cache AML
+- ce qui parait "lent" n'est pas forcement un bug, surtout au premier passage
+
+Positionnement du script `bootstrap-aml.sh`:
+- il sert a preparer les assets AML apres creation de l'infrastructure
+- le meilleur moment pour le lancer manuellement est en fin de Jour 2
+- au Jour 3, avec le repo a jour, le workflow CI sait normalement faire ce qu'il faut sans bootstrap manuel
+- si un environnement a ete cree avant les derniers correctifs, relancer `bootstrap-aml.sh` reste un bon outil de rattrapage
+
 ### 1. Lire les workflows (15 min)
 Ouvrir `.github/workflows/` et repondre :
 - Qu'est-ce qui declenche `ci-train.yml` ?
@@ -98,9 +165,32 @@ git push origin dev
 ```
 Observer GitHub Actions : les 3 jobs de `ci-train.yml`.
 
+Ce que fait concretement ce push:
+```mermaid
+sequenceDiagram
+    participant Dev as Apprenant
+    participant GH as GitHub Actions
+    participant Azure as Azure via OIDC
+    participant AML as Azure ML
+
+    Dev->>GH: git push origin dev
+    GH->>GH: lint
+    GH->>GH: unit-tests
+    GH->>Azure: login OIDC
+    GH->>AML: create/update environment
+    GH->>AML: create/update compute + role AcrPull
+    GH->>AML: submit pipeline
+    AML-->>GH: status prep_data -> train_model -> evaluate_model
+```
+
 ### 3. Observer le pipeline AML (15 min)
 Azure ML Studio > Jobs > pipeline en cours.
 Cliquer sur chaque etape : prep_data, train_model, evaluate_model.
+
+Pourquoi `prep_data` peut sembler "bloque":
+- le code de preparation est simple et rapide
+- mais AML doit parfois d'abord allouer le compute, preparer l'environnement et tirer l'image
+- c'est donc souvent une attente d'infrastructure, pas une attente "metier"
 
 Si le job echoue sur `az ml environment create` avec `AuthorizationFailed`:
 - verifier a nouveau les rôles Azure RBAC de l'app `github-mlops-lab`
@@ -116,6 +206,13 @@ curl -X POST http://EXTERNAL_IP/score \
   -d '{"data": [[5.1, 3.5, 1.4, 0.2]]}'
 # Attendu : [{"prediction": "setosa", ...}]
 ```
+
+Cette etape ne teste pas AML directement.
+Elle teste le resultat du workflow CD dev:
+- build de l'image applicative
+- push dans l'ACR
+- deploiement Kubernetes sur AKS
+- exposition du service `iris-classifier-svc`
 
 ### 5. Deployer le Managed Endpoint AML (backup fonctionnel, 10 min)
 Dans GitHub Actions, lancer le workflow manuel:

@@ -257,6 +257,39 @@ Pour une vraie production:
 - Portail Azure: verifier rg-mlopslab-dev (7 ressources)
 - Ouvrir `infrastructure/terraform-reference/` pour voir une version simplifiee de lecture
 
+### 6. Bootstrap AML assets (recommande avant J3, 10 min)
+Une fois l'infrastructure `dev` creee, on peut preparer les assets AML utilises ensuite par les workflows:
+- environnement AML `iris-train-env`
+- compute `cpu-cluster`
+- health-check AML simple
+
+Commande:
+```bash
+cd /home/seb/project/azure_lab/mlops-azure-lab
+bash scripts/bootstrap-aml.sh dev rg-mlopslab-dev aml-mlopslab-dev true
+```
+
+Note:
+- cette commande peut prendre plusieurs minutes, surtout au premier passage
+- la partie la plus lente est souvent le health-check AML, car Azure ML doit preparer le compute, l'environnement et le conteneur avant d'executer le code
+- si le script semble "attendre", ce n'est pas forcement un blocage
+
+Ce que fait ce script:
+- cree ou met a jour l'environnement AML
+- cree ou met a jour le compute AML
+- verifie l'identite du compute et l'acces `AcrPull` sur l'ACR
+- soumet un petit job AML de verification
+
+Pourquoi le lancer ici:
+- a ce moment, `rg-mlopslab-dev` et `aml-mlopslab-dev` existent vraiment
+- on reste coherent avec Terraform comme source de verite pour l'infra
+- on prepare un passage plus fluide vers le Jour 3
+
+Important:
+- le script peut etre relance sans danger si besoin
+- pour un repo a jour, le workflow du Jour 3 sait aussi recreer/corriger ces assets si necessaire
+- mais le lancer en fin de Jour 2 permet de verifier AML avant la CI/CD complete
+
 Questions a savoir expliquer a la fin:
 - Que fait Bicep dans Azure, sans notion de state Terraform ?
 - A quoi sert le backend `tfstate` ?
@@ -267,4 +300,5 @@ Questions a savoir expliquer a la fin:
 - [ ] 7 ressources dans rg-mlopslab-dev
 - [ ] Terraform state distant configure
 - [ ] Outputs Terraform visibles (workspace + AKS + ACR)
+- [ ] Bootstrap AML passe ou compris avant J3
 - [ ] Differences Bicep vs Terraform expliquees
