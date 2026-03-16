@@ -17,6 +17,20 @@ En pratique:
 - sans modele enregistre, la partie "versioning" ne montrera rien
 - sans endpoint AKS accessible, la simulation de drift ne peut pas fonctionner
 
+## Bien separer les deux sujets de J3
+
+Le Jour 3 montrait deux cibles de deploiement differentes:
+
+| Sujet | Workflow J3 associe | Ce que cela produit | Utilise au Jour 4 pour |
+|---|---|---|---|
+| `AKS` | `CD — Deploy to Dev (ACR build + AKS deploy)` | une application de scoring exposee sur AKS | la simulation de drift et l'observation App Insights |
+| `Managed Endpoint AML` | `CD — Deploy AML Managed Endpoint` | un modele enregistre dans AML + un endpoint AML gere | le versioning du modele dans le workspace AML |
+
+Donc:
+- pour `az ml model list --name iris-classifier`, c'est le workflow `Managed Endpoint AML` qui compte
+- pour `kubectl get svc iris-classifier-svc`, c'est le workflow `CD dev vers AKS` qui compte
+- ces deux parties sont complementaires, mais elles ne se remplacent pas
+
 ## Atelier
 
 ### 1. Explorer les runs MLflow (10 min)
@@ -27,6 +41,10 @@ Observer : Metrics, Parameters, Artifacts, Tags.
 Precondition:
 - avoir lance au moins une fois le workflow `CD — Deploy AML Managed Endpoint` du Jour 3
 - ce workflow enregistre le modele `iris-classifier` dans le workspace AML dev
+
+Si la commande suivante ne retourne rien, ce n'est pas un bug du registre AML:
+- cela signifie en general que le workflow `CD — Deploy AML Managed Endpoint` n'a pas encore ete lance avec succes
+- le deploiement AKS seul ne suffit pas a remplir le registre de modeles AML
 
 ```bash
 az ml model list --name iris-classifier

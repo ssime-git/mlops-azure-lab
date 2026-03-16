@@ -68,6 +68,36 @@ Important:
 - en pratique, on separe plus souvent entrainement, enregistrement du modele, validation, puis deploiement
 - il faut donc lire ce flux comme un environnement `dev` de demonstration, pas comme un modele de production a recopier tel quel
 
+## Deux cibles de deploiement differentes
+
+Le repo montre volontairement **deux manieres de servir un modele** apres l'entrainement.
+Elles ne font pas la meme chose et ne servent pas le meme objectif.
+
+| Cible | Ce qui est deploye | Qui gere le runtime | Ce que tu manipules | Usage dans le lab |
+|---|---|---|---|---|
+| `AKS` | une image Docker de scoring | toi via Kubernetes | image ACR, manifest K8s, service, rollout | montrer le chemin conteneur + ACR + AKS |
+| `Managed Endpoint AML` | un endpoint de modele Azure ML | Azure ML | modele AML, endpoint AML, deployment AML | montrer le chemin serving ML gere et le registre de modeles |
+
+En lecture simple:
+- `AKS` = approche "plateforme / Kubernetes"
+- `Managed Endpoint AML` = approche "service de serving ML gere"
+
+Ce que cela implique concretement:
+- deployer sur `AKS` **n'enregistre pas** automatiquement un modele dans le registre AML
+- deployer un `Managed Endpoint AML` **enregistre** le modele dans le workspace AML puis le sert via Azure ML
+- le Jour 4 depend donc du workflow `Managed Endpoint AML` pour la partie registre de modeles, pas du workflow AKS
+
+Schema de separation:
+```mermaid
+flowchart TD
+    A[CI AML reussie] --> B[Option 1: CD dev vers AKS]
+    A --> C[Option 2: CD AML Managed Endpoint]
+    B --> D[Image Docker dans ACR]
+    D --> E[Application de scoring sur AKS]
+    C --> F[Modele enregistre dans AML]
+    F --> G[Endpoint AML gere]
+```
+
 Vue d'ensemble:
 ```mermaid
 flowchart TD
@@ -243,6 +273,16 @@ Pourquoi manuel dans ce lab:
 - cela rend la demonstration plus previsible et plus proche d'un vrai gate de promotion `dev`
 - en pratique, l'ordre devient donc: `push` -> `CI AML` -> verification du resultat -> lancement manuel du `CD dev`
 
+Ce que fait exactement ce workflow:
+- il reconstruit un artefact modele local pour embarquer l'application de scoring
+- il build une image Docker
+- il push cette image dans l'ACR
+- il deploie cette image sur AKS avec Kubernetes
+
+Ce qu'il ne fait pas:
+- il n'enregistre pas `iris-classifier` dans le registre de modeles AML
+- il ne cree pas de `Managed Endpoint` Azure ML
+
 ### 5. Tester l'endpoint AKS (15 min)
 Si `kubectl` n'est pas installe en local:
 ```bash
@@ -281,6 +321,29 @@ Dans GitHub Actions, lancer le workflow manuel:
 - `target_env=dev`
 
 Puis verifier l'invocation smoke-test dans les logs du workflow.
+
+Ce que fait exactement ce workflow:
+- il prepare les assets AML utiles au workspace
+- il entraine et evalue le modele dans le runner GitHub
+- il enregistre ensuite `iris-classifier` dans le registre de modeles du workspace AML
+- il cree ou met a jour un `online endpoint` AML et son deployment associe
+- il invoque enfin l'endpoint pour un smoke test
+
+Quand l'utiliser dans le lab:
+- si tu veux comparer `AKS` et `Managed Endpoint AML`
+- si tu veux preparer le Jour 4 et voir apparaitre `iris-classifier` dans `az ml model list`
+- si tu veux une voie de serving plus proche d'un service ML gere que d'un cluster Kubernetes
+
+Pourquoi cette etape est importante pour la suite:
+- ce workflow enregistre aussi le modele `iris-classifier` dans le workspace AML
+- c'est ce modele enregistre que tu manipuleras au Jour 4 avec `az ml model list --name iris-classifier`
+- si tu sautes cette etape, la partie "versioning de modeles" du Jour 4 risque de ne rien afficher
+
+Pourquoi ce workflow n'a pas le meme probleme MLflow que le pipeline AML:
+- ici, `prep.py`, `train.py` et `evaluate.py` tournent localement dans le runner GitHub, pas comme job AML distant
+- `train.py` ne fait plus de `mlflow.sklearn.log_model()`
+- le modele est enregistre ensuite proprement dans AML via `register.py` et le SDK `azure-ai-ml`
+- on evite donc ici l'incompatibilite rencontree plus tot avec l'URI `azureml://...` du tracking MLflow en job AML
 
 ### 7. Tester le quality gate (5 min)
 ```bash
