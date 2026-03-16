@@ -133,18 +133,28 @@ bash scripts/deploy-bicep-full.sh dev mlopsteam01 rg-mlopsteam01-dev westeurope
 
 ### 2. Preparer le backend Terraform (10 min)
 ```bash
-TFSTATE_SUFFIX=$(whoami | tr -cd 'a-z0-9' | cut -c1-8)
-TFSTATE_SA="satfstate${TFSTATE_SUFFIX}"
+source lab/env/jour2.env
 
-az group create --name rg-tfstate --location westeurope
-az storage account create --name "$TFSTATE_SA" --resource-group rg-tfstate --sku Standard_LRS
-az storage container create --name tfstate --account-name "$TFSTATE_SA"
+az group create --name "$TFSTATE_RG" --location "$TFSTATE_LOCATION"
+az storage account create --name "$TFSTATE_SA" --resource-group "$TFSTATE_RG" --sku Standard_LRS
+az storage container create --name "$TFSTATE_CONTAINER" --account-name "$TFSTATE_SA"
 ```
 
 Ce que cette etape fait:
 - cree un compte de stockage Azure
 - cree un conteneur `tfstate`
 - permet a Terraform de stocker son state a distance plutot qu'en local
+
+Le fichier [lab/env/jour2.env](/home/seb/project/azure_lab/mlops-azure-lab/lab/env/jour2.env) centralise:
+- la region du backend
+- le nom du resource group `tfstate`
+- le nom du conteneur
+- la convention de nommage du storage account
+
+Pourquoi on le versionne:
+- il ne contient aucun secret
+- tous les participants partent de la meme base
+- on garde les commandes visibles, sans recopier des valeurs en dur dans tout le lab
 
 Pourquoi c'est important:
 - eviter les states locaux perdus ou divergents
@@ -155,9 +165,9 @@ Pourquoi c'est important:
 ```bash
 cd infrastructure/terraform
 terraform init \
-  -backend-config="resource_group_name=rg-tfstate" \
+  -backend-config="resource_group_name=$TFSTATE_RG" \
   -backend-config="storage_account_name=$TFSTATE_SA" \
-  -backend-config="container_name=tfstate" \
+  -backend-config="container_name=$TFSTATE_CONTAINER" \
   -backend-config="key=mlopslab-dev.tfstate"
 
 terraform plan -var-file="environments/dev.tfvars"
@@ -199,9 +209,9 @@ Point cout:
 
 ```bash
 terraform init -reconfigure \
-  -backend-config="resource_group_name=rg-tfstate" \
+  -backend-config="resource_group_name=$TFSTATE_RG" \
   -backend-config="storage_account_name=$TFSTATE_SA" \
-  -backend-config="container_name=tfstate" \
+  -backend-config="container_name=$TFSTATE_CONTAINER" \
   -backend-config="key=mlopslab-prod.tfstate"
 
 terraform plan -var-file="environments/prod.tfvars"
