@@ -1,4 +1,5 @@
 """Inference script for AML online endpoint and AKS Flask server."""
+
 import json
 import os
 
@@ -11,7 +12,9 @@ CLASSES = ["setosa", "versicolor", "virginica"]
 
 def init():
     global MODEL
-    model_path = os.path.join(os.environ.get("AZUREML_MODEL_DIR", "/app/model"), "model.joblib")
+    model_path = os.path.join(
+        os.environ.get("AZUREML_MODEL_DIR", "/app/model"), "model.joblib"
+    )
     MODEL = joblib.load(model_path)
     print(f"Model loaded from {model_path}")
 

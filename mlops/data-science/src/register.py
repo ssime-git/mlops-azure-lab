@@ -1,4 +1,5 @@
 """Register the trained model in AML Model Registry."""
+
 import argparse
 import os
 
@@ -20,7 +21,11 @@ def main(args):
         type=AssetTypes.CUSTOM_MODEL,
         name="iris-classifier",
         description="LogisticRegression on Iris dataset",
-        tags={"accuracy": args.accuracy, "framework": "scikit-learn", "env": args.environment},
+        tags={
+            "accuracy": args.accuracy,
+            "framework": "scikit-learn",
+            "env": args.environment,
+        },
     )
     registered = client.models.create_or_update(model)
     print(f"Registered: {registered.name} v{registered.version}")
@@ -31,7 +36,11 @@ if __name__ == "__main__":
     parser.add_argument("--model_dir", required=True)
     parser.add_argument("--accuracy", default="unknown")
     parser.add_argument("--environment", default="dev")
-    parser.add_argument("--subscription_id", default=os.environ.get("AZURE_SUBSCRIPTION_ID", ""))
-    parser.add_argument("--resource_group", default=os.environ.get("AML_RESOURCE_GROUP", ""))
+    parser.add_argument(
+        "--subscription_id", default=os.environ.get("AZURE_SUBSCRIPTION_ID", "")
+    )
+    parser.add_argument(
+        "--resource_group", default=os.environ.get("AML_RESOURCE_GROUP", "")
+    )
     parser.add_argument("--workspace", default=os.environ.get("AML_WORKSPACE", ""))
     main(parser.parse_args())

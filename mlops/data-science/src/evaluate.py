@@ -1,4 +1,5 @@
 """Evaluate model on test set. Exit code 1 if accuracy < threshold (CI quality gate)."""
+
 import argparse
 import sys
 
@@ -20,8 +21,14 @@ def main(args):
         mlflow.log_metric("test_accuracy", acc)
         mlflow.log_metric("test_f1_weighted", f1)
 
-    print(classification_report(y, preds, target_names=["setosa", "versicolor", "virginica"]))
-    print(f"Accuracy: {acc:.4f} | F1 (weighted): {f1:.4f} | Threshold: {args.min_accuracy}")
+    print(
+        classification_report(
+            y, preds, target_names=["setosa", "versicolor", "virginica"]
+        )
+    )
+    print(
+        f"Accuracy: {acc:.4f} | F1 (weighted): {f1:.4f} | Threshold: {args.min_accuracy}"
+    )
 
     if acc < args.min_accuracy:
         print(f"FAIL: {acc:.4f} < {args.min_accuracy}")

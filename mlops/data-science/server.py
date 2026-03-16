@@ -1,4 +1,5 @@
 """Minimal Flask server wrapping score.py for AKS deployment."""
+
 import sys
 
 from flask import Flask, request
@@ -12,7 +13,11 @@ init()
 
 @app.route("/score", methods=["POST"])
 def score():
-    return run(request.get_data(as_text=True)), 200, {"Content-Type": "application/json"}
+    return (
+        run(request.get_data(as_text=True)),
+        200,
+        {"Content-Type": "application/json"},
+    )
 
 
 @app.route("/health", methods=["GET"])
