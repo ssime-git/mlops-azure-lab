@@ -1,4 +1,5 @@
 """Train LogisticRegression on Iris. Log with MLflow autolog. Save model."""
+
 import argparse
 import os
 
