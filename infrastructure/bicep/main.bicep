@@ -92,6 +92,19 @@ module aks 'modules/aks.bicep' = if (deployFullStack) {
   }
 }
 
+resource amlWorkspaceAcrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deployFullStack) {
+  name: guid(amlWorkspace.outputs.id, acr.outputs.id, 'AcrPull')
+  scope: resourceGroup()
+  properties: {
+    roleDefinitionId: subscriptionResourceId(
+      'Microsoft.Authorization/roleDefinitions',
+      '7f951dda-4ed3-4680-a7ca-43fe172d538d'
+    )
+    principalId: amlWorkspace.outputs.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 output resourceGroupName string = resourceGroup().name
 output deploymentMode string = deployFullStack ? 'full' : 'lite'
 output amlWorkspaceName string = deployFullStack ? amlWorkspace.outputs.name : ''
