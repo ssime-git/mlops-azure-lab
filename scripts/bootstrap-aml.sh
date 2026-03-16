@@ -43,11 +43,29 @@ experiment_name: aml-bootstrap-health
 YAML
 
   JOB_NAME=$(az ml job create --file "$HEALTH_JOB_FILE" --query name -o tsv)
-  az ml job stream --name "$JOB_NAME"
-  STATUS=$(az ml job show --name "$JOB_NAME" --query status -o tsv)
+  STATUS=""
+
+  for attempt in $(seq 1 20); do
+    STATUS=$(az ml job show --name "$JOB_NAME" --query status -o tsv)
+    echo "[bootstrap-aml] health-check status [$attempt/20]: $STATUS"
+
+    case "$STATUS" in
+      Completed)
+        break
+        ;;
+      Failed|Canceled|CancelRequested|NotResponding)
+        echo "[bootstrap-aml] Health-check failed with status=$STATUS"
+        az ml job show --name "$JOB_NAME" -o json
+        exit 1
+        ;;
+    esac
+
+    sleep 15
+  done
 
   if [[ "$STATUS" != "Completed" ]]; then
     echo "[bootstrap-aml] Health-check failed with status=$STATUS"
+    az ml job show --name "$JOB_NAME" -o json
     exit 1
   fi
   echo "[bootstrap-aml] Health-check passed ($JOB_NAME)"

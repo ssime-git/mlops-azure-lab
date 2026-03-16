@@ -66,6 +66,29 @@ Ouvrir `.github/workflows/` et repondre :
 - Quelles etapes du notebook J1 sont reprises dans les scripts `prep.py`, `train.py`, `evaluate.py` ?
 
 ### 2. Premier push sur dev (10 min)
+Avant le push, verifier que l'identite GitHub OIDC a bien les droits sur le workspace cree au Jour 2.
+Sans cela, le job `train-pipeline` echoue typiquement sur `az ml environment create`.
+
+Checks conseilles:
+```bash
+PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
+
+az role assignment list \
+  --assignee "$PRINCIPAL_ID" \
+  --all \
+  --query "[].{role:roleDefinitionName,scope:scope}" \
+  -o table
+```
+
+Verifier au minimum:
+- `Contributor` sur `rg-mlopslab-dev`
+- `User Access Administrator` sur `rg-mlopslab-dev`
+
+Si les roles viennent d'etre ajoutes:
+- attendre 2 a 5 minutes
+- relancer ensuite le workflow
+
+Puis faire le push:
 ```bash
 git checkout dev
 # Modifier train.py : max_iter 200 -> 300
@@ -78,6 +101,11 @@ Observer GitHub Actions : les 3 jobs de `ci-train.yml`.
 ### 3. Observer le pipeline AML (15 min)
 Azure ML Studio > Jobs > pipeline en cours.
 Cliquer sur chaque etape : prep_data, train_model, evaluate_model.
+
+Si le job echoue sur `az ml environment create` avec `AuthorizationFailed`:
+- verifier a nouveau les rôles Azure RBAC de l'app `github-mlops-lab`
+- confirmer que `rg-mlopslab-dev` a bien ete cree par Terraform puis que les rôles ont ete reappliques dessus
+- relancer le workflow apres propagation IAM
 
 ### 4. Tester l'endpoint AKS (15 min)
 ```bash
