@@ -80,26 +80,42 @@ az account show --query id -o tsv
 > Objectif : éviter `Contributor` au scope subscription.
 > On donne des droits au **niveau Resource Group** uniquement.
 
-1. Créer les Resource Groups cibles (si non existants) :
+1. Créer **uniquement** le Resource Group du backend Terraform :
 
 ```bash
-az group create --name rg-mlopslab-dev  --location westeurope
-az group create --name rg-mlopslab-prod --location westeurope
 az group create --name rg-tfstate       --location westeurope
 ```
 
-2. Dans le portail Azure, faire 3 attributions du rôle **Contributor** à l'app `github-mlops-lab` :
+> Important :
+> - `rg-mlopslab-dev` et `rg-mlopslab-prod` seront crees par Terraform au Jour 2
+> - ne pas les creer manuellement avant `terraform apply`, sinon Terraform echouera en indiquant que le Resource Group existe deja
+
+2. Apres le `terraform apply` du Jour 2, dans le portail Azure, faire 3 attributions du rôle **Contributor** à l'app `github-mlops-lab` :
    - scope `rg-mlopslab-dev`
    - scope `rg-mlopslab-prod`
    - scope `rg-tfstate`
 
-3. Ajouter le rôle **User Access Administrator** sur :
+3. Ajouter ensuite le rôle **User Access Administrator** sur :
    - scope `rg-mlopslab-dev`
    - scope `rg-mlopslab-prod`
 
 > Pourquoi ce rôle ? Terraform/Bicep crée l'assignation `AcrPull` entre AKS et ACR.
 > Sans `User Access Administrator` (ou Owner), la création de `roleAssignments` échoue.
 > Ici le scope reste limité aux RG du lab.
+
+4. Verification rapide apres attribution des rôles :
+
+```bash
+PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
+az role assignment list --assignee "$PRINCIPAL_ID" --all --query "[].{role:roleDefinitionName,scope:scope}" -o table
+```
+
+Tu dois voir au minimum :
+- `Contributor` sur `rg-tfstate`
+- `Contributor` sur `rg-mlopslab-dev`
+- `Contributor` sur `rg-mlopslab-prod`
+- `User Access Administrator` sur `rg-mlopslab-dev`
+- `User Access Administrator` sur `rg-mlopslab-prod`
 
 ---
 
