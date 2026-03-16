@@ -91,6 +91,7 @@ resource "azurerm_machine_learning_workspace" "main" {
   key_vault_id            = azurerm_key_vault.main.id
   container_registry_id   = azurerm_container_registry.main.id
   application_insights_id = azurerm_application_insights.main.id
+  public_network_access_enabled = true
   tags                    = local.common_tags
 
   identity {
