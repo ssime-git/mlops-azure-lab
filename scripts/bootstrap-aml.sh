@@ -53,7 +53,7 @@ fi
 
 if [[ "$RUN_HEALTH_CHECK" == "true" ]]; then
   echo "[bootstrap-aml] Running AML health-check job..."
-  HEALTH_JOB_FILE=$(mktemp /tmp/aml-health-job-XXXXXX.yml)
+  HEALTH_JOB_FILE=$(mktemp ./aml-health-job-XXXXXX.yml)
   cat > "$HEALTH_JOB_FILE" <<'YAML'
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 code: mlops/data-science/src
@@ -90,6 +90,7 @@ YAML
     exit 1
   fi
   echo "[bootstrap-aml] Health-check passed ($JOB_NAME)"
+  rm -f "$HEALTH_JOB_FILE"
 fi
 
 echo "[bootstrap-aml] Done"

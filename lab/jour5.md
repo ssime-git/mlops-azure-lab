@@ -5,6 +5,17 @@
 - Utiliser Key Vault
 - Valider les standards equipe
 
+## Dependances depuis les jours precedents
+
+Le Jour 5 suppose que l'environnement `dev` existe deja:
+- `rg-mlopslab-dev`
+- `aml-mlopslab-dev`
+- `aks-mlopslab-dev`
+- `kv-mlopslab-dev`
+
+Il suppose aussi qu'un groupe Entra ID existe deja pour l'exercice RBAC.
+Dans les exemples ci-dessous, on utilise `mlops-team`.
+
 ## Atelier
 
 ### 1. Inspecter les role assignments existants (5 min)
@@ -18,6 +29,10 @@ az ad group show --group "mlops-team" --query id -o tsv
 bash scripts/setup-rbac.sh dev <GROUP_OBJECT_ID>
 az role assignment list --resource-group rg-mlopslab-dev --output table
 ```
+
+Si le groupe `mlops-team` n'existe pas:
+- utiliser un groupe Entra ID existant fourni par le formateur
+- ou creer un groupe de test avant de lancer le script
 
 ### 3. Utiliser Key Vault (10 min)
 ```bash
@@ -35,7 +50,7 @@ Questions de comprehension :
 ### 5. Checklist Standards Equipe (20 min)
 
 **Infrastructure**
-- [ ] Toute ressource creee via Terraform (0 clic portail)
+- [ ] Les ressources d'infrastructure du lab sont gerees principalement via Terraform
 - [ ] Tags `environment`, `project`, `managed_by` sur toutes les ressources
 - [ ] Budget alert configuree sur le subscription
 
@@ -45,7 +60,7 @@ Questions de comprehension :
 - [ ] Approbation manuelle requise pour prod
 
 **ML**
-- [ ] Chaque modele deploye = enregistre dans AML Registry
+- [ ] Chaque modele deploye = enregistre dans le workspace AML
 - [ ] Chaque run = metriques loggees (MLflow)
 - [ ] Drift monitoring configure sur endpoint prod
 
