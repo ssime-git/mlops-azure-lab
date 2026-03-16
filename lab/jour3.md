@@ -334,6 +334,11 @@ Quand l'utiliser dans le lab:
 - si tu veux preparer le Jour 4 et voir apparaitre `iris-classifier` dans `az ml model list`
 - si tu veux une voie de serving plus proche d'un service ML gere que d'un cluster Kubernetes
 
+Point d'attention quota/cout:
+- ce workflow consomme des ressources de `Managed Online Endpoint` Azure ML, avec ses propres quotas de VM
+- sur certaines subscriptions de lab, le deployment peut echouer si la taille de VM demandee n'est pas disponible
+- dans ce repo, le deployment est volontairement dimensionne de facon modeste pour limiter ce risque, mais AKS reste le chemin principal du lab
+
 Pourquoi cette etape est importante pour la suite:
 - ce workflow enregistre aussi le modele `iris-classifier` dans le workspace AML
 - c'est ce modele enregistre que tu manipuleras au Jour 4 avec `az ml model list --name iris-classifier`
