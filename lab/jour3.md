@@ -326,6 +326,7 @@ Ce que fait exactement ce workflow:
 - il prepare les assets AML utiles au workspace
 - il entraine et evalue le modele dans le runner GitHub
 - il enregistre ensuite `iris-classifier` dans le registre de modeles du workspace AML
+- il cree aussi un environnement AML d'inference dedie au serving du Managed Endpoint
 - il cree ou met a jour un `online endpoint` AML et son deployment associe
 - il invoque enfin l'endpoint pour un smoke test
 
@@ -348,6 +349,7 @@ Pourquoi ce workflow n'a pas le meme probleme MLflow que le pipeline AML:
 - ici, `prep.py`, `train.py` et `evaluate.py` tournent localement dans le runner GitHub, pas comme job AML distant
 - `train.py` ne fait plus de `mlflow.sklearn.log_model()`
 - le modele est enregistre ensuite proprement dans AML via `register.py` et le SDK `azure-ai-ml`
+- le serving AML utilise un environnement d'inference separe de l'environnement d'entrainement
 - on evite donc ici l'incompatibilite rencontree plus tot avec l'URI `azureml://...` du tracking MLflow en job AML
 
 ### 7. Tester le quality gate (5 min)

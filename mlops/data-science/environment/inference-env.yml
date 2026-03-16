@@ -1,0 +1,17 @@
+$schema: https://azuremlschemas.azureedge.net/latest/environment.schema.json
+name: iris-inference-env
+version: 1
+description: Inference environment for Iris managed online endpoint
+image: mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest
+conda_file:
+  name: iris-inference
+  channels: [defaults, conda-forge]
+  dependencies:
+    - python=3.10
+    - pip
+    - pip:
+      - azureml-inference-server-http
+      - scikit-learn>=1.3.0
+      - pandas>=2.0.0
+      - numpy>=1.24.0
+      - joblib>=1.3.0

@@ -59,6 +59,11 @@ jobs:
             "$AML_WORKSPACE" \
             true
 
+      - name: Create or update AML inference environment
+        run: |
+          az configure --defaults group="$AML_RESOURCE_GROUP" workspace="$AML_WORKSPACE"
+          az ml environment create --file mlops/data-science/environment/inference-env.yml
+
       - name: Train local model and run quality gate
         run: |
           python mlops/data-science/src/prep.py --output_dir /tmp/iris-endpoint
