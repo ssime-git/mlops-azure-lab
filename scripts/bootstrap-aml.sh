@@ -17,12 +17,30 @@ echo "[bootstrap-aml] target_env=$TARGET_ENV rg=$RESOURCE_GROUP ws=$WORKSPACE"
 az extension add -n ml --yes 1>/dev/null
 az configure --defaults group="$RESOURCE_GROUP" workspace="$WORKSPACE"
 
+retry_aml_command() {
+  local attempts=$1
+  local sleep_seconds=$2
+  shift 2
+
+  local attempt
+  for attempt in $(seq 1 "$attempts"); do
+    if "$@"; then
+      return 0
+    fi
+    if [[ "$attempt" -lt "$attempts" ]]; then
+      echo "[bootstrap-aml] retry $attempt/$attempts failed, waiting ${sleep_seconds}s..."
+      sleep "$sleep_seconds"
+    fi
+  done
+  return 1
+}
+
 echo "[bootstrap-aml] Creating/updating AML environment iris-train-env..."
 az ml environment create --file mlops/data-science/environment/train-env.yml 1>/dev/null
 
 echo "[bootstrap-aml] Ensuring compute cluster cpu-cluster exists..."
 if ! az ml compute show --name cpu-cluster 1>/dev/null 2>&1; then
-  az ml compute create \
+  retry_aml_command 5 15 az ml compute create \
     --name cpu-cluster \
     --type amlcompute \
     --min-instances 0 \
@@ -31,13 +49,13 @@ if ! az ml compute show --name cpu-cluster 1>/dev/null 2>&1; then
 fi
 
 echo "[bootstrap-aml] Ensuring compute cluster identity is system-assigned..."
-az ml compute update \
+retry_aml_command 5 15 az ml compute update \
   --name cpu-cluster \
   --identity-type system_assigned 1>/dev/null
 
 echo "[bootstrap-aml] Ensuring cpu-cluster can pull from ACR..."
 sleep 15
-COMPUTE_PRINCIPAL_ID=$(az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
+COMPUTE_PRINCIPAL_ID=$(retry_aml_command 5 15 az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
 ACR_ID=$(az acr list --resource-group "$RESOURCE_GROUP" --query "[0].id" -o tsv)
 
 if ! az role assignment list \

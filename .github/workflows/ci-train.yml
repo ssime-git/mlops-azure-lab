@@ -6,6 +6,7 @@ on:
     paths: ['mlops/**', 'tests/**', 'requirements.txt', 'requirements.in']
   pull_request:
     branches: [main]
+    paths: ['mlops/**', 'tests/**', 'requirements.txt', 'requirements.in']
   workflow_dispatch:
 
 permissions:
@@ -68,8 +69,26 @@ jobs:
 
       - name: Create compute cluster if not exists
         run: |
+          retry_aml() {
+            local attempts=$1
+            local sleep_seconds=$2
+            shift 2
+
+            local attempt
+            for attempt in $(seq 1 "$attempts"); do
+              if "$@"; then
+                return 0
+              fi
+              if [ "$attempt" -lt "$attempts" ]; then
+                echo "Retry $attempt/$attempts failed, waiting ${sleep_seconds}s..."
+                sleep "$sleep_seconds"
+              fi
+            done
+            return 1
+          }
+
           if ! az ml compute show --name cpu-cluster >/dev/null 2>&1; then
-            az ml compute create \
+            retry_aml 5 15 az ml compute create \
               --name cpu-cluster \
               --type amlcompute \
               --min-instances 0 \
@@ -77,12 +96,12 @@ jobs:
               --size Standard_DS3_v2
           fi
 
-          az ml compute update \
+          retry_aml 5 15 az ml compute update \
             --name cpu-cluster \
             --identity-type system_assigned
 
           sleep 15
-          COMPUTE_PRINCIPAL_ID=$(az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
+          COMPUTE_PRINCIPAL_ID=$(retry_aml 5 15 az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
           ACR_ID=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} --query "[0].id" -o tsv)
 
           if ! az role assignment list \
