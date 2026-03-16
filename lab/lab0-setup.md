@@ -241,10 +241,10 @@ PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" 
 az role assignment list --assignee $PRINCIPAL_ID --all --query "[].{role:roleDefinitionName, scope:scope}" -o table
 # → Contributor + User Access Administrator sur les RG du lab
 # Test 4 : Pipeline Python local
-python mlops/data-science/src/prep.py --output_dir /tmp/iris-check
-python mlops/data-science/src/train.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
-python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
-source .venv/bin/activate; pytest tests/ -v
+uv run python mlops/data-science/src/prep.py --output_dir /tmp/iris-check
+uv run python mlops/data-science/src/train.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
+uv run python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
+uv run pytest tests/ -v
 # → 5 tests PASSED
 
 # Test 5 : GitHub Secrets (vérification visuelle seulement)

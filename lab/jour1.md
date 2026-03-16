@@ -60,14 +60,14 @@ Points a observer:
 
 ### 5. Passage notebook -> scripts (15 min)
 ```bash
-python mlops/data-science/src/prep.py --output_dir /tmp/iris
-python mlops/data-science/src/train.py --data_dir /tmp/iris --model_dir /tmp/model
-python mlops/data-science/src/evaluate.py --data_dir /tmp/iris --model_dir /tmp/model
-pytest tests/ -v
+uv run python mlops/data-science/src/prep.py --output_dir /tmp/iris
+uv run python mlops/data-science/src/train.py --data_dir /tmp/iris --model_dir /tmp/model
+uv run python mlops/data-science/src/evaluate.py --data_dir /tmp/iris --model_dir /tmp/model
+uv run pytest tests/ -v
 ```
 
 ## Checkpoint J1
 - [ ] Notebook Iris execute de bout en bout
 - [ ] Pipeline local (prep -> train -> evaluate) sans erreur
 - [ ] Workspace AML dev visible sur le portail
-- [ ] `pytest tests/ -v` : 5 tests PASSED
+- [ ] `uv run pytest tests/ -v` : 5 tests PASSED
