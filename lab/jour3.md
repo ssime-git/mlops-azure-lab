@@ -62,6 +62,12 @@ et le modifient directement sans naviguer vers un portail supplementaire.
 Le point important du Jour 3 est que le `git push` ne lance pas "juste des tests Python".
 Il declenche une chaine complete entre GitHub, Azure ML, ACR et AKS.
 
+Important:
+- dans ce lab, le deploiement AKS juste apres un CI vert est un raccourci pedagogique
+- l'objectif est de montrer la chaine complete end-to-end en une seule journee
+- en pratique, on separe plus souvent entrainement, enregistrement du modele, validation, puis deploiement
+- il faut donc lire ce flux comme un environnement `dev` de demonstration, pas comme un modele de production a recopier tel quel
+
 Vue d'ensemble:
 ```mermaid
 flowchart TD
@@ -89,6 +95,18 @@ Pourquoi cela peut prendre du temps:
 - AML doit tirer l'image Docker depuis l'ACR
 - le pipeline AML enchaine ensuite `prep_data`, `train_model`, `evaluate_model`
 - seulement apres un CI vert, le workflow CD construit l'image applicative et la deploie sur AKS
+
+Ce qui serait plus frequent en conditions reelles:
+```mermaid
+flowchart LR
+    A[Push dev] --> B[CI training + evaluation]
+    B --> C[Validation metriques]
+    C --> D[Enregistrement du modele]
+    D --> E[Approbation manuelle ou promotion]
+    E --> F[Build image de serving]
+    F --> G[Deploiement dev ou staging]
+    G --> H[Promotion prod]
+```
 
 En pratique, le script Python `prep.py` est tres rapide.
 Si l'etape `prep_data` semble longue, le temps est souvent consomme par:
@@ -224,6 +242,10 @@ Elle teste le resultat du workflow CD dev:
 - push dans l'ACR
 - deploiement Kubernetes sur AKS
 - exposition du service `iris-classifier-svc`
+
+Note d'architecture:
+- ici, le deploiement AKS suit automatiquement un CI vert pour accelerer la demonstration
+- dans un vrai flux MLOps, on prefererait souvent un declenchement manuel ou une promotion explicite avant de deployer
 
 ### 5. Deployer le Managed Endpoint AML (backup fonctionnel, 10 min)
 Dans GitHub Actions, lancer le workflow manuel:
