@@ -16,6 +16,7 @@ venv/
 
 # Azure ML
 .azureml/
+.azure-local/
 outputs/
 logs/
 mlruns/

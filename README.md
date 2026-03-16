@@ -89,3 +89,11 @@ tests/                 tests unitaires + integration
 - Infographie complete: `docs/infographie-mlops-lab.md`
 - Infographie Excalidraw (source editable): `docs/infographie-mlops-lab.excalidraw`
 - Infographie PNG (export): `docs/infographie-mlops-lab.png`
+
+## Wiki du Repo
+- Index du wiki: `docs/wiki/README.md`
+- Vision MLOps cloud: `docs/wiki/01-vision-mlops-cloud.md`
+- Architecture du repo: `docs/wiki/02-architecture-du-repo.md`
+- CI/CD GitHub Actions + Azure: `docs/wiki/03-ci-cd-github-actions-azure.md`
+- Serving, observabilite et gouvernance: `docs/wiki/04-serving-observabilite-gouvernance.md`
+- GitHub Actions vs Azure DevOps: `docs/wiki/05-github-actions-vs-azure-devops.md`
