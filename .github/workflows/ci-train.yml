@@ -6,6 +6,7 @@ on:
     paths: ['mlops/**', 'tests/**', 'requirements.txt', 'requirements.in']
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   id-token: write

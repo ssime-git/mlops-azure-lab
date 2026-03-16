@@ -186,11 +186,17 @@ Observer GitHub Actions : les 3 jobs de `ci-train.yml`.
 Si tu veux relancer la CI avec le **dernier contenu du repo**:
 - eviter de seulement cliquer sur `Re-run jobs` d'un ancien workflow si des fichiers ont change depuis
 - un rerun relance le workflow sur le meme commit SHA
-- pour forcer un nouveau run sur l'etat courant de `dev`, tu peux pousser un commit vide
+- attention: un commit vide ne declenche pas `ci-train.yml` ici, car le workflow a un filtre `paths`
+- pour relancer avec le dernier contenu du repo, utiliser de preference `Run workflow` sur `CI — Lint + Tests + AML Training Pipeline`
+- autre option: pousser une vraie modification dans `mlops/**`, `tests/**`, `requirements.txt` ou `requirements.in`
 
 Exemple:
 ```bash
-git commit --allow-empty -m "chore: rerun ci"
+# Option A: lancer le workflow manuellement depuis l'onglet Actions
+
+# Option B: pousser une vraie modification qui match le filtre paths
+git add mlops/data-science/src/train.py
+git commit -m "chore: rerun ci with tracked change"
 git push origin dev
 ```
 
