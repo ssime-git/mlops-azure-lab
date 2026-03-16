@@ -237,16 +237,14 @@ az ad app list --display-name "github-mlops-lab" --query "[].{name:displayName, 
 # → 1 ligne affichée
 
 # Test 3 : Role assignment présent
-az role assignment list \
-  --assignee $(az ad app list --display-name "github-mlops-lab" --query "[0].appId" -o tsv) \
-  --query "[].{role:roleDefinitionName, scope:scope}" -o table
+PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
+az role assignment list --assignee $PRINCIPAL_ID --all --query "[].{role:roleDefinitionName, scope:scope}" -o table
 # → Contributor + User Access Administrator sur les RG du lab
-
 # Test 4 : Pipeline Python local
 python mlops/data-science/src/prep.py --output_dir /tmp/iris-check
 python mlops/data-science/src/train.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
 python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
-pytest tests/ -v
+source .venv/bin/activate; pytest tests/ -v
 # → 5 tests PASSED
 
 # Test 5 : GitHub Secrets (vérification visuelle seulement)

@@ -44,7 +44,25 @@ terraform plan -var-file="environments/dev.tfvars"
 terraform apply -var-file="environments/dev.tfvars"
 ```
 
+Recommandation lab:
+- Faire **au minimum** l'environnement `dev`
+- Prevoir un `terraform destroy -var-file="environments/dev.tfvars"` en fin de session si le cluster ne sert plus
+- Ne pas laisser AKS tourner inutilement pendant la nuit ou plusieurs jours
+
+Point cout:
+- `dev` cree un cluster AKS avec `1 x Standard_D2s_v3`
+- C'est acceptable pour un lab court, mais ce n'est pas une infra "gratuite"
+
 ### 4. Terraform prod (optionnel, 10 min)
+> **Important — optionnel pour raison de cout**
+>
+> Cette etape est **optionnelle**. Elle existe pour illustrer la separation `dev` / `prod`,
+> mais elle cree une infra sensiblement plus chere que `dev`.
+>
+> La configuration actuelle `prod` cree un cluster AKS avec `2 x Standard_D4s_v3`.
+> Pour un lab, **ne lancer cette etape que si c'est explicitement demande**.
+> Sinon, rester sur `dev` suffit pour valider les objectifs du Jour 2.
+
 ```bash
 terraform init -reconfigure \
   -backend-config="resource_group_name=rg-tfstate" \
@@ -55,6 +73,35 @@ terraform init -reconfigure \
 terraform plan -var-file="environments/prod.tfvars"
 terraform apply -var-file="environments/prod.tfvars"
 ```
+
+Si tu lances quand meme `prod` pour la demo:
+- verifier le `terraform plan` avant `apply`
+- detruire l'environnement a la fin avec `terraform destroy -var-file="environments/prod.tfvars"`
+- ne pas considerer cette configuration comme une vraie prod
+
+Si tu veux une "prod low cost" uniquement pour tester la commande:
+- dupliquer `environments/prod.tfvars` dans un fichier temporaire, par exemple `environments/prod-lowcost.tfvars`
+- reduire temporairement la taille a `aks_node_count = 1` et `aks_vm_size = "Standard_D2s_v3"`
+- lancer `plan/apply` avec ce fichier temporaire
+- detruire juste apres le test
+
+Exemple:
+```bash
+cp environments/prod.tfvars environments/prod-lowcost.tfvars
+# puis editer prod-lowcost.tfvars:
+# aks_node_count = 1
+# aks_vm_size    = "Standard_D2s_v3"
+
+terraform plan -var-file="environments/prod-lowcost.tfvars"
+terraform apply -var-file="environments/prod-lowcost.tfvars"
+terraform destroy -var-file="environments/prod-lowcost.tfvars"
+```
+
+Pour une vraie production:
+- dimensionner AKS selon la charge reelle, pas "au plus petit"
+- utiliser au minimum plusieurs nœuds et une capacite compatible avec la haute disponibilite
+- definir des exigences claires sur disponibilite, supervision, sauvegarde, reseau et securite
+- revoir le SKU ACR, les logs, les policies et le dimensionnement avant toute mise en service
 
 ### 5. Verification + comparaison (10 min)
 - `terraform output` pour verifier AML/AKS/ACR
