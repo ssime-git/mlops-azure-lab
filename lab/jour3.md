@@ -60,7 +60,7 @@ et le modifient directement sans naviguer vers un portail supplementaire.
 ## Ce qui se passe derriere les workflows
 
 Le point important du Jour 3 est que le `git push` ne lance pas "juste des tests Python".
-Il declenche une chaine complete entre GitHub, Azure ML, ACR et AKS.
+Il declenche ici la partie CI, puis on lance volontairement le CD dev a la main pour garder le controle sur le build, le push et le deploiement.
 
 Important:
 - dans ce lab, le deploiement AKS juste apres un CI vert est un raccourci pedagogique
@@ -81,10 +81,11 @@ flowchart TD
     H --> I[train_model]
     I --> J[evaluate_model]
     J --> K[CI vert]
-    K --> L[GitHub Actions - CD dev]
-    L --> M[Build image et push vers ACR]
-    M --> N[Deploy sur AKS]
-    N --> O[Test curl sur endpoint AKS]
+    K --> L[Declenchement manuel du CD dev]
+    L --> M[GitHub Actions - CD dev]
+    M --> N[Build image et push vers ACR]
+    N --> O[Deploy sur AKS]
+    O --> P[Test curl sur endpoint AKS]
 ```
 
 Pourquoi cela peut prendre du temps:
@@ -94,7 +95,7 @@ Pourquoi cela peut prendre du temps:
 - le compute `cpu-cluster` peut devoir sortir de veille si `min-instances = 0`
 - AML doit tirer l'image Docker depuis l'ACR
 - le pipeline AML enchaine ensuite `prep_data`, `train_model`, `evaluate_model`
-- seulement apres un CI vert, le workflow CD construit l'image applicative et la deploie sur AKS
+- apres un CI vert, on peut lancer manuellement le workflow CD dev qui construit l'image applicative et la deploie sur AKS
 
 Ce qui serait plus frequent en conditions reelles:
 ```mermaid
@@ -232,14 +233,35 @@ Si le job echoue sur `az ml environment create` avec `AuthorizationFailed`:
 - confirmer que `rg-mlopslab-dev` a bien ete cree par Terraform puis que les rôles ont ete reappliques dessus
 - relancer le workflow apres propagation IAM
 
-### 4. Tester l'endpoint AKS (15 min)
+### 4. Lancer le CD dev manuellement (10 min)
+Dans GitHub Actions, lancer le workflow manuel:
+- `CD — Deploy to Dev (ACR build + AKS deploy)`
+
+Pourquoi manuel dans ce lab:
+- le pipeline AML prend deja plusieurs minutes
+- on ne veut pas builder, pusher et deployer a chaque push de test
+- cela rend la demonstration plus previsible et plus proche d'un vrai gate de promotion `dev`
+- en pratique, l'ordre devient donc: `push` -> `CI AML` -> verification du resultat -> lancement manuel du `CD dev`
+
+### 5. Tester l'endpoint AKS (15 min)
+Si `kubectl` n'est pas installe en local:
 ```bash
-az aks get-credentials --resource-group rg-mlopslab-dev --name aks-mlopslab-dev
-kubectl get svc iris-classifier-svc   # noter EXTERNAL-IP
-curl -X POST http://EXTERNAL_IP/score \
-  -H "Content-Type: application/json" \
-  -d '{"data": [[5.1, 3.5, 1.4, 0.2]]}'
-# Attendu : [{"prediction": "setosa", ...}]
+az aks install-cli
+```
+
+Puis:
+```bash
+az aks get-credentials --resource-group rg-mlopslab-dev --name aks-mlopslab-dev --overwrite-existing
+
+kubectl get svc iris-classifier-svc
+
+curl -X POST http://<EXTERNAL-IP>/score -H "Content-Type: application/json" -d '{"data": [[5.1, 3.5, 1.4, 0.2]]}'
+```
+
+Remplacer `<EXTERNAL-IP>` par la vraie valeur retournee par `kubectl get svc iris-classifier-svc`.
+Attendu:
+```json
+[{"prediction": "setosa", "...": "..."}]
 ```
 
 Cette etape ne teste pas AML directement.
@@ -250,17 +272,17 @@ Elle teste le resultat du workflow CD dev:
 - exposition du service `iris-classifier-svc`
 
 Note d'architecture:
-- ici, le deploiement AKS suit automatiquement un CI vert pour accelerer la demonstration
+- ici, le deploiement AKS est lance manuellement apres un CI vert pour garder la main sur le temps et le cout
 - dans un vrai flux MLOps, on prefererait souvent un declenchement manuel ou une promotion explicite avant de deployer
 
-### 5. Deployer le Managed Endpoint AML (backup fonctionnel, 10 min)
+### 6. Deployer le Managed Endpoint AML (backup fonctionnel, 10 min)
 Dans GitHub Actions, lancer le workflow manuel:
 - `CD — Deploy AML Managed Endpoint`
 - `target_env=dev`
 
 Puis verifier l'invocation smoke-test dans les logs du workflow.
 
-### 6. Tester le quality gate (5 min)
+### 7. Tester le quality gate (5 min)
 ```bash
 # Dans evaluate.py, passer min_accuracy a 0.99
 # Pousser -> observer le CI echouer sur evaluate_model
