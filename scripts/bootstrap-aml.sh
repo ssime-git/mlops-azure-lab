@@ -30,6 +30,27 @@ if ! az ml compute show --name cpu-cluster 1>/dev/null 2>&1; then
     --size Standard_DS3_v2 1>/dev/null
 fi
 
+echo "[bootstrap-aml] Ensuring compute cluster identity is system-assigned..."
+az ml compute update \
+  --name cpu-cluster \
+  --identity-type system_assigned 1>/dev/null
+
+echo "[bootstrap-aml] Ensuring cpu-cluster can pull from ACR..."
+sleep 15
+COMPUTE_PRINCIPAL_ID=$(az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
+ACR_ID=$(az acr list --resource-group "$RESOURCE_GROUP" --query "[0].id" -o tsv)
+
+if ! az role assignment list \
+  --assignee-object-id "$COMPUTE_PRINCIPAL_ID" \
+  --scope "$ACR_ID" \
+  --query "[?roleDefinitionName=='AcrPull'] | [0]" -o tsv | grep -q .; then
+  az role assignment create \
+    --assignee-object-id "$COMPUTE_PRINCIPAL_ID" \
+    --assignee-principal-type ServicePrincipal \
+    --role AcrPull \
+    --scope "$ACR_ID" 1>/dev/null
+fi
+
 if [[ "$RUN_HEALTH_CHECK" == "true" ]]; then
   echo "[bootstrap-aml] Running AML health-check job..."
   HEALTH_JOB_FILE=$(mktemp /tmp/aml-health-job-XXXXXX.yml)

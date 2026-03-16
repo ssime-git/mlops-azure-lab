@@ -76,6 +76,25 @@ jobs:
               --size Standard_DS3_v2
           fi
 
+          az ml compute update \
+            --name cpu-cluster \
+            --identity-type system_assigned
+
+          sleep 15
+          COMPUTE_PRINCIPAL_ID=$(az ml compute show --name cpu-cluster --query identity.principal_id -o tsv)
+          ACR_ID=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} --query "[0].id" -o tsv)
+
+          if ! az role assignment list \
+            --assignee-object-id "$COMPUTE_PRINCIPAL_ID" \
+            --scope "$ACR_ID" \
+            --query "[?roleDefinitionName=='AcrPull'] | [0]" -o tsv | grep -q .; then
+            az role assignment create \
+              --assignee-object-id "$COMPUTE_PRINCIPAL_ID" \
+              --assignee-principal-type ServicePrincipal \
+              --role AcrPull \
+              --scope "$ACR_ID"
+          fi
+
       - name: Submit AML training pipeline
         id: submit
         run: |
