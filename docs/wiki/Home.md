@@ -13,6 +13,19 @@ Ce contenu est pense comme un support de formation technique pour :
 - des ML engineers juniors qui veulent relier code, CI/CD, cloud et deploiement
 - des profils techniques qui connaissent deja Python et le machine learning, mais pas encore toute la chaine MLOps
 
+## Comment lire cette wiki
+
+Il faut lire ce wiki comme un support de comprehension.
+
+- les pages du wiki expliquent les concepts, les choix d'architecture et les bonnes pratiques
+- les labs donnent les instructions pas-a-pas pour manipuler le repo et Azure
+- le README reste la porte d'entree du projet
+
+Autrement dit:
+
+- `lab/` repond surtout a la question "que faut-il faire maintenant ?"
+- `docs/wiki/` repond surtout a la question "qu'est-ce que cela veut dire, pourquoi on le fait et comment raisonner proprement ?"
+
 ## Parcours recommande
 
 1. [Workflow global d'un projet MLOps sur Azure](./00-workflow-global-azure-mlops.md)
@@ -32,6 +45,20 @@ Ce contenu est pense comme un support de formation technique pour :
 - une approche securisee via OIDC et RBAC
 - des environnements `dev` et `prod` avec promotion controlee
 - une observabilite verifiable via Application Insights et requetes KQL
+
+## Ce que ce projet n'essaie pas de faire
+
+Ce depot n'essaie pas d'etre:
+
+- une plateforme entreprise complete
+- une reference absolue de production pour tous les contextes
+- un cours exhaustif sur Azure
+
+Le choix pedagogique est volontaire:
+
+- montrer une chaine MLOps complete mais de taille raisonnable
+- rendre visibles les interactions entre les briques
+- garder assez de realisme pour parler de bonnes pratiques, de cout, de RBAC et d'observabilite
 
 ## Vue d'ensemble
 
@@ -54,6 +81,32 @@ flowchart LR
 - GitHub Actions et Azure DevOps repondent a des besoins tres proches avec des differences surtout d'ecosysteme et de gouvernance
 - le but du wiki est de rendre ces notions lisibles sans demander un niveau expert en infra
 
+## Questions auxquelles ce wiki repond
+
+Si tu debutes, voici les questions auxquelles tu devrais trouver une reponse en lisant la wiki:
+
+- pourquoi sortir d'un notebook pour aller vers des scripts et des workflows
+- a quoi servent Azure ML, ACR, AKS et Application Insights dans la meme chaine
+- pourquoi on separe `dev` et `prod`
+- pourquoi on parle de CI/CD, OIDC, RBAC et IaC dans un projet ML
+- pourquoi "un modele qui marche" ne suffit pas pour parler de production
+
+## Erreurs de lecture frequentes
+
+Quand on debute, on a souvent tendance a croire que:
+
+- "MLOps" veut juste dire "deployer un modele"
+- Azure ML suffit a lui seul a resoudre tout le sujet
+- Kubernetes est obligatoire pour tous les cas
+- l'observabilite se limite a regarder si le endpoint repond
+- la securite peut etre ajoutee a la fin
+
+Le repo montre justement l'inverse:
+
+- le MLOps est une chaine
+- chaque brique couvre seulement une partie du probleme
+- il faut relier code, infra, identite, deployment et monitoring
+
 ## Comment utiliser ce wiki en formation
 
 - commencer par le workflow global pour comprendre la chaine de bout en bout
@@ -69,6 +122,7 @@ flowchart LR
 - [Setup du lab](../../lab/lab0-setup.md)
 - [Jour 3 CI/CD](../../lab/jour3.md)
 - [Jour 4 Monitoring](../../lab/jour4.md)
+- [Jour 5 Securite et gouvernance](../../lab/jour5.md)
 
 ## Navigation
 

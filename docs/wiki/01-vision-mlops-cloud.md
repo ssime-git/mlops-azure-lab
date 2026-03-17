@@ -21,6 +21,28 @@ Dans le cloud, on cherche en plus a separer clairement :
 - les environnements
 - les pipelines d'automatisation
 
+## Pourquoi le mot "industrialiser" est important
+
+Dans beaucoup de projets ML debutants, le modele existe, mais le systeme autour du modele n'existe pas encore vraiment.
+
+On voit souvent:
+
+- un notebook qui marche sur une machine
+- des fichiers de donnees en local
+- une evaluation manuelle
+- un deploiement fait une fois "pour montrer"
+
+Le passage au MLOps commence quand on cherche a rendre tout cela:
+
+- relancable
+- tracable
+- partageable
+- automatisable
+- observable
+
+Le cloud n'est pas la finalite.
+Le cloud est le moyen d'executer cela dans un cadre plus stable et plus standardise.
+
 ## Message cle
 
 Le sujet principal n'est pas "comment lancer un modele sur Azure".
@@ -36,6 +58,17 @@ Le changement de perspective le plus important est souvent celui-ci :
 Autrement dit :
 - un notebook utile n'est pas encore un produit exploitable
 - un bon score offline n'est pas encore une mise en production reussie
+
+## Les 4 questions de fond d'un projet MLOps
+
+Un projet ML exploitable doit repondre a quatre questions en meme temps:
+
+1. Comment entrainer et evaluer proprement ?
+2. Comment mettre en service sans bricolage manuel ?
+3. Comment observer ce qui se passe apres le deploiement ?
+4. Comment controler qui a le droit de faire quoi ?
+
+Le MLOps commence quand on accepte que ces quatre questions ont autant d'importance que le score du modele.
 
 ## Comment ce repo materialise cette vision
 
@@ -70,7 +103,35 @@ Azure apporte plusieurs briques qui couvrent les besoins MLOps sans tout reconst
 - Azure Container Registry pour stocker les images de serving
 - Key Vault pour les secrets et la centralisation des references sensibles
 - Application Insights et Azure Monitor pour la telemetrie et les alertes
-- Microsoft Entra ID pour l'identite federée et le RBAC
+- Microsoft Entra ID pour l'identite federee et le RBAC
+
+## A quoi sert chaque brique, en langage simple
+
+| Brique Azure | A quoi elle sert dans le repo | Question a laquelle elle repond |
+|---|---|---|
+| Azure ML | executer des jobs ML et gerer les assets ML | "Ou tourne l'entrainement ?" |
+| ACR | stocker des images Docker | "Ou vit l'image de serving ?" |
+| AKS | executer une application de prediction conteneurisee | "Ou tourne le service HTTP ?" |
+| Application Insights | observer les requetes et la telemetrie applicative | "Que se passe-t-il apres le deploiement ?" |
+| Key Vault | stocker des secrets | "Ou mettre les informations sensibles ?" |
+| Entra ID | gerer identites et permissions | "Qui a le droit d'agir ?" |
+
+## Pourquoi on ne met pas tout dans Azure ML
+
+Question frequente d'un debutant:
+"Si Azure ML existe, pourquoi garder aussi ACR, AKS, Key Vault, App Insights ?"
+
+La reponse est simple:
+
+- Azure ML couvre tres bien les workflows et assets ML
+- mais un systeme exploitable a aussi besoin d'un runtime applicatif, d'une observabilite, d'une gestion d'identites et d'une gestion de secrets
+
+Il faut donc raisonner en systeme:
+
+- AML pour la couche ML
+- AKS ou Managed Endpoint pour la couche serving
+- App Insights / Monitor pour l'observabilite
+- Entra / RBAC / Key Vault pour la gouvernance
 
 ## Lecture entreprise
 
@@ -104,6 +165,15 @@ Dans ce repo, il suffit d'abord de comprendre ces 5 idees :
 | Manipulations manuelles | Pipelines CI/CD |
 | Test ponctuel | Observabilite continue |
 
+## Bonnes pratiques a retenir tres tot
+
+- separer le code exploratoire du code relancable
+- versionner l'infrastructure comme le code applicatif
+- eviter les operations cloud irreproductibles a la main
+- donner des permissions minimales plutot qu'un acces large
+- distinguer ce qui releve du "modele" et ce qui releve du "service"
+- prevoir l'observation avant d'avoir un incident
+
 ## Le principe cle : tout traiter comme un systeme
 
 Dans un projet ML immature, l'equipe pense souvent en une seule question :
@@ -120,6 +190,23 @@ Dans un projet MLOps, il faut aussi repondre a ces questions :
 
 Ce repo est utile parce qu'il montre que le MLOps n'est pas un outil unique.
 C'est l'assemblage coherent de pratiques DevOps, Data et plateforme cloud.
+
+## Schema de lecture debutant
+
+```mermaid
+flowchart TD
+    A[Code et notebook] --> B[Scripts relancables]
+    B --> C[Tests et quality gate]
+    C --> D[Infra et identite]
+    D --> E[Entrainement et deploiement]
+    E --> F[Monitoring]
+    F --> G[Correction et iteration]
+```
+
+Si tu ne dois retenir qu'une idee:
+
+- un projet ML mature n'est pas seulement un bon modele
+- c'est un bon modele place dans un systeme fiable
 
 ## Point d'attention
 

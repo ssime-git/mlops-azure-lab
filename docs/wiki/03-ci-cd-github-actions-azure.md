@@ -8,6 +8,21 @@ Le repo utilise GitHub Actions comme moteur d'automatisation.
 Azure sert de plateforme d'execution et de deploiement.
 L'ensemble est relie proprement par OIDC, donc sans secret statique Azure dans GitHub.
 
+## Avant de rentrer dans les workflows
+
+Quand on debute, on peut voir la CI/CD comme une sorte de "systeme de verification et de livraison".
+
+- la CI dit: "est-ce que le changement est acceptable techniquement ?"
+- la CD dit: "si oui, comment le livrer proprement dans un environnement ?"
+
+Dans un projet ML, cela couvre a la fois:
+
+- le code Python
+- le pipeline d'entrainement
+- l'image de serving
+- le deploiement cloud
+- les regles de promotion entre environnements
+
 ## Message cle
 
 Ici, la CI/CD n'est pas une couche annexe.
@@ -27,6 +42,25 @@ Dans ce repo, cela veut dire concretement :
 - soumettre un pipeline AML
 - construire une image de serving
 - deployer sur Azure
+
+## Ce qui change par rapport a un projet logiciel "classique"
+
+Dans un projet applicatif classique, la CI/CD verifie surtout:
+
+- la qualite du code
+- les tests
+- la construction d'un binaire ou d'une image
+
+Dans un projet ML, il faut ajouter:
+
+- l'execution d'un pipeline d'entrainement
+- l'evaluation du modele
+- parfois le versioning d'artefacts ML
+- parfois des conditions de promotion liees a des metriques
+
+Cela explique pourquoi la CI/CD d'un projet ML peut sembler plus lourde:
+- elle ne livre pas seulement du code
+- elle livre un comportement de prediction qu'il faut aussi verifier
 
 ## Pourquoi on fait cette automatisation
 
@@ -58,6 +92,14 @@ sequenceDiagram
     GH->>AKS: deploy manifest
 ```
 
+## Lecture du schema
+
+Ce schema montre trois idees importantes:
+
+- GitHub Actions n'accede pas directement a Azure avec un mot de passe stocke
+- le pipeline d'entrainement et le deploiement applicatif sont deux etapes distinctes
+- le deploiement `dev` n'est pas automatique dans ce lab, il est volontairement manuel apres verification
+
 ## CI : verifier puis entrainer
 
 Le workflow [`.github/workflows/ci-train.yml`](../../.github/workflows/ci-train.yml) fait trois choses :
@@ -84,6 +126,24 @@ Lecture entreprise :
 Si tu viens du notebook :
 - pense a la CI comme a un collegue automatique qui rerun les verifications a chaque changement
 - pense a AML comme a l'endroit ou l'entrainement est execute de facon standardisee
+
+## Pourquoi faire tourner aussi AML dans la CI
+
+Si on ne faisait que:
+
+- `black`
+- `flake8`
+- `pytest`
+
+on validerait seulement la partie locale du projet.
+
+Le repo va plus loin:
+
+- il valide aussi que l'environnement AML, le compute et le pipeline cloud fonctionnent reellement
+
+Bonne pratique:
+
+- quand un systeme depend d'un service cloud critique, il faut tester aussi ce service dans le flux de verification
 
 Point de branche:
 - dans ce repo, les declenchements automatiques `push` sont volontairement attaches a `dev`
@@ -112,11 +172,30 @@ Point important :
 - l'image de serving embarque un modele construit pendant le workflow
 - cela montre une logique simple de bout en bout
 - dans le repo, l'image AKS utilise maintenant un runtime de serving dedie, separe des dependances de training/MLflow
-- cette separation evite des conflits de dependances dans l'image de serving et reflète mieux une architecture reelle
+- cette separation evite des conflits de dependances dans l'image de serving et reflete mieux une architecture reelle
 
 Ce que tu dois comprendre ici :
 - deploiement ne veut pas dire seulement "copier du code"
 - il faut aussi preparer le runtime qui va exposer la prediction
+
+## Pourquoi le CD dev reste manuel ici
+
+Ce choix est pedagogique mais aussi raisonnable techniquement.
+
+Si on declenchait automatiquement le CD a chaque push `dev`:
+
+- le lab serait plus lent
+- on consommerait plus de ressources Azure et GitHub Actions
+- on masquerait la distinction entre "j'ai un entrainement valide" et "je veux vraiment redeployer un service"
+
+La bonne lecture est donc:
+
+- la CI verifie et entraine
+- l'humain regarde
+- puis le CD dev deploie si cela a du sens
+
+Ce n'est pas une limitation.
+C'est un exemple de gate de promotion simplifie.
 
 ## AKS et Managed Endpoint AML ne jouent pas le meme role
 
@@ -131,6 +210,21 @@ Point cle:
 - le deploiement `AKS` n'enregistre pas automatiquement le modele dans le registre AML
 - le workflow `Managed Endpoint AML` enregistre `iris-classifier` dans le workspace AML
 - c'est pour cela que le versioning de modele du Jour 4 depend du workflow Managed Endpoint, pas du deploiement AKS
+
+## Comment choisir entre les deux, en pratique
+
+Il ne faut pas les opposer comme "bonne" et "mauvaise" solution.
+
+La vraie question est:
+
+- qui veut controler le runtime ?
+- qui exploite le service ?
+- ou veut-on porter la complexite ?
+
+En pratique:
+
+- `AKS` convient bien si l'organisation a deja une culture Kubernetes et veut une logique applicative homogene
+- `Managed Endpoint AML` convient bien si l'equipe veut rester plus pres d'une plateforme ML geree
 
 ## Separation recommandee des environnements
 
@@ -154,7 +248,7 @@ Il ne rebuild pas depuis zero.
 Il recupere l'image la plus recente depuis l'ACR dev, l'importe dans l'ACR prod, puis deploie sur AKS prod.
 
 Lecture MLOps :
-- on cherche a promouvoir un artefact deja produit, pas a recompiler différemment en prod
+- on cherche a promouvoir un artefact deja produit, pas a recompiler differemment en prod
 - c'est plus proche d'une vraie logique de release
 
 Lecture entreprise :
@@ -165,6 +259,22 @@ Version simple :
 - `dev` sert a tester rapidement
 - `prod` demande plus de controle
 - on essaie de promouvoir quelque chose qui existe deja, pas de refaire autrement
+
+## Bonne pratique cle pour la prod
+
+Une mauvaise pratique frequente consiste a reconstruire differemment en prod.
+
+Ce repo montre l'idee inverse:
+
+- on produit un artefact
+- on le valide
+- on le promeut
+
+Pourquoi c'est important:
+
+- on reduit les ecarts entre `dev` et `prod`
+- on rend les releases plus auditables
+- on limite les "surprises de production"
 
 ## OIDC : le point de securite le plus important
 
@@ -195,6 +305,17 @@ Si les notions d'OIDC, App Registration ou Federated Credentials sont nouvelles 
 - retiens surtout que le pipeline s'authentifie a Azure sans stocker de mot de passe longue duree
 - c'est une bonne pratique moderne a connaitre tres tot
 
+## Ce qu'il faut comparer mentalement
+
+| Ancienne habitude | Approche recommandee ici |
+|---|---|
+| stocker un secret de service principal dans GitHub | utiliser OIDC avec token temporaire |
+| donner des droits larges "pour etre tranquille" | donner des droits limites au bon scope |
+| deployer a la main depuis son poste | laisser le pipeline porter l'action |
+
+Cette comparaison est importante parce qu'elle montre que la CI/CD n'est pas seulement une question de confort.
+C'est aussi une question de securite et de gouvernance.
+
 ## Pourquoi cette approche parle aussi aux equipes Azure DevOps
 
 La logique est exactement celle d'un pipeline d'entreprise classique :
@@ -216,6 +337,12 @@ les assets AML utiles au lab.
 Lecture MLOps :
 - tout ce qui est repetitif ou fragile doit devenir scriptable
 - un bon systeme cloud evite les operations manuelles irreproductibles
+
+## Liens avec les labs
+
+- [Jour 3](../../lab/jour3.md) montre l'execution concrete de cette page
+- [Jour 4](../../lab/jour4.md) montre ce qu'on observe apres deploiement
+- [Jour 5](../../lab/jour5.md) montre comment relier CI/CD et gouvernance
 
 ## Navigation
 
