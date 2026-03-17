@@ -27,12 +27,22 @@ az role assignment list --resource-group rg-mlopslab-dev --output table
 ```bash
 az ad group show --group "mlops-team" --query id -o tsv
 bash scripts/setup-rbac.sh dev <GROUP_OBJECT_ID>
-az role assignment list --resource-group rg-mlopslab-dev --output table
+az role assignment list --assignee <GROUP_OBJECT_ID> --all --query "[].{role:roleDefinitionName,scope:scope}" -o table
 ```
 
 Si le groupe `mlops-team` n'existe pas:
 - utiliser un groupe Entra ID existant fourni par le formateur
 - ou creer un groupe de test avant de lancer le script
+
+Ce que fait le script:
+- attribue `AzureML Data Scientist` au scope du resource group `rg-mlopslab-dev`
+- attribue `Azure Kubernetes Service Cluster User Role` au scope du cluster AKS dev
+- attribue `Key Vault Secrets User` au scope du Key Vault dev
+
+Pourquoi la verification utilise `--assignee --all`:
+- une partie des rôles est au scope du resource group
+- une autre partie est au scope de ressources individuelles comme AKS et Key Vault
+- `--resource-group` seul ne montre pas toujours clairement toute l'image
 
 ### 3. Utiliser Key Vault (10 min)
 ```bash
@@ -40,6 +50,14 @@ KV="kv-mlopslab-dev"
 az keyvault secret set --vault-name $KV --name "model-api-key" --value "secret-key-123"
 az keyvault secret show --vault-name $KV --name "model-api-key" --query value -o tsv
 ```
+
+Ce que montre cet exercice:
+- comment stocker un secret dans Key Vault
+- comment le relire via Azure CLI
+
+Ce que cet exercice ne montre pas encore:
+- l'injection automatique du secret dans l'application
+- la lecture du secret depuis le code applicatif
 
 ### 4. Audit OIDC vs Service Principal (10 min)
 Questions de comprehension :
@@ -52,7 +70,7 @@ Questions de comprehension :
 **Infrastructure**
 - [ ] Les ressources d'infrastructure du lab sont gerees principalement via Terraform
 - [ ] Tags `environment`, `project`, `managed_by` sur toutes les ressources
-- [ ] Budget alert configuree sur le subscription
+- [ ] Budget alert configuree sur le subscription si ton organisation le permet
 
 **CI/CD**
 - [ ] 0 secret en clair dans le code
@@ -60,9 +78,10 @@ Questions de comprehension :
 - [ ] Approbation manuelle requise pour prod
 
 **ML**
-- [ ] Chaque modele deploye = enregistre dans le workspace AML
-- [ ] Chaque run = metriques loggees (MLflow)
-- [ ] Drift monitoring configure sur endpoint prod
+- [ ] Les runs AML journalisent bien des metriques (MLflow)
+- [ ] Le modele `iris-classifier` est visible dans le workspace AML apres execution du workflow `CD — Deploy AML Managed Endpoint`
+- [ ] Le deploiement AKS et le Managed Endpoint AML sont bien compris comme deux chemins differents
+- [ ] Drift / telemetrie verifies sur l'environnement `dev`
 
 **Securite**
 - [ ] OIDC pour GitHub -> Azure (pas de secret SP)

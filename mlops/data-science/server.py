@@ -3,14 +3,18 @@
 import os
 import sys
 
-from azure.monitor.opentelemetry import configure_azure_monitor
 from flask import Flask, request
 
 sys.path.insert(0, "src")
 from score import init, run  # noqa: E402
 
 if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
-    configure_azure_monitor()
+    try:
+        from azure.monitor.opentelemetry import configure_azure_monitor
+    except ImportError as exc:
+        print(f"App Insights instrumentation disabled: {exc}")
+    else:
+        configure_azure_monitor()
 
 app = Flask(__name__)
 init()
