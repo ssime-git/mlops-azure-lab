@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn flask
+COPY mlops/data-science/requirements-serving.txt .
+RUN pip install --no-cache-dir -r requirements-serving.txt
 COPY mlops/data-science/src/ ./src/
 COPY outputs/model/ ./model/
 COPY mlops/data-science/server.py .

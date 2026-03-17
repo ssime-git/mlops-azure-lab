@@ -1,0 +1,7 @@
+flask>=3.0.0
+gunicorn>=21.0.0
+scikit-learn==1.7.2
+pandas==2.3.3
+numpy==2.2.6
+joblib==1.5.3
+azure-monitor-opentelemetry==1.8.2

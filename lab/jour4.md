@@ -31,6 +31,11 @@ Donc:
 - pour `kubectl get svc iris-classifier-svc`, c'est le workflow `CD dev vers AKS` qui compte
 - ces deux parties sont complementaires, mais elles ne se remplacent pas
 
+Point d'architecture important:
+- l'image AKS de serving doit rester legere et orientee inference
+- elle n'a pas besoin d'embarquer toutes les dependances du training ou du tracking MLflow
+- dans ce repo, la partie serving AKS utilise donc des dependances dediees et separees du runtime de training
+
 ## Atelier
 
 ### 1. Explorer les runs MLflow (10 min)
