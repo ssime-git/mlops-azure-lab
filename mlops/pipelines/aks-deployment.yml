@@ -23,6 +23,8 @@ spec:
         env:
         - name: AZUREML_MODEL_DIR
           value: /app/model
+        - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+          value: APPINSIGHTS_CONNECTION_STRING_PLACEHOLDER
         resources:
           requests: { memory: "256Mi", cpu: "250m" }
           limits: { memory: "512Mi", cpu: "500m" }

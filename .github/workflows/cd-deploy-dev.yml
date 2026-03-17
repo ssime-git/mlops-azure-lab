@@ -28,6 +28,7 @@ jobs:
     environment: dev
     outputs:
       acr_server: ${{ steps.acr.outputs.server }}
+      appinsights_connection_string: ${{ steps.appi.outputs.connection_string }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -54,6 +55,15 @@ jobs:
           NAME=$(az acr list --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} --query "[0].name" -o tsv)
           SERVER=$(az acr show --name $NAME --query loginServer -o tsv)
           echo "server=$SERVER" >> $GITHUB_OUTPUT
+
+      - name: Get App Insights connection string
+        id: appi
+        run: |
+          NAME=$(az monitor app-insights component show \
+            --app appi-mlopslab-dev \
+            --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} \
+            --query connectionString -o tsv)
+          echo "connection_string=$NAME" >> $GITHUB_OUTPUT
 
       - name: Build and push to ACR
         run: |
@@ -89,6 +99,7 @@ jobs:
           sed -i "s|ACR_LOGIN_SERVER_PLACEHOLDER|${{ needs.build-push.outputs.acr_server }}|g" mlops/pipelines/aks-deployment.yml
           sed -i "s|IMAGE_TAG_PLACEHOLDER|${{ env.IMAGE_TAG }}|g" mlops/pipelines/aks-deployment.yml
           sed -i "s|ENVIRONMENT_PLACEHOLDER|dev|g" mlops/pipelines/aks-deployment.yml
+          sed -i "s|APPINSIGHTS_CONNECTION_STRING_PLACEHOLDER|${{ needs.build-push.outputs.appinsights_connection_string }}|g" mlops/pipelines/aks-deployment.yml
 
       - name: Apply manifest
         run: kubectl apply -f mlops/pipelines/aks-deployment.yml

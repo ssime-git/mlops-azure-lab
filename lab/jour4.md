@@ -58,14 +58,32 @@ Important:
 
 ### 3. Alerte Azure Monitor (15 min)
 Portal > App Insights (`appi-mlopslab-dev`) > Alerts > New Alert Rule.
-- Signal : `requests/failed`
-- Threshold : > 5 en 5 min
+
+Dans le portail, le signal peut apparaitre sous le libelle lisible `Failed requests`
+(equivalent au nom technique `requests/failed`).
+
+Configuration recommandee pour le lab:
+- Signal : `Failed requests`
+- Threshold type : `Static`
+- Aggregation type : `Count`
+- Operator : `Greater than`
+- Unit : `Count`
+- Threshold : `5`
+- Check every : `1 minute`
+- Lookback period : `5 minutes`
+- Alert rule name : `alert-failed-requests-appi-mlopslab-dev`
 - Action group : email
+
+Interpretation:
+- Azure reevalue toutes les `1 minute`
+- en regardant les `5 dernieres minutes`
+- et declenche si plus de `5` requetes ont echoue sur cette fenetre
 
 ### 4. Simulation drift (25 min)
 Precondition:
 - le workflow `CD — Deploy to Dev` du Jour 3 doit avoir deploye l'application sur AKS
 - `kubectl get svc iris-classifier-svc` doit retourner une `EXTERNAL-IP`
+- l'application AKS doit avoir ete redeployee avec l'instrumentation App Insights a jour
 
 ```bash
 ENDPOINT=$(kubectl get svc iris-classifier-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -84,6 +102,10 @@ uv run python scripts/generate-drift.py --endpoint http://$ENDPOINT/score --n_no
 Si `EXTERNAL-IP` est vide:
 - attendre encore un peu que le Load Balancer Azure soit provisionne
 - ou revenir au Jour 3 pour verifier le workflow CD dev
+
+Si tu ne vois toujours pas de requetes dans `appi-mlopslab-dev`:
+- verifier que le `CD — Deploy to Dev` a bien ete relance apres mise a jour de l'instrumentation
+- attendre 1 a 3 minutes de propagation dans App Insights
 
 ## Checkpoint J4
 - [ ] 2 runs compares dans AML Studio

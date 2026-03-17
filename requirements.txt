@@ -36,6 +36,8 @@ azure-identity==1.25.2
     # via
     #   -r requirements.in
     #   azure-monitor-opentelemetry-exporter
+azure-monitor-opentelemetry==1.8.2
+    # via -r requirements.in
 azure-mgmt-core==1.6.0
     # via azure-ai-ml
 azure-monitor-opentelemetry==1.8.2
