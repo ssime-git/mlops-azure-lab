@@ -214,6 +214,10 @@ git push origin dev
 ```
 Observer GitHub Actions : les 3 jobs de `ci-train.yml`.
 
+Note de branche:
+- dans ce lab, les declenchements automatiques CI/CD `dev` sont volontairement attaches a la branche `dev`
+- `main` sert de branche de reference synchronisee, mais on evite d'y declencher les memes runs automatiques pour ne pas dupliquer les executions
+
 Si tu veux relancer la CI avec le **dernier contenu du repo**:
 - eviter de seulement cliquer sur `Re-run jobs` d'un ancien workflow si des fichiers ont change depuis
 - un rerun relance le workflow sur le meme commit SHA

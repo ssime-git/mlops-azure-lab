@@ -2,7 +2,7 @@ name: CI — Lint + Tests + AML Training Pipeline
 
 on:
   push:
-    branches: [main, dev]
+    branches: [dev]
     paths: ['mlops/**', 'tests/**', 'requirements.txt', 'requirements.in']
   pull_request:
     branches: [main]
