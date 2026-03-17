@@ -186,6 +186,17 @@ Le repo traite aussi des sujets souvent oublies dans les demos ML :
 - approbation manuelle avant la prod
 - identities federées a la place des secrets persistants
 
+Dans l'atelier `Jour 5`, le setup ne cree pas de groupe Entra ID dedie pour l'equipe.
+L'exercice RBAC se fait donc:
+
+- soit avec un groupe existant fourni pour la formation
+- soit avec un groupe de test cree pour l'atelier puis supprime a la fin
+
+Cela permet de separer clairement:
+
+- l'identite technique du pipeline GitHub
+- et les droits donnes a une equipe humaine MLOps
+
 Ce sont des sujets de gouvernance parce qu'ils definissent :
 
 - qui peut agir

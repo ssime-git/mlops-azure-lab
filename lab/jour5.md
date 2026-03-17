@@ -13,7 +13,11 @@ Le Jour 5 suppose que l'environnement `dev` existe deja:
 - `aks-mlopslab-dev`
 - `kv-mlopslab-dev`
 
-Il suppose aussi qu'un groupe Entra ID existe deja pour l'exercice RBAC.
+Le setup precedent ne cree pas de groupe Entra ID pour toi.
+Pour l'exercice RBAC, il faut donc:
+- soit reutiliser un groupe Entra ID deja fourni
+- soit creer un groupe de test, puis le supprimer a la fin
+
 Dans les exemples ci-dessous, on utilise `mlops-team`.
 
 ## Atelier
@@ -34,6 +38,23 @@ Si le groupe `mlops-team` n'existe pas:
 - utiliser un groupe Entra ID existant fourni par le formateur
 - ou creer un groupe de test avant de lancer le script
 
+Exemple avec un groupe de test:
+```bash
+az ad group create \
+  --display-name "mlops-team" \
+  --mail-nickname "mlops-team"
+
+GROUP_OBJECT_ID=$(az ad group show --group "mlops-team" --query id -o tsv)
+
+bash scripts/setup-rbac.sh dev "$GROUP_OBJECT_ID"
+
+az role assignment list \
+  --assignee "$GROUP_OBJECT_ID" \
+  --all \
+  --query "[].{role:roleDefinitionName,scope:scope}" \
+  -o table
+```
+
 Ce que fait le script:
 - attribue `AzureML Data Scientist` au scope du resource group `rg-mlopslab-dev`
 - attribue `Azure Kubernetes Service Cluster User Role` au scope du cluster AKS dev
@@ -43,6 +64,11 @@ Pourquoi la verification utilise `--assignee --all`:
 - une partie des rôles est au scope du resource group
 - une autre partie est au scope de ressources individuelles comme AKS et Key Vault
 - `--resource-group` seul ne montre pas toujours clairement toute l'image
+
+Nettoyage optionnel a la fin du lab:
+```bash
+az ad group delete --group "mlops-team"
+```
 
 ### 3. Utiliser Key Vault (10 min)
 ```bash
