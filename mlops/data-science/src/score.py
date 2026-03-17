@@ -2,6 +2,7 @@
 
 import json
 import os
+from pathlib import Path
 
 import joblib
 import numpy as np
@@ -12,9 +13,17 @@ CLASSES = ["setosa", "versicolor", "virginica"]
 
 def init():
     global MODEL
-    model_path = os.path.join(
-        os.environ.get("AZUREML_MODEL_DIR", "/app/model"), "model.joblib"
-    )
+    model_root = Path(os.environ.get("AZUREML_MODEL_DIR", "/app/model"))
+    model_path = model_root / "model.joblib"
+
+    if not model_path.exists():
+        matches = sorted(model_root.rglob("model.joblib"))
+        if not matches:
+            raise FileNotFoundError(
+                f"model.joblib not found under AZUREML_MODEL_DIR={model_root}"
+            )
+        model_path = matches[0]
+
     MODEL = joblib.load(model_path)
     print(f"Model loaded from {model_path}")
 
