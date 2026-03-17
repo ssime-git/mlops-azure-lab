@@ -3,7 +3,7 @@
 import os
 import sys
 
-from flask import Flask, request
+import flask
 
 sys.path.insert(0, "src")
 from score import init, run  # noqa: E402
@@ -16,14 +16,14 @@ if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     else:
         configure_azure_monitor()
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 init()
 
 
 @app.route("/score", methods=["POST"])
 def score():
     return (
-        run(request.get_data(as_text=True)),
+        run(flask.request.get_data(as_text=True)),
         200,
         {"Content-Type": "application/json"},
     )
