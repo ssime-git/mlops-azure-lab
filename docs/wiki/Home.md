@@ -28,8 +28,10 @@ Ce contenu est pense comme un support de formation technique pour :
 - un projet ML transforme en scripts versionnes, testables et deployables
 - une infrastructure Azure deployee en IaC
 - une CI/CD qui relie GitHub, Azure ML, ACR et AKS
+- deux chemins de serving complementaires: AKS et AML Managed Endpoint
 - une approche securisee via OIDC et RBAC
 - des environnements `dev` et `prod` avec promotion controlee
+- une observabilite verifiable via Application Insights et requetes KQL
 
 ## Vue d'ensemble
 

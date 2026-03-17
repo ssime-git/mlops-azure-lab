@@ -103,9 +103,53 @@ Le lab met en avant plusieurs dimensions :
 - Azure Monitor pour les alertes
 - script de drift pour simuler des comportements anormaux
 
+Pour le chemin AKS du lab:
+- l'application Flask de scoring envoie sa telemetrie HTTP vers `Application Insights`
+- dans le portail Azure, le menu `Logs` ouvre generalement `Query Hub`
+- c'est a cet endroit qu'on execute les requetes KQL pour verifier l'arrivee des `requests`
+
+Requetes KQL utiles:
+
+Requetes recentes:
+```kusto
+requests
+| where timestamp > ago(30m)
+| order by timestamp desc
+| take 20
+```
+
+Succes / codes HTTP:
+```kusto
+requests
+| where timestamp > ago(30m)
+| summarize count() by success, resultCode
+```
+
+Volume dans le temps:
+```kusto
+requests
+| where timestamp > ago(30m)
+| summarize count() by bin(timestamp, 5m), success
+| order by timestamp desc
+```
+
+Traces recentes:
+```kusto
+traces
+| where timestamp > ago(30m)
+| order by timestamp desc
+| take 20
+```
+
 Lecture MLOps :
 - observer un modele en prod ne se limite pas a regarder la latence
 - il faut suivre aussi les erreurs, les patterns d'entree et les changements de comportement
+
+Point important sur le drift:
+- dans ce lab, le script de drift envoie des donnees anormales, mais l'API peut continuer a repondre en `200`
+- un drift metier n'implique donc pas forcement une erreur technique HTTP
+- App Insights permet ici de verifier que le trafic arrive bien, puis d'analyser la telemetrie
+- pour un vrai suivi de drift metier, il faudrait aussi suivre la distribution des predictions et des features
 
 Si tu es junior, retiens ceci :
 - mettre un modele en ligne n'est pas la fin du travail

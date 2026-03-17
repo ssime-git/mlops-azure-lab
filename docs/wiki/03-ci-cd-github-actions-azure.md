@@ -53,6 +53,7 @@ sequenceDiagram
     GH->>Entra: token OIDC
     Entra-->>GH: token Azure temporaire
     GH->>AML: submit training pipeline
+    GH->>GH: CD dev manuel
     GH->>ACR: build et push image
     GH->>AKS: deploy manifest
 ```
@@ -84,6 +85,11 @@ Si tu viens du notebook :
 - pense a la CI comme a un collegue automatique qui rerun les verifications a chaque changement
 - pense a AML comme a l'endroit ou l'entrainement est execute de facon standardisee
 
+Point de branche:
+- dans ce repo, les declenchements automatiques `push` sont volontairement attaches a `dev`
+- `main` reste une branche de reference synchronisee et de validation via `pull_request`
+- cela evite de dupliquer les runs CI/CD sur deux branches qui portent le meme contenu
+
 ## CD dev : construire puis deployer
 
 Le workflow [`.github/workflows/cd-deploy-dev.yml`](../../.github/workflows/cd-deploy-dev.yml) illustre une logique classique :
@@ -95,13 +101,36 @@ Le workflow [`.github/workflows/cd-deploy-dev.yml`](../../.github/workflows/cd-d
 5. injecter les valeurs dynamiques dans le manifest Kubernetes
 6. deployer sur AKS
 
+Dans le lab actuel, le `CD dev` est lance **manuellement** apres verification du resultat de la CI.
+Ce choix est volontaire:
+
+- le pipeline AML prend deja plusieurs minutes
+- on ne veut pas rebuild et redeployer AKS a chaque push de test
+- cela rend la demonstration plus lisible et plus proche d'un gate de promotion vers `dev`
+
 Point important :
 - l'image de serving embarque un modele construit pendant le workflow
-- cela montre une logique simple de bout en bout, meme si une architecture plus mature separerait souvent mieux build, registry et promotion de modele
+- cela montre une logique simple de bout en bout
+- dans le repo, l'image AKS utilise maintenant un runtime de serving dedie, separe des dependances de training/MLflow
+- cette separation evite des conflits de dependances dans l'image de serving et reflète mieux une architecture reelle
 
 Ce que tu dois comprendre ici :
 - deploiement ne veut pas dire seulement "copier du code"
 - il faut aussi preparer le runtime qui va exposer la prediction
+
+## AKS et Managed Endpoint AML ne jouent pas le meme role
+
+Le repo montre deux cibles de deploiement differentes :
+
+| Cible | Workflow | Ce que cela produit | Utilite principale |
+|---|---|---|---|
+| `AKS` | [`.github/workflows/cd-deploy-dev.yml`](../../.github/workflows/cd-deploy-dev.yml) | une application de scoring conteneurisee sur Kubernetes | serving applicatif + App Insights |
+| `Managed Endpoint AML` | [`.github/workflows/cd-deploy-aml-endpoint.yml`](../../.github/workflows/cd-deploy-aml-endpoint.yml) | un modele enregistre dans AML + un endpoint gere | registre de modeles + serving ML gere |
+
+Point cle:
+- le deploiement `AKS` n'enregistre pas automatiquement le modele dans le registre AML
+- le workflow `Managed Endpoint AML` enregistre `iris-classifier` dans le workspace AML
+- c'est pour cela que le versioning de modele du Jour 4 depend du workflow Managed Endpoint, pas du deploiement AKS
 
 ## Separation recommandee des environnements
 

@@ -104,6 +104,67 @@ uv run python scripts/generate-drift.py --endpoint http://$ENDPOINT/score --n_no
 # Observer les reponses anormales dans App Insights > Requests
 ```
 
+Ce qu'il faut bien comprendre:
+- ici, le "drift" est un drift **metier** sur les donnees d'entree
+- cela ne signifie pas forcement que l'API doit renvoyer des erreurs HTTP
+- dans ce lab, beaucoup de requetes driftes repondent quand meme en `200`
+- App Insights sert donc surtout a observer le trafic, les temps de reponse et les eventuelles erreurs techniques
+- le drift se voit plutot dans le contenu des predictions que dans un code HTTP `500`
+
+### 5. Observer App Insights avec KQL (15 min)
+Dans le portail Azure:
+- ouvrir `appi-mlopslab-dev`
+- cliquer sur `Logs`
+- cela ouvre generalement `Query Hub`
+- coller ensuite les requetes KQL ci-dessous puis cliquer sur `Run`
+
+Requete 1 - voir les requetes recentes:
+```kusto
+requests
+| where timestamp > ago(30m)
+| order by timestamp desc
+| take 20
+```
+
+Attendu:
+- des lignes recentes correspondant aux appels sur `/score`
+
+Requete 2 - resumer succes / codes HTTP:
+```kusto
+requests
+| where timestamp > ago(30m)
+| summarize count() by success, resultCode
+```
+
+Attendu:
+- majoritairement `success=true`
+- souvent `resultCode=200`
+
+Requete 3 - volume de trafic dans le temps:
+```kusto
+requests
+| where timestamp > ago(30m)
+| summarize count() by bin(timestamp, 5m), success
+| order by timestamp desc
+```
+
+Attendu:
+- une hausse du nombre de requetes apres l'execution de `generate-drift.py`
+
+Requete 4 - traces recentes si besoin de debug:
+```kusto
+traces
+| where timestamp > ago(30m)
+| order by timestamp desc
+| take 20
+```
+
+Interpretation:
+- si `requests` remonte bien, la chaine `AKS -> App Insights` fonctionne
+- si les resultats restent en `200`, cela ne veut pas dire qu'il n'y a pas de drift
+- cela veut simplement dire que le drift ne casse pas techniquement l'API
+- pour aller plus loin sur le drift metier, il faudrait aussi analyser les predictions et leur distribution
+
 Si `EXTERNAL-IP` est vide:
 - attendre encore un peu que le Load Balancer Azure soit provisionne
 - ou revenir au Jour 3 pour verifier le workflow CD dev
