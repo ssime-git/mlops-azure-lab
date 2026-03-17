@@ -2,6 +2,7 @@
 
 import argparse
 import os
+from pathlib import Path
 
 from azure.ai.ml import MLClient
 from azure.ai.ml.constants import AssetTypes
@@ -16,8 +17,14 @@ def main(args):
         resource_group_name=args.resource_group,
         workspace_name=args.workspace,
     )
+
+    model_path = Path(args.model_dir)
+    nested_model_file = model_path / "model.joblib"
+    if model_path.is_dir() and nested_model_file.exists():
+        model_path = nested_model_file
+
     model = Model(
-        path=args.model_dir,
+        path=str(model_path),
         type=AssetTypes.CUSTOM_MODEL,
         name="iris-classifier",
         description="LogisticRegression on Iris dataset",
@@ -28,7 +35,7 @@ def main(args):
         },
     )
     registered = client.models.create_or_update(model)
-    print(f"Registered: {registered.name} v{registered.version}")
+    print(f"Registered: {registered.name} v{registered.version} from {model_path}")
 
 
 if __name__ == "__main__":
