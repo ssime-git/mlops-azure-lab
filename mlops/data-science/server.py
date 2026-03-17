@@ -8,15 +8,25 @@ import flask
 sys.path.insert(0, "src")
 from score import init, run  # noqa: E402
 
+app_insights_connection_string = os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING")
+
 if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     try:
         from azure.monitor.opentelemetry import configure_azure_monitor
+        from opentelemetry.instrumentation.flask import FlaskInstrumentor
     except ImportError as exc:
         print(f"App Insights instrumentation disabled: {exc}")
     else:
-        configure_azure_monitor()
+        configure_azure_monitor(connection_string=app_insights_connection_string)
 
 app = flask.Flask(__name__)
+
+if app_insights_connection_string:
+    try:
+        FlaskInstrumentor().instrument_app(app)
+    except NameError:
+        pass
+
 init()
 
 
