@@ -1,0 +1,60 @@
+name: Docs — Sync GitHub Wiki
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['docs/wiki/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-github-wiki
+  cancel-in-progress: true
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate wiki token
+        run: |
+          if [ -z "${{ secrets.GH_WIKI_TOKEN }}" ]; then
+            echo "Missing GH_WIKI_TOKEN secret."
+            echo "Create a classic PAT or fine-grained token with access to this repo and wiki."
+            exit 1
+          fi
+
+      - name: Clone GitHub wiki repository
+        env:
+          GH_WIKI_TOKEN: ${{ secrets.GH_WIKI_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${GH_WIKI_TOKEN}@github.com/${{ github.repository }}.wiki.git" wiki-repo
+
+      - name: Sync docs/wiki into GitHub wiki
+        run: |
+          cp docs/wiki/*.md wiki-repo/
+
+      - name: Commit and push if changed
+        working-directory: wiki-repo
+        env:
+          GH_WIKI_TOKEN: ${{ secrets.GH_WIKI_TOKEN }}
+        run: |
+          if [ -z "$(git status --short)" ]; then
+            echo "Wiki already up to date."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+
+          if git diff --cached --quiet; then
+            echo "No staged wiki changes."
+            exit 0
+          fi
+
+          git commit -m "Sync wiki from docs/wiki"
+          git push "https://x-access-token:${GH_WIKI_TOKEN}@github.com/${{ github.repository }}.wiki.git" HEAD:master
