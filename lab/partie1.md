@@ -1,4 +1,4 @@
-# Jour 1 — Fondations DevOps & Azure pour la Data/ML
+# Partie 1 — Fondations : du notebook aux scripts
 
 ## Objectifs
 - Comprendre DevOps vs MLOps
@@ -7,39 +7,39 @@
 - Lancer le pipeline ML localement de bout en bout
 
 ## Positionnement de J1 par rapport a J2
-
 Le Jour 1 est une journee de **prise en main**:
 - on decouvre les concepts
 - on execute le pipeline ML en local
 - on comprend comment AML va etre utilise ensuite
 
-La creation "officielle" de l'infrastructure Azure `dev` du lab est faite au **Jour 2** avec Terraform.
-
-Important:
-- ne pas creer manuellement `rg-mlopslab-dev` au Jour 1
-- ne pas creer manuellement `aml-mlopslab-dev` si tu veux ensuite laisser Terraform gerer l'infra
-- sinon le `terraform apply` du Jour 2 echouera car les ressources existeront deja
-
 ## Prerequis
 - Compte Azure actif avec acces au subscription de lab
 - git, Python 3.10, Azure CLI installes
-- `az extension add -n ml` execute
+- partie 0 setup terminée!
 
 ## Architecture (schema a dessiner)
-```
-GitHub Actions (CI/CD)
-       |
-       |-- Azure ML (train, track, register)
-       |         v
-       '-- ACR (image) -> AKS (serving)
-                              v
-                   Azure Monitor + App Insights
-                   Key Vault (secrets)
+
+```mermaid
+graph TD
+    A["GitHub Actions<br/>(CI/CD)"] --> B["Azure ML<br/>(train, track, register)"]
+    A --> C["ACR<br/>(image)"]
+    C --> D["AKS<br/>(serving)"]
+    B --> D
+    D --> E["Azure Monitor<br/>+ App Insights"]
+    D --> F["Key Vault<br/>(secrets)"]
+    
+    style A fill:#0078d4,stroke:#005a9e,color:#fff
+    style B fill:#0078d4,stroke:#005a9e,color:#fff
+    style C fill:#0078d4,stroke:#005a9e,color:#fff
+    style D fill:#0078d4,stroke:#005a9e,color:#fff
+    style E fill:#107c10,stroke:#0b6b0b,color:#fff
+    style F fill:#ff8c00,stroke:#d97706,color:#fff
 ```
 
 ## Atelier
 
 ### 1. Setup (5 min)
+
 ```bash
 git clone https://github.com/TON_ORG/mlops-azure-lab.git
 cd mlops-azure-lab
@@ -49,6 +49,7 @@ uv pip install -r requirements.txt
 ```
 
 ### 2. Convention de branches (5 min)
+
 - `main` -> CI + CD prod (approbation manuelle)
 - `dev`  -> CI + CD dev automatique
 - `feature/*` -> CI seulement
@@ -59,22 +60,14 @@ az login
 ```
 
 Ce que l'on fait ici:
+
 - verifier l'acces Azure
 - comprendre a quoi servira le workspace AML dev
 - preparer mentalement la suite du lab
 
-Ce que l'on **ne fait pas** ici:
-- creer `rg-mlopslab-dev`
-- creer `aml-mlopslab-dev`
-
-Ces ressources seront creees au Jour 2 par Terraform.
-
-Si le formateur fournit deja un workspace AML dev existant pour la demo:
-- l'utiliser en lecture / exploration
-- ne pas le recreer a la main
 
 ### 4. Notebook first (15 min)
-Ouvrir `mlops/data-science/notebooks/iris-walkthrough.ipynb` dans Azure ML Studio (ou local Jupyter) et executer toutes les cellules.
+Ouvrir et lire `mlops/data-science/notebooks/iris-walkthrough.ipynb` pour prendre connaissance de la logique `prep -> train -> evaluate`. Vous pouvez également executer les cellules en local si vous le souhaitez.
 
 Si le workspace AML dev n'existe pas encore a ce stade:
 - faire la lecture du notebook localement
@@ -88,16 +81,21 @@ Points a observer:
 
 ### 5. Passage notebook -> scripts (15 min)
 ```bash
+# Etape 1: Preparation des donnees
 uv run python mlops/data-science/src/prep.py --output_dir /tmp/iris
+
+# Etape 2: Entrainement du modele
 uv run python mlops/data-science/src/train.py --data_dir /tmp/iris --model_dir /tmp/model
+
+# Etape 3: Evaluation du modele
 uv run python mlops/data-science/src/evaluate.py --data_dir /tmp/iris --model_dir /tmp/model
+
+# Etape 4: Execution des tests
 uv run pytest tests/ -v
 ```
 
 ## Checkpoint J1
-- [ ] Notebook Iris execute de bout en bout
-- [ ] Pipeline local (prep -> train -> evaluate) sans erreur
-- [ ] `uv run pytest tests/ -v` : 5 tests PASSED
+- [X] Notebook Iris execute de bout en bout
+- [X] Pipeline local (prep -> train -> evaluate) sans erreur
+- [X] `uv run pytest tests/ -v` : 5 tests PASSED
 
-Checkpoint optionnel si un workspace de demo existe deja:
-- [ ] Workspace AML dev visible sur le portail

@@ -62,7 +62,17 @@ Important:
 - ce lab n'utilise pas un AML Registry partage entre plusieurs workspaces
 
 ### 3. Alerte Azure Monitor (15 min)
-Portal > App Insights (`appi-mlopslab-dev`) > Alerts > New Alert Rule.
+
+Repere d'abord ton App Insights (suffixe via `lab/env/naming.env`) :
+
+```bash
+source lab/env/partie2.env
+az resource list --resource-group "$AML_RESOURCE_GROUP_DEV" \
+  --resource-type Microsoft.Insights/components \
+  --query "[0].name" -o tsv
+```
+
+Puis : Portal > App Insights (nom retourne ci-dessus, par ex. `appi-mlopslab-<suffix>-dev`) > Alerts > New Alert Rule.
 
 Dans le portail, le signal peut apparaitre sous le libelle lisible `Failed requests`
 (equivalent au nom technique `requests/failed`).
@@ -76,7 +86,7 @@ Configuration recommandee pour le lab:
 - Threshold : `5`
 - Check every : `1 minute`
 - Lookback period : `5 minutes`
-- Alert rule name : `alert-failed-requests-appi-mlopslab-dev`
+- Alert rule name : `alert-failed-requests-<appi-name>`
 - Action group : email
 
 Interpretation:
@@ -113,7 +123,7 @@ Ce qu'il faut bien comprendre:
 
 ### 5. Observer App Insights avec KQL (15 min)
 Dans le portail Azure:
-- ouvrir `appi-mlopslab-dev`
+- ouvrir ton App Insights (nom recupere plus haut, ex. `appi-mlopslab-<suffix>-dev`)
 - cliquer sur `Logs`
 - cela ouvre generalement `Query Hub`
 - coller ensuite les requetes KQL ci-dessous puis cliquer sur `Run`
@@ -169,7 +179,7 @@ Si `EXTERNAL-IP` est vide:
 - attendre encore un peu que le Load Balancer Azure soit provisionne
 - ou revenir au Jour 3 pour verifier le workflow CD dev
 
-Si tu ne vois toujours pas de requetes dans `appi-mlopslab-dev`:
+Si tu ne vois toujours pas de requetes dans ton App Insights :
 - verifier que le `CD — Deploy to Dev` a bien ete relance apres mise a jour de l'instrumentation
 - attendre 1 a 3 minutes de propagation dans App Insights
 

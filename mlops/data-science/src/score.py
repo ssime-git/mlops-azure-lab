@@ -6,6 +6,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+import pandas as pd
 
 MODEL = None
 CLASSES = ["setosa", "versicolor", "virginica"]
@@ -30,7 +31,9 @@ def init():
 
 def run(raw_data: str) -> str:
     data = json.loads(raw_data)
-    features = np.array(data["data"])
+    raw_features = np.array(data["data"])
+    feature_names = MODEL.feature_names_in_
+    features = pd.DataFrame(raw_features, columns=feature_names)
     preds = MODEL.predict(features).tolist()
     probas = MODEL.predict_proba(features).tolist()
     result = [

@@ -66,7 +66,7 @@ resource "azurerm_container_registry" "main" {
 }
 
 resource "azurerm_log_analytics_workspace" "main" {
-  name                = "law-mlopslab-${var.environment}"
+  name                = "law-${local.base_name}"
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   sku                 = "PerGB2018"
@@ -84,7 +84,7 @@ resource "azurerm_application_insights" "main" {
 }
 
 resource "azurerm_machine_learning_workspace" "main" {
-  name                    = "aml-${local.base_name}"
+  name                    = "${var.aml_workspace_prefix}-${local.base_name}"
   resource_group_name     = azurerm_resource_group.main.name
   location                = var.location
   storage_account_id      = azurerm_storage_account.main.id
@@ -104,6 +104,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = var.location
   dns_prefix          = "aks-${local.base_name}"
+  oidc_issuer_enabled = true
   tags                = local.common_tags
 
   default_node_pool {

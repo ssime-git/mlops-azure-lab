@@ -59,11 +59,15 @@ jobs:
       - name: Get App Insights connection string
         id: appi
         run: |
-          NAME=$(az monitor app-insights component show \
-            --app appi-mlopslab-dev \
+          APPI_NAME=$(az resource list \
+            --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} \
+            --resource-type Microsoft.Insights/components \
+            --query "[0].name" -o tsv)
+          CONN=$(az monitor app-insights component show \
+            --app "$APPI_NAME" \
             --resource-group ${{ secrets.AML_RESOURCE_GROUP_DEV }} \
             --query connectionString -o tsv)
-          echo "connection_string=$NAME" >> $GITHUB_OUTPUT
+          echo "connection_string=$CONN" >> $GITHUB_OUTPUT
 
       - name: Build and push to ACR
         run: |

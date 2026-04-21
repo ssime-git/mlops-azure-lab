@@ -8,6 +8,8 @@ import mlflow
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 
 def main(args):
@@ -15,7 +17,15 @@ def main(args):
     X, y = train_df.drop("target", axis=1), train_df["target"]
 
     with mlflow.start_run():
-        model = LogisticRegression(max_iter=args.max_iter, random_state=42)
+        model = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    LogisticRegression(max_iter=args.max_iter, random_state=42),
+                ),
+            ]
+        )
         model.fit(X, y)
         acc = accuracy_score(y, model.predict(X))
         mlflow.log_param("max_iter", args.max_iter)

@@ -10,7 +10,6 @@ Si tu bloques sur une étape, note l'erreur exacte et apporte-la en J1.
 4. GitHub Secrets et Environments
 5. Vérification finale
 
----
 
 ## Étape 1 — Vérifier ton accès Azure et installer les outils
 
@@ -40,7 +39,6 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
----
 
 ## Étape 2 — Créer l'App Registration Azure
 
@@ -53,7 +51,7 @@ uv pip install -r requirements.txt
 
 1. Aller sur https://portal.azure.com
 2. Barre de recherche en haut → taper **"Microsoft Entra ID"** → cliquer le résultat
-3. Menu gauche → **App registrations** → bouton **New registration**
+3. Menu gauche → **Manage** → **App registrations** → bouton **New registration**
 4. Remplir :
    - **Name** : `github-mlops-lab`
    - **Supported account types** : *Accounts in this organizational directory only*
@@ -77,74 +75,56 @@ az account show --query id -o tsv
 
 ### 2c. Donner les permissions Azure à cette identité (least privilege)
 
-> Objectif : éviter `Contributor` au scope subscription.
-> On donne des droits au **niveau Resource Group** uniquement.
+ > Objectif : éviter `Contributor` au scope subscription.
+ > On donne des droits au **niveau Resource Group** uniquement.
 
-1. Créer **uniquement** le Resource Group du backend Terraform :
+  1. Definir un suffixe unique dans `lab/env/naming.env` pour éviter les collisions si plusieurs personnes partagent la meme subscription.
 
-```bash
-az group create --name rg-tfstate       --location westeurope
-```
+ ```bash
+ export LAB_SUFFIX="seb"
+ ```
 
-> Important :
-> - `rg-mlopslab-dev` et `rg-mlopslab-prod` seront crees par Terraform au Jour 2
-> - ne pas les creer manuellement avant `terraform apply`, sinon Terraform echouera en indiquant que le Resource Group existe deja
-
-2. Apres le `terraform apply` du Jour 2, dans le portail Azure, faire 3 attributions du rôle **Contributor** à l'app `github-mlops-lab` :
-   - scope `rg-mlopslab-dev`
-   - scope `rg-mlopslab-prod`
-   - scope `rg-tfstate`
-
-3. Ajouter ensuite le rôle **User Access Administrator** sur :
-   - scope `rg-mlopslab-dev`
-   - scope `rg-mlopslab-prod`
-
-> Pourquoi ce rôle ? Terraform/Bicep crée l'assignation `AcrPull` entre AKS et ACR.
-> Sans `User Access Administrator` (ou Owner), la création de `roleAssignments` échoue.
-> Ici le scope reste limité aux RG du lab.
-
-4. Verification rapide apres attribution des rôles :
-
-```bash
-PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
-az role assignment list --assignee "$PRINCIPAL_ID" --all --query "[].{role:roleDefinitionName,scope:scope}" -o table
-```
-
-Tu dois voir au minimum :
-- `Contributor` sur `rg-tfstate`
-- `Contributor` sur `rg-mlopslab-dev`
-- `Contributor` sur `rg-mlopslab-prod`
-- `User Access Administrator` sur `rg-mlopslab-dev`
-- `User Access Administrator` sur `rg-mlopslab-prod`
-
----
+  2. Créer **uniquement** le Resource Group du backend Terraform :
+ 
+ ```bash
+ source lab/env/partie2.env
+ az group create --name "$TFSTATE_RG" --location "$TFSTATE_LOCATION"
+ ```
+ 
+ 3. Les attributions de rôles Azure pour `github-mlops-lab` seront faites dans la partie 2, une fois les resource groups du lab créés.
 
 ## Étape 3 — Configurer OIDC (Federated Credentials)
 
 > **Pourquoi OIDC et pas un secret ?**
 >
-> Sans OIDC, il faudrait créer un secret (mot de passe) sur l'App Registration et le stocker
-> dans GitHub. Problème : ce secret est valable longtemps, peut fuiter dans les logs, et doit
-> être renouvelé manuellement.
+> Sans OIDC, il faudrait créer un secret (mot de passe) sur l'App Registration et le stocker.
 >
-> Avec OIDC (Workload Identity Federation), le flux est :
-> ```
-> GitHub Actions démarre un job
->         │
->         ▼
-> GitHub génère un token temporaire signé (~5 min) :
-> "Je suis le workflow du repo TON_ORG/mlops-azure-lab, environment=dev"
->         │
->         ▼
-> Azure vérifie la signature + vérifie que le repo/env correspond
-> aux Federated Credentials configurés sur l'App Registration
->         │
->         ▼
-> Azure délivre un token d'accès Azure (valable ~1h)
-> → az login réussit, aucun secret stocké nulle part
-> ```
->
-> C'est le standard industrie depuis 2022. Zéro secret, zéro rotation manuelle.
+> dans GitHub. Problème : ce secret est valable longtemps, peut fuiter dans les logs, et doit être renouvelé manuellement.
+
+Avec OIDC (Workload Identity Federation), le flux est :
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Actions
+    participant Token as GitHub Token Service
+    participant Azure as Azure Entra ID
+    participant CLI as az CLI
+
+    GH->>Token: Job started, request token
+    Token-->>GH: Temporary token (5 min validity)
+    Note over GH: Token contains: repo, org, environment
+    GH->>Azure: Present token to Federated Credentials
+    Azure->>Azure: Verify signature & metadata
+    Azure->>Azure: Match against configured credentials
+    Azure-->>GH: Azure access token (1h validity)
+    GH->>CLI: az login with token
+    CLI-->>GH: Authentication successful
+    Note over CLI: No secrets stored anywhere
+
+
+```
+
+C'est le standard industrie depuis 2022. Zéro secret, zéro rotation manuelle.
 
 ### 3a. Accéder aux Federated Credentials
 
@@ -198,30 +178,35 @@ Tu dois avoir **3 Federated Credentials** listés dans l'onglet.
 > Un token émis pour `branch=main` ne peut pas être utilisé pour `environment=production`.
 > Chaque credential autorise un contexte précis — c'est le principe du moindre privilège.
 
----
 
 ## Étape 4 — Configurer les GitHub Secrets et Environments
 
 ### 4a. Ajouter les 9 Repository Secrets
 
-Dans ton repo GitHub → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+ Dans ton repo GitHub → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+ 
+ Ajouter ces secrets un par un :
 
-Ajouter ces secrets un par un :
+ ```bash
+ source lab/env/naming.env
+ ```
 
-| Secret Name | Valeur |
-|-------------|--------|
-| `AZURE_CLIENT_ID` | Application (client) ID (étape 2b) |
-| `AZURE_TENANT_ID` | Directory (tenant) ID (étape 2b) |
-| `AZURE_SUBSCRIPTION_ID` | Subscription ID (étape 2b) |
-| `AML_WORKSPACE_DEV` | `aml-mlopslab-dev` |
-| `AML_WORKSPACE_PROD` | `aml-mlopslab-prod` |
-| `AML_RESOURCE_GROUP_DEV` | `rg-mlopslab-dev` |
-| `AML_RESOURCE_GROUP_PROD` | `rg-mlopslab-prod` |
-| `AKS_CLUSTER_DEV` | `aks-mlopslab-dev` |
-| `AKS_CLUSTER_PROD` | `aks-mlopslab-prod` |
+ | Secret Name | Valeur |
+ |-------------|--------|
+ | `AZURE_CLIENT_ID` | Application (client) ID (étape 2b) |
+ | `AZURE_TENANT_ID` | Directory (tenant) ID (étape 2b) |
+ | `AZURE_SUBSCRIPTION_ID` | Subscription ID (étape 2b) |
+| `AML_WORKSPACE_DEV` | `$AML_WORKSPACE_DEV` |
+| `AML_WORKSPACE_PROD` | `$AML_WORKSPACE_PROD` |
+| `AML_RESOURCE_GROUP_DEV` | `$AML_RESOURCE_GROUP_DEV` |
+| `AML_RESOURCE_GROUP_PROD` | `$AML_RESOURCE_GROUP_PROD` |
+| `AKS_CLUSTER_DEV` | `$AKS_CLUSTER_DEV` |
+| `AKS_CLUSTER_PROD` | `$AKS_CLUSTER_PROD` |
 
-> Les 4 derniers contiennent les noms des ressources Azure qui seront créées en J2.
+> Les 6 derniers contiennent les noms des ressources Azure qui seront créées en J2.
 > Tu les rentres maintenant pour ne pas avoir à y revenir.
+
+> Si tu utilises un suffixe, ces valeurs doivent rester coherentes avec `lab/env/naming.env`.
 
 ### 4b. Créer les 2 GitHub Environments
 
@@ -239,7 +224,6 @@ Dans ton repo GitHub → **Settings** → **Environments** → **New environment
 > Le workflow `cd-deploy-prod.yml` utilise `environment: production`. GitHub bloquera
 > l'exécution jusqu'à ce qu'un reviewer approuve. C'est le quality gate prod.
 
----
 
 ## Étape 5 — Vérification finale
 
@@ -252,23 +236,12 @@ az account show --query "{name:name, state:state}" -o table
 az ad app list --display-name "github-mlops-lab" --query "[].{name:displayName, id:appId}" -o table
 # → 1 ligne affichée
 
-# Test 3 : Role assignment présent
-PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
-az role assignment list --assignee $PRINCIPAL_ID --all --query "[].{role:roleDefinitionName, scope:scope}" -o table
-# → Contributor + User Access Administrator sur les RG du lab
-# Test 4 : Pipeline Python local
-uv run python mlops/data-science/src/prep.py --output_dir /tmp/iris-check
-uv run python mlops/data-science/src/train.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
-uv run python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-check --model_dir /tmp/model-check
-uv run pytest tests/ -v
-# → 5 tests PASSED
-
-# Test 5 : GitHub Secrets (vérification visuelle seulement)
+# Test 3 : GitHub Secrets (vérification visuelle seulement)
 # GitHub > Settings > Secrets > vérifier que les 9 secrets apparaissent dans la liste
 # Les valeurs ne sont jamais affichées — c'est normal
 ```
 
-Si tous les tests passent → prêt pour J1.
+Si tous les tests passent → prêt pour commencer !!
 
 ---
 
@@ -280,5 +253,5 @@ Si tous les tests passent → prêt pour J1.
 | App Registration créée mais rôle refusé | Propagation IAM lente | Attendre 2-3 min, réessayer |
 | GitHub Actions : `AADSTS70021: No matching federated identity record found` | Federated Credential mal configuré (mauvais repo, org, ou entity type) | Vérifier les 3 credentials : org/repo exact, entity type exact |
 | GitHub Actions : `ClientSecretCredentialAuthenticationError` | AZURE_CLIENT_ID ou AZURE_TENANT_ID incorrect | Revérifier les secrets GitHub vs l'App Registration |
-| GitHub Actions : `AuthorizationFailed` sur `roleAssignments` | Rôle `User Access Administrator` manquant | Ajouter `User Access Administrator` sur `rg-mlopslab-dev` et `rg-mlopslab-prod` |
+| GitHub Actions : `AuthorizationFailed` sur `roleAssignments` | Rôle `User Access Administrator` manquant | Ajouter `User Access Administrator` sur `$AML_RESOURCE_GROUP_DEV` et `$AML_RESOURCE_GROUP_PROD` (voir `lab/env/naming.env`) |
 | `pytest` : `ModuleNotFoundError` | dépendances non installées | `uv pip install -r requirements.txt` |

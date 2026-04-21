@@ -27,3 +27,7 @@ mlflow.db
 *.log
 *.tmp
 .pytest_cache/
+
+# Admin notes (ne pas pousser)
+lab/partie0_admin.md
+users/

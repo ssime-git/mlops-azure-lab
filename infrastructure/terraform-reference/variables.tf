@@ -17,6 +17,12 @@ variable "project_name" {
   default = "mlopslab"
 }
 
+variable "aml_workspace_prefix" {
+  type        = string
+  default     = "aml"
+  description = "Prefix for the Azure ML workspace name (change to bypass soft-delete conflicts)"
+}
+
 variable "aks_node_count" {
   type    = number
   default = 1

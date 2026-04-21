@@ -7,11 +7,11 @@
 
 ## Dependances depuis les jours precedents
 
-Le Jour 5 suppose que l'environnement `dev` existe deja:
-- `rg-mlopslab-dev`
-- `aml-mlopslab-dev`
-- `aks-mlopslab-dev`
-- `kv-mlopslab-dev`
+Le Jour 5 suppose que l'environnement `dev` existe deja (noms suffixes via `lab/env/naming.env`) :
+- `$AML_RESOURCE_GROUP_DEV` (ex. `rg-mlopslab-<suffix>-dev`)
+- `$AML_WORKSPACE_DEV`     (ex. `aml-mlopslab-<suffix>-dev`)
+- `$AKS_CLUSTER_DEV`       (ex. `aks-mlopslab-<suffix>-dev`)
+- Key Vault (ex. `kv-mlopslab-<suffix>-dev`)
 
 Le setup precedent ne cree pas de groupe Entra ID pour toi.
 Pour l'exercice RBAC, il faut donc:
@@ -24,7 +24,8 @@ Dans les exemples ci-dessous, on utilise `mlops-team`.
 
 ### 1. Inspecter les role assignments existants (5 min)
 ```bash
-az role assignment list --resource-group rg-mlopslab-dev --output table
+source lab/env/partie2.env
+az role assignment list --resource-group "$AML_RESOURCE_GROUP_DEV" --output table
 ```
 
 ### 2. Configurer RBAC (15 min)
@@ -56,7 +57,7 @@ az role assignment list \
 ```
 
 Ce que fait le script:
-- attribue `AzureML Data Scientist` au scope du resource group `rg-mlopslab-dev`
+- attribue `AzureML Data Scientist` au scope du resource group `$AML_RESOURCE_GROUP_DEV`
 - attribue `Azure Kubernetes Service Cluster User Role` au scope du cluster AKS dev
 - attribue `Key Vault Secrets User` au scope du Key Vault dev
 
@@ -72,9 +73,12 @@ az ad group delete --group "mlops-team"
 
 ### 3. Utiliser Key Vault (10 min)
 ```bash
-KV="kv-mlopslab-dev"
-az keyvault secret set --vault-name $KV --name "model-api-key" --value "secret-key-123"
-az keyvault secret show --vault-name $KV --name "model-api-key" --query value -o tsv
+source lab/env/partie2.env
+KV=$(az resource list --resource-group "$AML_RESOURCE_GROUP_DEV" \
+  --resource-type Microsoft.KeyVault/vaults --query "[0].name" -o tsv)
+echo "KV: $KV"
+az keyvault secret set --vault-name "$KV" --name "model-api-key" --value "secret-key-123"
+az keyvault secret show --vault-name "$KV" --name "model-api-key" --query value -o tsv
 ```
 
 Ce que montre cet exercice:

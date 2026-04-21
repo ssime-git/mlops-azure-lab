@@ -189,16 +189,40 @@ Checks conseilles:
 ```bash
 PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
 
+source lab/env/partie2.env
 az role assignment list \
   --assignee "$PRINCIPAL_ID" \
-  --all \
+  --resource-group "$AML_RESOURCE_GROUP_DEV" \
   --query "[].{role:roleDefinitionName,scope:scope}" \
   -o table
 ```
 
 Verifier au minimum:
-- `Contributor` sur `rg-mlopslab-dev`
-- `User Access Administrator` sur `rg-mlopslab-dev`
+- `Contributor` sur `$AML_RESOURCE_GROUP_DEV`
+- `User Access Administrator` sur `$AML_RESOURCE_GROUP_DEV`
+
+(valeurs suffixees via `lab/env/naming.env`)
+
+Recuperer d'un coup toutes les valeurs a mettre dans **GitHub → Settings → Secrets and variables → Actions** :
+```bash
+source lab/env/partie2.env
+echo "AZURE_CLIENT_ID=$(az ad sp list --display-name 'github-mlops-lab' --query '[0].appId' -o tsv)"
+echo "AZURE_TENANT_ID=$(az account show --query tenantId -o tsv)"
+echo "AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)"
+echo "AML_RESOURCE_GROUP_DEV=$AML_RESOURCE_GROUP_DEV"
+echo "AML_WORKSPACE_DEV=$AML_WORKSPACE_DEV"
+echo "AKS_CLUSTER_DEV=$AKS_CLUSTER_DEV"
+```
+
+Les 6 secrets a creer :
+| Secret GitHub | Source |
+|---|---|
+| `AZURE_CLIENT_ID` | appId du SP `github-mlops-lab` |
+| `AZURE_TENANT_ID` | tenant de la souscription |
+| `AZURE_SUBSCRIPTION_ID` | id de la souscription |
+| `AML_RESOURCE_GROUP_DEV` | `$AML_RESOURCE_GROUP_DEV` |
+| `AML_WORKSPACE_DEV` | `$AML_WORKSPACE_DEV` |
+| `AKS_CLUSTER_DEV` | `$AKS_CLUSTER_DEV` |
 
 Si les roles viennent d'etre ajoutes:
 - attendre 2 a 5 minutes
@@ -264,7 +288,7 @@ Pourquoi `prep_data` peut sembler "bloque":
 
 Si le job echoue sur `az ml environment create` avec `AuthorizationFailed`:
 - verifier a nouveau les rôles Azure RBAC de l'app `github-mlops-lab`
-- confirmer que `rg-mlopslab-dev` a bien ete cree par Terraform puis que les rôles ont ete reappliques dessus
+- confirmer que `$AML_RESOURCE_GROUP_DEV` a bien ete cree par Terraform puis que les rôles ont ete reappliques dessus
 - relancer le workflow apres propagation IAM
 
 ### 4. Lancer le CD dev manuellement (10 min)
@@ -295,7 +319,8 @@ az aks install-cli
 
 Puis:
 ```bash
-az aks get-credentials --resource-group rg-mlopslab-dev --name aks-mlopslab-dev --overwrite-existing
+source lab/env/partie2.env
+az aks get-credentials --resource-group "$AML_RESOURCE_GROUP_DEV" --name "$AKS_CLUSTER_DEV" --overwrite-existing
 
 kubectl get svc iris-classifier-svc
 

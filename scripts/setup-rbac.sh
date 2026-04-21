@@ -1,12 +1,29 @@
 #!/bin/bash
 # Configure RBAC for MLOps team on a given environment.
+#
 # Usage: bash setup-rbac.sh <env> <aad-group-object-id>
+#
+# Variables d'environnement honorees (definies dans lab/env/naming.env) :
+#   LAB_PROJECT_NAME  : base du nom projet (defaut: "mlopslab")
+#   LAB_SUFFIX        : suffixe multi-user (optionnel)
+#
+# Si LAB_PROJECT_NAME n'est pas defini, on tombe sur "mlopslab-${LAB_SUFFIX}"
+# si un suffixe est fourni, sinon "mlopslab".
 set -euo pipefail
 ENV=${1:-dev}
 GROUP_OID=${2?"Usage: $0 <env> <group-object-id>"}
-PROJECT="mlopslab"
+
+if [[ -n "${LAB_PROJECT_NAME:-}" ]]; then
+  PROJECT="$LAB_PROJECT_NAME"
+elif [[ -n "${LAB_SUFFIX:-}" ]]; then
+  PROJECT="mlopslab-${LAB_SUFFIX}"
+else
+  PROJECT="mlopslab"
+fi
+
 RG="rg-${PROJECT}-${ENV}"
 SUB=$(az account show --query id -o tsv)
+echo "PROJECT=$PROJECT  RG=$RG"
 
 echo "=== RBAC setup for env=$ENV, group=$GROUP_OID ==="
 
