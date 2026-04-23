@@ -81,11 +81,11 @@ tests/                 tests unitaires + integration
 
 ## Documentation Formation
 - Lab setup: `lab/lab0-setup.md`
-- Jour 1: `lab/jour1.md`
-- Jour 2: `lab/jour2.md`
-- Jour 3: `lab/jour3.md`
-- Jour 4: `lab/jour4.md`
-- Jour 5: `lab/jour5.md`
+- Partie 1: `lab/partie1.md`
+- Partie 2: `lab/partie2.md`
+- Partie 3: `lab/partie3.md`
+- Partie 4: `lab/partie4.md`
+- Partie 5: `lab/partie5.md`
 - Infographie complete: `docs/infographie-mlops-lab.md`
 - Infographie Excalidraw (source editable): `docs/infographie-mlops-lab.excalidraw`
 - Infographie PNG (export): `docs/infographie-mlops-lab.png`
