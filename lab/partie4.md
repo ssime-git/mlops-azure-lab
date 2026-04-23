@@ -1,105 +1,110 @@
-# Jour 4 — Tracking, Registry & Monitoring
+# Partie 4 — Tracking, Registry & Monitoring
 
 ## Objectifs
 - Comparer des runs MLflow dans AML Studio
-- Gérer les versions de modeles dans le registre de modeles du workspace AML
+- Gérer les versions de modèles dans le registre de modèles du workspace AML
 - Configurer une alerte Azure Monitor
-- Simuler du data drift
+- Simuler du data drift sur l'endpoint AKS
 
-## Dependances depuis J3
+## Dépendances depuis la Partie 3
 
-La partie 4 suppose que:
-- le pipeline AML du Jour 3 a déjà tourné avec succes
-- le workflow `CD — Deploy AML Managed Endpoint` a ete lance au moins une fois si tu veux manipuler un modele enregistre dans AML
-- le workflow CD dev vers AKS a deja termine si tu veux simuler du drift sur `iris-classifier-svc`
+La Partie 4 suppose que :
+- le pipeline AML de la Partie 3 a déjà tourné avec succès
+- le workflow `CD — Deploy AML Managed Endpoint` a été lancé au moins une fois si vous souhaitez manipuler un modèle enregistré dans AML
+- le workflow `CD dev vers AKS` a déjà terminé si vous souhaitez simuler du drift sur `iris-classifier-svc`
 
-En pratique:
-- sans modèle enregistré, la partie "versioning" ne montrera rien
+Conséquences concrètes :
+- sans modèle enregistré, la partie « versioning » ne montrera rien
 - sans endpoint AKS accessible, la simulation de drift ne peut pas fonctionner
 
-## Bien separer les deux sujets de J3
+## Bien séparer les deux sujets de la Partie 3
 
-Le Jour 3 montrait deux cibles de deploiement differentes:
+La Partie 3 montrait deux cibles de déploiement différentes :
 
-| Sujet | Workflow J3 associe | Ce que cela produit | Utilise au Jour 4 pour |
+| Sujet | Workflow Partie 3 associé | Ce que cela produit | Utilisé en Partie 4 pour |
 |---|---|---|---|
-| `AKS` | `CD — Deploy to Dev (ACR build + AKS deploy)` | une application de scoring exposee sur AKS | la simulation de drift et l'observation App Insights |
-| `Managed Endpoint AML` | `CD — Deploy AML Managed Endpoint` | un modele enregistre dans AML + un endpoint AML gere | le versioning du modele dans le workspace AML |
+| `AKS` | `CD — Deploy to Dev (ACR build + AKS deploy)` | une application de scoring exposée sur AKS | la simulation de drift et l'observation App Insights |
+| `Managed Endpoint AML` | `CD — Deploy AML Managed Endpoint` | un modèle enregistré dans AML + un endpoint AML géré | le versioning du modèle dans le workspace AML |
 
-Donc:
+Donc :
 - pour `az ml model list --name iris-classifier`, c'est le workflow `Managed Endpoint AML` qui compte
 - pour `kubectl get svc iris-classifier-svc`, c'est le workflow `CD dev vers AKS` qui compte
-- ces deux parties sont complementaires, mais elles ne se remplacent pas
+- ces deux parties sont **complémentaires** mais ne se remplacent pas
 
-Point d'architecture important:
-- l'image AKS de serving doit rester legere et orientee inference
-- elle n'a pas besoin d'embarquer toutes les dependances du training ou du tracking MLflow
-- dans ce repo, la partie serving AKS utilise donc des dependances dediees et separees du runtime de training
+> [!NOTE]
+> **Point d'architecture** : l'image AKS de serving doit rester légère et orientée inférence. Elle n'a pas besoin d'embarquer toutes les dépendances du training ou du tracking MLflow. Dans ce dépôt, la partie serving AKS utilise des dépendances dédiées et séparées du runtime de training.
 
 ## Atelier
 
 ### 1. Explorer les runs MLflow (10 min)
-Azure ML Studio > Jobs > selectionner 2 runs > Compare.
-Observer : Metrics, Parameters, Artifacts, Tags.
 
-### 2. Versioning de modeles dans le workspace AML (10 min)
-Precondition:
-- avoir lance au moins une fois le workflow `CD — Deploy AML Managed Endpoint` du Jour 3
-- ce workflow enregistre le modele `iris-classifier` dans le workspace AML dev
+Ouvrez **Azure ML Studio → Jobs**, sélectionnez 2 runs, puis cliquez sur **Compare**.
 
-Si la commande suivante ne retourne rien, ce n'est pas un bug du registre AML:
-- cela signifie en general que le workflow `CD — Deploy AML Managed Endpoint` n'a pas encore ete lance avec succes
-- le deploiement AKS seul ne suffit pas a remplir le registre de modeles AML
+Observez les onglets :
+- **Metrics** : évolution des métriques entre runs
+- **Parameters** : hyperparamètres utilisés
+- **Artifacts** : fichiers produits (modèle, logs)
+- **Tags** : métadonnées
+
+### 2. Versioning de modèles dans le workspace AML (10 min)
+
+> [!IMPORTANT]
+> **Précondition** : avoir lancé au moins une fois le workflow `CD — Deploy AML Managed Endpoint` de la Partie 3. Ce workflow enregistre le modèle `iris-classifier` dans le workspace AML `dev`. **Le déploiement AKS seul ne remplit pas le registre de modèles AML.**
+
+Listez les versions enregistrées du modèle :
 
 ```bash
+# Toutes les versions du modele
 az ml model list --name iris-classifier
+
+# Details d'une version precise
 az ml model show --name iris-classifier --version 1
 ```
 
-`Azure ML Studio > Models > iris-classifier` -> historique des versions dans le workspace.
+Ouvrez **Azure ML Studio → Models → `iris-classifier`** pour voir l'historique des versions dans le workspace.
 
-Important:
-- ici on parle du registre de modeles du **workspace AML**
-- ce lab n'utilise pas un AML Registry partage entre plusieurs workspaces
+> [!NOTE]
+> Ici, vous manipulez le registre de modèles du **workspace AML**. Ce lab n'utilise pas un AML Registry partagé entre plusieurs workspaces.
 
 ### 3. Alerte Azure Monitor (15 min)
 
-Repere d'abord ton App Insights (suffixe via `lab/env/naming.env`) :
+Repérez d'abord votre instance Application Insights (le suffixe provient de `lab/env/naming.env`) :
 
 ```bash
 source lab/env/partie2.env
-az resource list --resource-group "$AML_RESOURCE_GROUP_DEV" \
+az resource list \
+  --resource-group "$AML_RESOURCE_GROUP_DEV" \
   --resource-type Microsoft.Insights/components \
   --query "[0].name" -o tsv
 ```
 
-La commande ci-dessus permet de recuperer le nom de l'instance App Insights.
+Cette commande retourne le nom de l'instance Application Insights (ex. `appi-mlopslab-sebs-dev`).
 
-Puis suivre le chemin dans le portail : `Portal > App Insights > (nom retourne ci-dessus, par ex. appi-mlopslab-<suffix>-dev) > Monitoring > Alerts > Create > New Alert Rule`.
+Suivez ensuite ce chemin dans le portail : **Portal → App Insights → (le nom retourné ci-dessus) → Monitoring → Alerts → Create → New Alert Rule**.
 
-Dans le portail, le signal peut apparaitre sous le libelle lisible `Failed requests`
-(equivalent au nom technique `requests/failed`).
+Dans le portail, le signal apparaît sous le libellé `Failed requests` (équivalent au nom technique `requests/failed`).
 
-Configuration recommandee pour le lab:
-- Signal name : `Failed requests`
-- Threshold type : `Static`
-- Aggregation type : `Count`
-- Operator : `Greater than`
-- Unit : `Count`
-- Threshold : `5`
-- Check every : `1 minute`
-- Lookback period : `5 minutes`
-- Alert rule name : `alert-failed-requests-<appi-name>`
-- Action group : email (voir ci-dessous)
+Configuration recommandée pour le lab :
+
+| Champ | Valeur |
+|---|---|
+| Signal name | `Failed requests` |
+| Threshold type | `Static` |
+| Aggregation type | `Count` |
+| Operator | `Greater than` |
+| Unit | `Count` |
+| Threshold | `5` |
+| Check every | `1 minute` |
+| Lookback period | `5 minutes` |
+| Alert rule name | `alert-failed-requests-<appi-name>` |
+| Action group | email (voir ci-dessous) |
 
 > [!INFO]
-> - Azure reevalue toutes les `1 minute`
-> - en regardant les `5 dernieres minutes`
-> - et declenche si plus de `5` requetes ont echoue sur cette fenetre
+> Lecture de la règle : Azure réévalue toutes les `1 minute`, en regardant les `5 dernières minutes`, et déclenche si plus de `5` requêtes ont échoué sur cette fenêtre.
 
-#### 3.1 Creer l'Action Group et l'attacher a l'alerte
+#### 3.1 Créer l'Action Group et l'attacher à l'alerte
 
-Sans Action Group, l'alerte se declenche mais **personne n'est notifie**. Chaque etudiant utilise **son propre email** :
+Sans Action Group, l'alerte se déclenche mais **personne n'est notifié**. Chaque étudiant utilise **son propre email** :
 
 ```bash
 source lab/env/partie2.env
@@ -130,34 +135,35 @@ az monitor metrics alert update \
   --add-action "$AG_ID"
 ```
 
-Verifier que l'action group est bien rattache :
+Vérifiez que l'Action Group est bien rattaché :
 
 ```bash
-az resource show -g "$AML_RESOURCE_GROUP_DEV" \
+az resource show \
+  -g "$AML_RESOURCE_GROUP_DEV" \
   --resource-type "Microsoft.Insights/metricAlerts" \
   -n "$ALERT_NAME" \
   --api-version 2024-03-01-preview \
   --query "properties.actions"
 ```
 
-Tu dois voir ton `ag-lab-email-${LAB_SUFFIX}` dans la sortie.
+Vous devez voir votre `ag-lab-email-${LAB_SUFFIX}` dans la sortie.
 
 > [!IMPORTANT]
-> Si tu obtiens `InvalidApiVersionParameter` avec une longue liste d'api-versions, c'est **tres probablement** que `$AML_RESOURCE_GROUP_DEV` ou `$ALERT_NAME` est vide dans ton shell (URL malformee avec `resourcegroups//metricAlerts/`). Verifier avec :
+> Si vous obtenez `InvalidApiVersionParameter` avec une longue liste d'api-versions, c'est **très probablement** que `$AML_RESOURCE_GROUP_DEV` ou `$ALERT_NAME` est vide dans votre shell (URL malformée avec `resourcegroups//metricAlerts/`). Vérifiez avec :
 > ```bash
 > echo "RG=$AML_RESOURCE_GROUP_DEV  ALERT=$ALERT_NAME"
 > ```
-> Si l'un est vide, re-sourcer l'environnement : `source lab/env/partie2.env` et re-exporter `ALERT_NAME`.
+> Si l'une des variables est vide, re-sourcez l'environnement : `source lab/env/partie2.env` et redéfinissez `ALERT_NAME`.
 
-Alternative via le portail : `Portal > Monitor > Alert rules > <nom de l'alerte> > Actions`.
+Alternative via le portail : **Portal → Monitor → Alert rules → `<nom de l'alerte>` → Actions**.
 
 > [!WARNING]
 > - le premier email Azure Monitor tombe souvent dans les **spams**
-> - `short-name` est limite a 12 caracteres (d'ou le `${LAB_SUFFIX:0:6}`)
+> - `short-name` est limité à 12 caractères (d'où le `${LAB_SUFFIX:0:6}`)
 
-#### 3.2 Tester le declenchement
+#### 3.2 Tester le déclenchement
 
-Le script `generate-drift.py` n'emet que des `200` : il ne declenche **pas** l'alerte. Pour la tester, il faut forcer des erreurs `500` avec un payload invalide :
+Le script `generate-drift.py` n'émet que des `200` : il ne déclenche **pas** l'alerte. Pour tester cette dernière, forcez des erreurs `500` avec un payload invalide :
 
 ```bash
 ENDPOINT=$(kubectl get svc iris-classifier-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
@@ -167,43 +173,54 @@ for i in $(seq 1 10); do
 done
 ```
 
-Attendre 2 a 5 minutes : l'email d'alerte doit arriver (verifier les spams).
+Attendez 2 à 5 minutes : l'email d'alerte doit arriver (**vérifiez les spams**).
 
-### 4. Simulation drift
-Précondition:
-- le workflow `CD — Deploy to Dev` du Jour 3 doit avoir deploye l'application sur AKS
-- `kubectl get svc iris-classifier-svc` doit retourner une `EXTERNAL-IP`
-- l'application AKS doit avoir ete redeployee avec l'instrumentation App Insights a jour
+### 4. Simulation de drift (15 min)
+
+> [!IMPORTANT]
+> **Préconditions** :
+> - le workflow `CD — Deploy to Dev` de la Partie 3 doit avoir déployé l'application sur AKS
+> - `kubectl get svc iris-classifier-svc` doit retourner une `EXTERNAL-IP`
+> - l'application AKS doit avoir été redéployée avec l'instrumentation App Insights à jour
+
+Le script `generate-drift.py` envoie deux types de trafic : des requêtes « normales » (distribution Iris typique) et des requêtes « driftées » (valeurs hors distribution).
 
 ```bash
 ENDPOINT=$(kubectl get svc iris-classifier-svc -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 
-# Trafic normal
-uv run python scripts/generate-drift.py --endpoint http://$ENDPOINT/score --n_normal 50 --n_drifted 0
+# 1) Trafic normal : 50 requetes representatives
+uv run python scripts/generate-drift.py \
+  --endpoint http://$ENDPOINT/score \
+  --n_normal 50 --n_drifted 0
 
 # Observer App Insights > Live Metrics pendant l'envoi
 
-# Trafic drifte
-uv run python scripts/generate-drift.py --endpoint http://$ENDPOINT/score --n_normal 10 --n_drifted 40
+# 2) Trafic drifte : 10 normales + 40 avec valeurs hors distribution
+uv run python scripts/generate-drift.py \
+  --endpoint http://$ENDPOINT/score \
+  --n_normal 10 --n_drifted 40
 
 # Observer les reponses anormales dans App Insights > Requests
 ```
 
-Ce qu'il faut bien comprendre:
-- ici, le "drift" est un drift **metier** sur les donnees d'entree
-- cela ne signifie pas forcement que l'API doit renvoyer des erreurs HTTP
-- dans ce lab, beaucoup de requetes driftes repondent quand meme en `200`
-- App Insights sert donc surtout a observer le trafic, les temps de reponse et les eventuelles erreurs techniques
-- le drift se voit plutot dans le contenu des predictions que dans un code HTTP `500`
+> [!NOTE]
+> **À bien comprendre** :
+> - ici, le « drift » est un drift **métier** sur les données d'entrée
+> - cela ne signifie pas forcément que l'API renvoie des erreurs HTTP
+> - beaucoup de requêtes driftées répondent quand même en `200`
+> - App Insights sert surtout à observer le trafic, les temps de réponse et les erreurs techniques
+> - le drift métier se voit plutôt dans le contenu des prédictions que dans un code HTTP `500`
 
 ### 5. Observer App Insights avec KQL (15 min)
-Dans le portail Azure:
-- ouvrir ton App Insights (nom recupere plus haut, ex. `appi-mlopslab-<suffix>-dev`)
-- cliquer sur `Logs`
-- cela ouvre generalement `Query Hub`
-- coller ensuite les requetes KQL ci-dessous puis cliquer sur `Run`
 
-Requete 1 - voir les requetes recentes:
+Dans le portail Azure :
+- ouvrez votre Application Insights (nom récupéré plus haut, ex. `appi-mlopslab-<suffix>-dev`)
+- cliquez sur **Logs**
+- cela ouvre le **Query Hub**
+- collez les requêtes KQL ci-dessous puis cliquez sur **Run**
+
+#### Requête 1 — voir les requêtes récentes
+
 ```kusto
 requests
 | where timestamp > ago(30m)
@@ -211,21 +228,20 @@ requests
 | take 20
 ```
 
-Attendu:
-- des lignes recentes correspondant aux appels sur `/score`
+Attendu : des lignes récentes correspondant aux appels sur `/score`.
 
-Requete 2 - resumer succes / codes HTTP:
+#### Requête 2 — résumer succès / codes HTTP
 ```kusto
 requests
 | where timestamp > ago(30m)
 | summarize count() by success, resultCode
 ```
 
-Attendu:
+Attendu :
 - majoritairement `success=true`
 - souvent `resultCode=200`
 
-Requete 3 - volume de trafic dans le temps:
+#### Requête 3 — volume de trafic dans le temps
 ```kusto
 requests
 | where timestamp > ago(30m)
@@ -233,10 +249,9 @@ requests
 | order by timestamp desc
 ```
 
-Attendu:
-- une hausse du nombre de requetes apres l'execution de `generate-drift.py`
+Attendu : une hausse du nombre de requêtes après l'exécution de `generate-drift.py`.
 
-Requete 4 - traces recentes si besoin de debug:
+#### Requête 4 — traces récentes (debug)
 ```kusto
 traces
 | where timestamp > ago(30m)
@@ -244,22 +259,18 @@ traces
 | take 20
 ```
 
-Interpretation:
-- si `requests` remonte bien, la chaine `AKS -> App Insights` fonctionne
-- si les resultats restent en `200`, cela ne veut pas dire qu'il n'y a pas de drift
-- cela veut simplement dire que le drift ne casse pas techniquement l'API
-- pour aller plus loin sur le drift metier, il faudrait aussi analyser les predictions et leur distribution
+Interprétation :
+- si `requests` remonte bien, la chaîne `AKS → App Insights` fonctionne
+- si les résultats restent en `200`, cela ne signifie pas qu'il n'y a pas de drift : cela veut simplement dire que le drift ne casse pas techniquement l'API
+- pour aller plus loin sur le drift métier, il faudrait analyser les prédictions et leur distribution
 
-Si `EXTERNAL-IP` est vide:
-- attendre encore un peu que le Load Balancer Azure soit provisionne
-- ou revenir au Jour 3 pour verifier le workflow CD dev
+> [!WARNING]
+> **Dépannage** :
+> - si `EXTERNAL-IP` est vide : attendez que le Load Balancer Azure soit provisionné, ou revenez à la Partie 3 pour vérifier le workflow CD `dev`
+> - si vous ne voyez toujours pas de requêtes dans App Insights : vérifiez que `CD — Deploy to Dev` a bien été relancé après mise à jour de l'instrumentation, puis attendez 1 à 3 minutes de propagation
 
-Si tu ne vois toujours pas de requetes dans ton App Insights :
-- verifier que le `CD — Deploy to Dev` a bien ete relance apres mise a jour de l'instrumentation
-- attendre 1 a 3 minutes de propagation dans App Insights
-
-## Checkpoint J4
-- [ ] 2 runs compares dans AML Studio
-- [ ] Versions modele visibles dans le workspace AML
-- [ ] Alerte Monitor configuree
-- [ ] Drift simule et logs observes dans App Insights
+## Checkpoint Partie 4
+- [ ] 2 runs comparés dans AML Studio
+- [ ] Versions de modèle visibles dans le workspace AML
+- [ ] Alerte Azure Monitor configurée avec Action Group
+- [ ] Drift simulé et logs observés dans App Insights

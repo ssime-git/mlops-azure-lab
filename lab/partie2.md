@@ -1,32 +1,30 @@
-# Jour 2 — Infrastructure as Code & Environnements
+# Partie 2 — Infrastructure as Code & Environnements
 
 ## Objectifs
-- Demarrer avec Bicep pour comprendre l'IaC Azure-native
-- Basculer sur Terraform pour la gestion operationnelle de dev/prod
-- Comprendre la separation dev/prod
-- Comparer Bicep vs Terraform sur une meme architecture
+- Démarrer avec Bicep pour comprendre l'IaC Azure-native
+- Basculer sur Terraform pour la gestion opérationnelle de `dev`/`prod`
+- Comprendre la séparation `dev`/`prod`
+- Comparer Bicep et Terraform sur une même architecture
 
-## Pourquoi ce jour existe
+## Pourquoi cette partie existe
 
-Jusqu'ici, on a surtout manipule Azure "a la main" ou via quelques scripts.
-Le but du Jour 2 est de passer a une logique **Infrastructure as Code (IaC)**:
-- l'infrastructure est decrite dans des fichiers
-- ces fichiers peuvent etre relus, versionnes et revus dans Git
-- on peut recreer un environnement de maniere plus fiable
-- on reduit les ecarts entre ce qui est documente et ce qui existe vraiment dans Azure
+Jusqu'ici, vous avez manipulé Azure « à la main » ou via quelques scripts. Le but de la Partie 2 est de passer à une logique **Infrastructure as Code (IaC)** :
+- l'infrastructure est décrite dans des fichiers
+- ces fichiers sont relus, versionnés et revus dans Git
+- un environnement peut être recréé de manière fiable
+- les écarts entre la documentation et l'état réel dans Azure diminuent
 
-En pratique, on va creer la meme famille de ressources avec deux approches:
+En pratique, vous allez créer la même famille de ressources avec deux approches :
 - **Bicep** pour comprendre la logique Azure-native
-- **Terraform** pour la gestion operationnelle de la suite du lab
+- **Terraform** pour la gestion opérationnelle de la suite du lab
 
 ## Bicep vs Terraform en clair
 
 ### Bicep
 
-Bicep est le langage IaC natif de l'ecosysteme Azure.
-On decrit des ressources Azure, puis Azure Resource Manager se charge du deploiement.
+Bicep est le langage IaC natif de l'écosystème Azure. Vous décrivez des ressources Azure, puis Azure Resource Manager se charge du déploiement.
 
-Schema mental:
+Schéma mental :
 
 ```mermaid
 graph LR
@@ -35,20 +33,19 @@ graph LR
     C --> D["creation des ressources Azure"]
 ```
 
-Ce que Bicep fait bien dans ce lab:
-- montrer comment Azure pense ses ressources et leurs dependances
-- decrire une infra Azure de maniere lisible
-- rester tres proche des concepts natifs Azure
+Ce que Bicep apporte dans ce lab :
+- montrer comment Azure modélise ses ressources et leurs dépendances
+- décrire une infra Azure de manière lisible
+- rester très proche des concepts natifs Azure
 
 ### Terraform
 
-Terraform est un outil IaC multi-cloud et multi-providers.
-Il conserve un **state** qui represente l'infrastructure qu'il pense gerer, puis compare:
-- ce qui est decrit dans le code
-- ce qui est deja dans le state
-- ce qu'il faut creer, modifier ou detruire
+Terraform est un outil IaC multi-cloud et multi-providers. Il conserve un **state** qui représente l'infrastructure qu'il pense gérer, puis compare :
+- ce qui est décrit dans le code
+- ce qui est déjà dans le state
+- ce qu'il faut créer, modifier ou détruire
 
-Schema mental:
+Schéma mental :
 
 ```mermaid
 graph LR
@@ -58,12 +55,12 @@ graph LR
     D --> E["ressources Azure"]
 ```
 
-Ce que Terraform fait dans ce lab:
+Ce que Terraform apporte dans ce lab :
 
-- separer clairement `dev` et `prod`
+- séparer clairement `dev` et `prod`
 - garder un state distant partageable
 - rendre les changements plus explicites via `plan`
-- s'integrer facilement dans une logique d'exploitation et de CI/CD
+- s'intégrer facilement dans une logique d'exploitation et de CI/CD
 
 ### Comparaison simple
 
@@ -77,172 +74,172 @@ flowchart LR
     F --> C
 ```
 
-En résumé:
+En résumé :
 
-- **Bicep** = excellent pour comprendre et decrire Azure de facon native
-- **Terraform** = plus adapte ici pour gérer des environnements durables et répétables
+- **Bicep** : excellent pour comprendre et décrire Azure de façon native
+- **Terraform** : plus adapté ici pour gérer des environnements durables et reproductibles
 
-## Ce qu'on va conserver pour la suite
+## Ce qui est conservé pour la suite
 
-Pour la suite du lab, on **conserve Terraform comme source principale d'infrastructure**.
+Pour la suite du lab, **Terraform est la source principale d'infrastructure**.
 
-Pourquoi:
+Pourquoi :
+- gérer `dev` et `prod` avec la même structure
+- disposer d'un `terraform plan` lisible avant chaque changement
+- utiliser un backend distant pour garder un state propre et partagé
+- s'appuyer sur un outillage courant en contexte plateforme / exploitation
 
-- on veut gérer `dev` et `prod` avec la même structure
-- on veut un `terraform plan` lisible avant les changements
-- on veut un backend distant pour garder un state propre
-- on veut un outillage courant en contexte plateforme / exploitation
-
-Ce qu'on garde exactement:
-
+Ce qui est conservé précisément :
 - le dossier `infrastructure/terraform/`
 - les fichiers `environments/dev.tfvars` et `environments/prod.tfvars`
 - le backend distant `tfstate`
 
-Ce qu'on ne garde pas comme chemin principal:
-- la demo Bicep du debut de J2
+Ce qui n'est pas conservé comme chemin principal :
+- la démo Bicep du début de la Partie 2 (utile pédagogiquement mais pas retenue comme socle pour les Parties 3/4/5)
 
-Pourquoi:
-
-- elle sert surtout a comprendre le modèle Azure-native
-- elle est utile pedagogiquement, mais ce n'est pas le socle retenu pour J3/J4/J5
-
-Vue d'ensemble:
+Vue d'ensemble :
 
 ```text
-Partie 2:
-  Bicep -> comprendre l'approche Azure-native
-  Terraform -> mettre en place l'infra retenue
+Partie 2 :
+  Bicep      -> comprendre l'approche Azure-native
+  Terraform  -> mettre en place l'infra retenue
 
-Parties 3/4/5:
-  Terraform -> faire evoluer et relire l'infra des environnements
-  AML / CI-CD / deploiement -> s'appuyer sur cette infra
+Parties 3/4/5 :
+  Terraform              -> faire évoluer et relire l'infra des environnements
+  AML / CI-CD / serving  -> s'appuyer sur cette infra
 ```
 
 ## Atelier
 
-### 1. Demo Bicep rapide (15 min - si contributeur Azure seulement)
+### 1. Démo Bicep rapide (15 min — si rôle `Contributor` sur la subscription)
+
+Lancez un déploiement Bicep minimal pour voir comment Azure Resource Manager interprète un fichier `.bicep`, sans impacter l'infrastructure Terraform du lab :
 
 ```bash
-# az login
+# Assurez-vous d'etre connecte : az login
 bash scripts/deploy-bicep-demo.sh rg-mlopslab-bicep-demo westeurope
 ```
 
-Objectif: voir le flux Bicep en mode **lite** (coût + temps reduits) sans impacter les environnements Terraform.
+Objectif : voir le flux Bicep en mode **lite** (coût et temps réduits).
 
-Ce que cette demo montre:
+Ce que cette démo illustre :
+- un déploiement déclaratif Azure-native
+- la notion de ressources et de dépendances
+- un cycle rapide pour comprendre la mécanique IaC sans installer toute la structure Terraform
 
-- un deploiement declaratif Azure-native
-- la notion de ressources + dependances
-- un cycle rapide pour comprendre la mecanique IaC sans installer toute la structure Terraform
-
-Option avancee (full Bicep avec garde-fous):
+Option avancée (Bicep complet avec garde-fous) :
 
 ```bash
-# Garde-fous integres: project_name unique obligatoire + RG reservees bloquees
+# Garde-fous integres : project_name unique obligatoire + RG reserves bloques
 bash scripts/deploy-bicep-full.sh dev mlopsteam01 rg-mlopsteam01-dev westeurope
 ```
 
-### 2. Preparer le backend Terraform (10 min)
- 
- ```bash
- # Source les variables d'environnement pour le backend Terraform
- source lab/env/partie2.env
+### 2. Préparer le backend Terraform (10 min)
 
- # Crée le compte de stockage Azure pour stocker l'état Terraform à distance
- az storage account create --name "$TFSTATE_SA" --resource-group "$TFSTATE_RG" --sku Standard_LRS
+Terraform stocke par défaut son state (qui décrit les ressources qu'il gère) dans un fichier local `terraform.tfstate`. Pour un usage d'équipe, il faut le déplacer sur un **backend distant**. Vous allez créer un Storage Account Azure qui hébergera ce state :
 
- # Crée le conteneur dans le compte de stockage pour isoler les fichiers d'état
- az storage container create --name "$TFSTATE_CONTAINER" --account-name "$TFSTATE_SA"
- ```
- 
- Ce que cette etape fait:
-- reutilise le resource group `tfstate` cree pendant le setup
- - cree un compte de stockage Azure
- - cree un conteneur `tfstate`
- - permet a Terraform de stocker son state a distance plutot qu'en local
-
- Le fichier [lab/env/partie2.env](/home/seb/project/azure_lab/mlops-azure-lab/lab/env/partie2.env) centralise:
- - la region du backend
- - le nom du resource group `tfstate`
- - le nom du conteneur
- - la convention de nommage du storage account
-
- Le fichier [lab/env/naming.env](/home/seb/project/azure_lab/mlops-azure-lab/lab/env/naming.env) centralise:
- - le suffixe partage a reutiliser pour les noms potentiellement en conflit dans la subscription
-
- Pourquoi on le versionne:
- - il ne contient aucun secret
-- tous les participants partent de la meme base
-- on garde les commandes visibles, sans recopier des valeurs en dur dans tout le lab
-
-Pourquoi c'est important:
-- eviter les states locaux perdus ou divergents
-- faciliter le travail en equipe
-- preparer un fonctionnement proche d'un vrai projet
-
-### 3. Terraform dev (25 min)
 ```bash
-# Source les variables d'environnement pour le backend Terraform
+# 1) Charger les variables d'environnement du backend (TFSTATE_RG, TFSTATE_SA, TFSTATE_CONTAINER, LAB_*)
 source lab/env/partie2.env
 
-# Accéder au répertoire Terraform
+# 2) Creer le compte de stockage Azure (Standard_LRS suffit pour un lab)
+az storage account create \
+  --name "$TFSTATE_SA" \
+  --resource-group "$TFSTATE_RG" \
+  --sku Standard_LRS
+
+# 3) Creer le conteneur qui portera le fichier d'etat
+az storage container create \
+  --name "$TFSTATE_CONTAINER" \
+  --account-name "$TFSTATE_SA"
+```
+
+Ce que cette étape fait :
+- réutilise le resource group `tfstate` créé pendant la Partie 0
+- crée un Storage Account Azure
+- crée un conteneur `tfstate`
+- permet à Terraform de stocker son state à distance plutôt qu'en local
+
+> [!INFO]
+> Les fichiers `lab/env/partie2.env` et `lab/env/naming.env` centralisent :
+> - la région et le nom du resource group `tfstate`
+> - le nom du conteneur et la convention de nommage du storage account
+> - le **suffixe partagé** (`LAB_SUFFIX`) à réutiliser pour tous les noms susceptibles d'entrer en conflit dans la subscription
+>
+> Ces fichiers sont versionnés : ils ne contiennent **aucun secret**. Tous les participants partent ainsi de la même base.
+
+Pourquoi un backend distant est important :
+- éviter les states locaux perdus ou divergents
+- faciliter le travail en équipe
+- préparer un fonctionnement proche d'un vrai projet
+
+### 3. Déployer l'environnement `dev` avec Terraform (25 min)
+
+Vous allez maintenant initialiser Terraform sur le backend distant, générer un plan, puis créer l'infrastructure `dev`.
+
+```bash
+# 1) Charger les variables d'environnement
+source lab/env/partie2.env
+
+# 2) Se placer dans le dossier Terraform
 cd infrastructure/terraform
 
-# Initialiser Terraform avec la configuration du backend distant
-# Cela configure la connexion au compte de stockage Azure pour stocker l'état
+# 3) Initialiser Terraform + configurer le backend distant (premiere fois)
 terraform init \
   -backend-config="resource_group_name=$TFSTATE_RG" \
   -backend-config="storage_account_name=$TFSTATE_SA" \
   -backend-config="container_name=$TFSTATE_CONTAINER" \
   -backend-config="key=mlopslab-dev.tfstate"
 
-# SEULEMENT si déja initialisé, utiliser -reconfigure pour forcer la reconfiguration
+# 3bis) UNIQUEMENT si Terraform a deja ete initialise avec une autre config,
+#       utiliser -reconfigure pour forcer le changement de backend
 terraform init -reconfigure \
   -backend-config="resource_group_name=$TFSTATE_RG" \
   -backend-config="storage_account_name=$TFSTATE_SA" \
   -backend-config="container_name=$TFSTATE_CONTAINER" \
   -backend-config="key=mlopslab-dev.tfstate"
 
-# Afficher le plan Terraform pour l'environnement dev
-# Cela montre quelles ressources seront créées, modifiées ou supprimées
-terraform plan -var-file="environments/dev.tfvars" -var="project_name=$LAB_PROJECT_NAME"
+# 4) Afficher le plan (diff entre le state et le code) sans rien modifier
+terraform plan \
+  -var-file="environments/dev.tfvars" \
+  -var="project_name=$LAB_PROJECT_NAME"
 
-# Appliquer les changements Terraform pour créer l'infrastructure dev
-# Cela crée réellement les ressources dans Azure
-terraform apply -var-file="environments/dev.tfvars" -var="project_name=$LAB_PROJECT_NAME"
+# 5) Appliquer le plan : cree reellement les ressources dans Azure
+terraform apply \
+  -var-file="environments/dev.tfvars" \
+  -var="project_name=$LAB_PROJECT_NAME"
 ```
 
-Ce que cette etape fait:
-- `init` prepare le provider Azure et connecte le backend distant
-- `plan` montre ce que Terraform va creer
-- `apply` cree les ressources du lab pour `dev`
+Ce que fait chaque commande :
+- `terraform init` : prépare le provider Azure et connecte le backend distant
+- `terraform plan` : montre ce que Terraform va créer / modifier / détruire
+- `terraform apply` : exécute le plan et crée les ressources du lab pour `dev`
 
-Ressources principales creees:
+Ressources principales créées :
 - Resource Group
 - Storage Account
 - Key Vault
-- ACR
-- Log Analytics + Application Insights
-- AML Workspace
-- AKS
+- Azure Container Registry (ACR)
+- Log Analytics Workspace + Application Insights
+- Azure ML Workspace
+- Azure Kubernetes Service (AKS)
 
-Recommandation lab:
-- Faire **au minimum** l'environnement `dev`
-- Prevoir un `terraform destroy -var-file="environments/dev.tfvars"` en fin de session si le cluster ne sert plus
-- Ne pas laisser AKS tourner inutilement pendant la nuit ou plusieurs jours
-
-Point coût:
-- `dev` cree un cluster AKS avec `1 x Standard_D2s_v3`
-- C'est acceptable pour un lab court, mais ce n'est pas une infra "gratuite"
+> [!WARNING]
+> **Point coût** : `dev` crée un cluster AKS avec `1 x Standard_D2s_v3`. Acceptable pour un lab court, mais pas gratuit.
+>
+> Recommandations :
+> - déployer **au minimum** l'environnement `dev`
+> - prévoir un `terraform destroy -var-file="environments/dev.tfvars"` en fin de session si le cluster ne sert plus
+> - ne pas laisser AKS tourner inutilement pendant la nuit ou plusieurs jours
 
 ### 3bis. Attribuer les rôles Azure à l'app GitHub (5 min)
-Une fois les resource groups du lab créés, attribuer les rôles Azure à l'app `github-mlops-lab`.
+
+Une fois les resource groups du lab créés, attribuez les rôles Azure à votre application `$GITHUB_APP_NAME` (Service Principal utilisé plus tard par les workflows CI/CD via OIDC).
 
 ```bash
-# 1) Sourcer les variables et résoudre l'identité de l'app GitHub
+# 1) Sourcer les variables et resoudre l'identite de l'app GitHub
 source lab/env/partie2.env
-PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
+PRINCIPAL_ID=$(az ad sp list --display-name "$GITHUB_APP_NAME" --query "[0].id" -o tsv)
 SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
 # 2) Sanity check (les 3 variables doivent être non vides)
@@ -270,11 +267,15 @@ az role assignment create \
   --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AML_RESOURCE_GROUP_DEV"
 ```
 
-> **Pourquoi `--assignee-principal-type ServicePrincipal`** : évite l'erreur `PrincipalNotFound` due au délai de réplication Entra si la SP (Un Service Principal est l’identité d’une App Registration) vient d'être créée.
->
-> **Si tu ouvres un nouveau shell** : relance l'étape 1 (les variables ne persistent pas).
+> [!TIP]
+> - **`--assignee-principal-type ServicePrincipal`** évite l'erreur `PrincipalNotFound` due au délai de réplication Entra quand la SP vient d'être créée. Un Service Principal est l'identité associée à une App Registration.
+> - Si vous ouvrez un **nouveau shell**, relancez l'étape 1 : les variables `$PRINCIPAL_ID`, `$SUBSCRIPTION_ID`, etc. ne persistent pas.
 
-Pour lancer l'étape `prod` (NE PAS FAIRE ICI), ajouter en plus :
+<br>
+<details>
+<summary>Environnement prod (pour information)</summary>
+
+Pour l'environnement `prod` (**ne pas lancer ici**), ajoutez en plus :
 
 ```bash
 az role assignment create \
@@ -289,37 +290,39 @@ az role assignment create \
   --role "User Access Administrator" \
   --scope "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AML_RESOURCE_GROUP_PROD"
 ```
+</details>
+<br>
 
-Pourquoi ce rôle :
-- Terraform/Bicep crée l'assignation `AcrPull` entre AKS et ACR
-- sans `User Access Administrator` ou `Owner`, la création de `roleAssignments` échoue
-- le scope reste limité aux resource groups du lab
+Pourquoi `User Access Administrator` :
+- Terraform (et Bicep) crée l'assignation `AcrPull` entre AKS et ACR
+- sans `User Access Administrator` (ou `Owner`), la création de `roleAssignments` échoue
+- le scope reste strictement limité aux resource groups du lab
 
-Verification rapide apres attribution des rôles :
+Vérification rapide après attribution :
 
 ```bash
-PRINCIPAL_ID=$(az ad sp list --display-name "github-mlops-lab" --query "[0].id" -o tsv)
+source lab/env/partie2.env
+PRINCIPAL_ID=$(az ad sp list --display-name "$GITHUB_APP_NAME" --query "[0].id" -o tsv)
 az role assignment list --assignee "$PRINCIPAL_ID" --query "[].{role:roleDefinitionName,scope:scope}" -o table
 ```
 
-Tu dois voir au minimum :
+Vous devez voir au minimum :
 - `Contributor` sur `$TFSTATE_RG`
 - `Contributor` sur `$AML_RESOURCE_GROUP_DEV`
 - `User Access Administrator` sur `$AML_RESOURCE_GROUP_DEV`
 
-Si l'environnement `prod` est aussi créé :
+Si l'environnement `prod` est également créé :
 - `Contributor` sur `$AML_RESOURCE_GROUP_PROD`
 - `User Access Administrator` sur `$AML_RESOURCE_GROUP_PROD`
 
-### 4. Terraform prod (optionnel, 10 min)
- > **Important — optionnel pour raison de cout**
- >
- > Cette etape est **optionnelle**. Elle existe pour illustrer la separation `dev` / `prod`,
-> mais elle cree une infra sensiblement plus chere que `dev`.
+### 4. Terraform `prod` (optionnel, 10 min)
+
+> [!WARNING]
+> **Étape optionnelle, impact coût.**
 >
-> La configuration actuelle `prod` cree un cluster AKS avec `2 x Standard_D4s_v3`.
-> Pour un lab, **ne lancer cette etape que si c'est explicitement demande**.
-> Sinon, rester sur `dev` suffit pour valider les objectifs du Jour 2.
+> Elle illustre la séparation `dev` / `prod` mais crée une infra sensiblement plus chère que `dev`. La configuration actuelle de `prod` crée un cluster AKS avec `2 x Standard_D4s_v3`.
+>
+> **Ne lancez cette étape que si c'est explicitement demandé.** Sinon, rester sur `dev` suffit pour valider les objectifs de la Partie 2.
 
 ```bash
 source lab/env/partie2.env
@@ -334,23 +337,23 @@ terraform plan -var-file="environments/prod.tfvars" -var="project_name=$LAB_PROJ
 terraform apply -var-file="environments/prod.tfvars" -var="project_name=$LAB_PROJECT_NAME"
 ```
 
-Ce que cette etape montre pedagogiquement:
-- la meme base d'infrastructure
-- mais avec un fichier de variables different
-- donc un environnement separe avec son propre state
+Ce que cette étape illustre pédagogiquement :
+- la même base d'infrastructure
+- avec un fichier de variables différent
+- donc un environnement séparé avec son propre state
 
-Si tu lances quand meme `prod` pour la demo:
-- verifier le `terraform plan` avant `apply`
-- detruire l'environnement a la fin avec `terraform destroy -var-file="environments/prod.tfvars"`
-- ne pas considerer cette configuration comme une vraie prod
+Si vous lancez `prod` pour la démo :
+- vérifiez le `terraform plan` avant `apply`
+- détruisez l'environnement à la fin : `terraform destroy -var-file="environments/prod.tfvars"`
+- ne considérez pas cette configuration comme une vraie prod
 
-Si tu veux une "prod low cost" uniquement pour tester la commande:
-- dupliquer `environments/prod.tfvars` dans un fichier temporaire, par exemple `environments/prod-lowcost.tfvars`
-- reduire temporairement la taille a `aks_node_count = 1` et `aks_vm_size = "Standard_D2s_v3"`
-- lancer `plan/apply` avec ce fichier temporaire
-- detruire juste apres le test
+**Alternative « prod low cost »** (uniquement pour tester la commande) :
+- dupliquez `environments/prod.tfvars` dans un fichier temporaire, par exemple `environments/prod-lowcost.tfvars`
+- réduisez la taille à `aks_node_count = 1` et `aks_vm_size = "Standard_D2s_v3"`
+- lancez `plan` / `apply` avec ce fichier temporaire
+- détruisez juste après le test
 
-Exemple:
+Exemple :
 ```bash
 cp environments/prod.tfvars environments/prod-lowcost.tfvars
 # puis editer prod-lowcost.tfvars:
@@ -362,15 +365,15 @@ terraform apply -var-file="environments/prod-lowcost.tfvars"
 terraform destroy -var-file="environments/prod-lowcost.tfvars"
 ```
 
-Pour une vraie production:
-- dimensionner AKS selon la charge reelle, pas "au plus petit"
-- utiliser au minimum plusieurs nœuds et une capacite compatible avec la haute disponibilite
-- definir des exigences claires sur disponibilite, supervision, sauvegarde, reseau et securite
-- revoir le SKU ACR, les logs, les policies et le dimensionnement avant toute mise en service
+Pour une vraie production :
+- dimensionnez AKS selon la charge réelle, pas « au plus petit »
+- utilisez au minimum plusieurs nœuds et une capacité compatible avec la haute disponibilité
+- définissez des exigences claires sur disponibilité, supervision, sauvegarde, réseau et sécurité
+- revoyez le SKU ACR, les logs, les policies et le dimensionnement avant toute mise en service
 
-### 5. Verification + comparaison (10 min)
+### 5. Vérification et comparaison (10 min)
 
-Verification via Terraform et Azure CLI :
+Vérifiez l'infrastructure via Terraform et Azure CLI :
 
 ```bash
 source lab/env/partie2.env
@@ -394,53 +397,52 @@ Attendu : environ 7 ressources dans `$AML_RESOURCE_GROUP_DEV` :
 - Azure ML Workspace
 - AKS Cluster
 
-Autres checks :
-- **Portail Azure** : ouvrir le RG `$AML_RESOURCE_GROUP_DEV` (valeur exacte dépend de ton `LAB_SUFFIX`) et vérifier visuellement les ressources.
-- **Lecture comparée** : ouvrir `infrastructure/terraform-reference/` pour voir une version simplifiée et comparer les patterns.
+Vérifications complémentaires :
+- **Portail Azure** : ouvrez le RG `$AML_RESOURCE_GROUP_DEV` (valeur exacte dépend de votre `LAB_SUFFIX`) et vérifiez visuellement les ressources.
+- **Lecture comparée** : ouvrez `infrastructure/terraform-reference/` pour voir une version simplifiée et comparer les patterns avec l'implémentation complète.
 
-### 6. Bootstrap AML assets (recommande avant J3, 10 min)
-Une fois l'infrastructure `dev` creee, on peut preparer les assets AML utilises ensuite par les workflows:
+### 6. Bootstrap des assets AML (recommandé avant la Partie 3, 10 min)
+
+Une fois l'infrastructure `dev` créée, préparez les assets AML utilisés ensuite par les workflows :
 - environnement AML `iris-train-env`
 - compute `cpu-cluster`
 - health-check AML simple
 
-Commande à lancer depuis la racine du repo :
+Lancez depuis la racine du dépôt :
 
 ```bash
 source lab/env/partie2.env
 bash scripts/bootstrap-aml.sh dev "$AML_RESOURCE_GROUP_DEV" "$AML_WORKSPACE_DEV" true
 ```
 
-Note:
-- cette commande peut prendre plusieurs minutes, surtout au premier passage
-- la partie la plus lente est souvent le health-check AML, car Azure ML doit preparer le compute, l'environnement et le conteneur avant d'executer le code
-- si le script semble "attendre", ce n'est pas forcement un blocage
+> [!INFO]
+> Cette commande peut prendre plusieurs minutes, surtout au premier passage. La partie la plus lente est généralement le health-check AML : Azure ML doit préparer le compute, l'environnement et le conteneur avant d'exécuter le code. Si le script semble « attendre », ce n'est pas forcément un blocage.
 
-Ce que fait ce script:
-- cree ou met a jour l'environnement AML
-- cree ou met a jour le compute AML
-- verifie l'identite du compute et l'acces `AcrPull` sur l'ACR
-- soumet un petit job AML de verification
+Ce que fait ce script :
+- crée ou met à jour l'environnement AML
+- crée ou met à jour le compute AML
+- vérifie l'identité du compute et l'accès `AcrPull` sur l'ACR
+- soumet un petit job AML de vérification
 
-Pourquoi le lancer ici:
-- a ce moment, `$AML_RESOURCE_GROUP_DEV` et `$AML_WORKSPACE_DEV` existent vraiment
-- on reste coherent avec Terraform comme source de verite pour l'infra
-- on prepare un passage plus fluide vers le Jour 3
+Pourquoi le lancer ici :
+- à ce stade, `$AML_RESOURCE_GROUP_DEV` et `$AML_WORKSPACE_DEV` existent vraiment
+- la cohérence avec Terraform comme source de vérité est préservée
+- le passage vers la Partie 3 sera plus fluide
 
-Important:
-- le script peut etre relance sans danger si besoin
-- pour un repo a jour, le workflow du Jour 3 sait aussi recreer/corriger ces assets si necessaire
-- mais le lancer en fin de Jour 2 permet de verifier AML avant la CI/CD complete
+> [!NOTE]
+> Le script peut être relancé sans danger. Le workflow de la Partie 3 sait aussi recréer ou corriger ces assets si nécessaire, mais les vérifier en fin de Partie 2 permet d'isoler les problèmes AML avant la CI/CD complète.
 
-Questions a savoir expliquer a la fin:
+## Questions de clarification
+
+Avant de passer à la Partie 3, vous devez pouvoir répondre aux questions suivantes :
 - Que fait Bicep dans Azure, sans notion de state Terraform ?
-- A quoi sert le backend `tfstate` ?
-- Pourquoi `dev` et `prod` ont des fichiers de variables differents ?
-- Pourquoi la suite du lab s'appuie sur Terraform plutot que sur la demo Bicep ?
+- À quoi sert le backend `tfstate` ?
+- Pourquoi `dev` et `prod` ont-ils des fichiers de variables différents ?
+- Pourquoi la suite du lab s'appuie sur Terraform plutôt que sur la démo Bicep ?
 
-## Checkpoint J2
+## Checkpoint Partie 2
 - [ ] 7 ressources dans `$AML_RESOURCE_GROUP_DEV`
-- [ ] Terraform state distant configure
+- [ ] Terraform state distant configuré
 - [ ] Outputs Terraform visibles (workspace + AKS + ACR)
-- [ ] Bootstrap AML passe ou compris avant J3
-- [ ] Differences Bicep vs Terraform expliquees
+- [ ] Bootstrap AML passé ou compris avant la Partie 3
+- [ ] Différences Bicep vs Terraform expliquées

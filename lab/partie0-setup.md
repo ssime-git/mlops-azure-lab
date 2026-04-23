@@ -47,13 +47,31 @@ uv pip install -r requirements.txt
 > Au lieu de stocker un mot de passe quelque part, tu crées cette identité et tu lui donnes
 > des permissions sur Azure. Le mot de passe n'existe jamais — c'est le principe d'OIDC.
 
+> [!IMPORTANT]
+> **Chaque apprenant crée sa propre App Registration.** Trois raisons :
+> - les Federated Credentials (étape 3) sont liés à **ton** fork GitHub, pas celui du formateur
+> - le `AZURE_CLIENT_ID` est spécifique à chaque App : partager l'App reviendrait à partager les droits RBAC, ce qui casse l'isolation prévue par `LAB_SUFFIX`
+> - plusieurs apps avec le même `display-name` dans le tenant rendent le portail Entra ID illisible
+>
+> **Convention de nommage** : `github-mlops-lab-<LAB_SUFFIX>` (ex. `github-mlops-lab-seb`). La valeur est déjà exposée dans `lab/env/naming.env` via la variable `$GITHUB_APP_NAME`.
+
 ### 2a. Créer l'App Registration
+
+Récupérez d'abord le nom cible pour votre App :
+
+```bash
+source lab/env/naming.env
+echo "$GITHUB_APP_NAME"
+# Exemple : github-mlops-lab-seb
+```
+
+Puis dans le portail :
 
 1. Aller sur https://portal.azure.com
 2. Barre de recherche en haut → taper **"Microsoft Entra ID"** → cliquer le résultat
 3. Menu gauche → **Manage** → **App registrations** → bouton **New registration**
 4. Remplir :
-   - **Name** : `github-mlops-lab`
+   - **Name** : la valeur retournée par `echo "$GITHUB_APP_NAME"` ci-dessus (ex. `github-mlops-lab-sebs`)
    - **Supported account types** : *Accounts in this organizational directory only*
    - **Redirect URI** : laisser vide
 5. Cliquer **Register**
@@ -81,7 +99,7 @@ az account show --query id -o tsv
   1. Definir un suffixe unique dans `lab/env/naming.env` pour éviter les collisions si plusieurs personnes partagent la meme subscription.
 
  ```bash
- export LAB_SUFFIX="seb"
+ export LAB_SUFFIX="sebs"
  ```
 
   2. Créer **uniquement** le Resource Group du backend Terraform :
@@ -91,7 +109,7 @@ az account show --query id -o tsv
  az group create --name "$TFSTATE_RG" --location "$TFSTATE_LOCATION"
  ```
  
- 3. Les attributions de rôles Azure pour `github-mlops-lab` seront faites dans la partie 2, une fois les resource groups du lab créés.
+ 3. Les attributions de rôles Azure pour votre App Registration (`$GITHUB_APP_NAME`) seront faites dans la Partie 2, une fois les resource groups du lab créés. **Pour information, l'instructeur(-trice) pourra créer en avance l'application `github-mlops-lab` avec les permissions nécessaires.**
 
 ## Étape 3 — Configurer OIDC (Federated Credentials)
 
@@ -128,7 +146,7 @@ C'est le standard industrie depuis 2022. Zéro secret, zéro rotation manuelle.
 
 ### 3a. Accéder aux Federated Credentials
 
-Dans l'App Registration `github-mlops-lab` :
+Dans votre App Registration (`$GITHUB_APP_NAME`, ex. `github-mlops-lab-sebs`) :
 Menu gauche → **Certificates & secrets** → onglet **Federated credentials** → **Add credential**
 
 ### 3b. Créer les 3 credentials (un par un)
@@ -233,8 +251,9 @@ az account show --query "{name:name, state:state}" -o table
 # → state = Enabled
 
 # Test 2 : App Registration visible
-az ad app list --display-name "github-mlops-lab" --query "[].{name:displayName, id:appId}" -o table
-# → 1 ligne affichée
+source lab/env/naming.env
+az ad app list --display-name "$GITHUB_APP_NAME" --query "[].{name:displayName, id:appId}" -o table
+# → 1 ligne affichee
 
 # Test 3 : GitHub Secrets (vérification visuelle seulement)
 # GitHub > Settings > Secrets > vérifier que les 9 secrets apparaissent dans la liste
