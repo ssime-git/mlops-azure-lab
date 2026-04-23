@@ -230,7 +230,7 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 
 ### Plan de la formation
 
-# 2 sessions · 8h au total
+# 5 parties · 8h au total
 
 <div style="display:flex;gap:6px;margin-bottom:16px;">
   <div style="flex:1;height:4px;border-radius:2px;background:var(--orange);"></div>
@@ -243,12 +243,12 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
   <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
     <div style="font-size:0.52em;color:var(--orange);text-transform:uppercase;letter-spacing:0.12em;font-family:'Work Sans';font-weight:700;margin-bottom:6px;">Matin · 4h</div>
     <div style="font-family:'Work Sans';font-weight:700;font-size:0.8em;color:var(--light);margin-bottom:6px;">Fondations CI/CD ML</div>
-    <div style="font-size:0.62em;color:var(--body);line-height:1.6;">Contexte & enjeux<br>Spécificités ML<br>Outils : GH Actions / Azure Pipelines<br>OIDC & sécurité<br>— Démo guidée 1 —</div>
+    <div style="font-size:0.62em;color:var(--body);line-height:1.6;">Partie 1 · Fondations ML<br>Partie 2 · Infra & Environnements<br>Partie 3 · CI/CD & Outils<br>— Démo guidée 1 —</div>
   </div>
   <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:10px;padding:14px 16px;">
     <div style="font-size:0.52em;color:var(--cyan);text-transform:uppercase;letter-spacing:0.12em;font-family:'Work Sans';font-weight:700;margin-bottom:6px;">Après-midi · 4h</div>
     <div style="font-family:'Work Sans';font-weight:700;font-size:0.8em;color:var(--light);margin-bottom:6px;">Serving, Monitoring & Gouvernance</div>
-    <div style="font-size:0.62em;color:var(--body);line-height:1.6;">Modes de serving<br>Monitoring applicatif & ML<br>Registre de modèles & drift<br>Alerting & gouvernance<br>— Démo guidée 2 —</div>
+    <div style="font-size:0.62em;color:var(--body);line-height:1.6;">Partie 3 · Serving (AKS vs AML)<br>Partie 4 · Tracking, Registry & Drift<br>— Démo guidée 2 —<br>Partie 5 · Gouvernance</div>
   </div>
 </div>
 
@@ -265,7 +265,7 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 1 · Partie 1
+### Partie 1 — Fondations
 
 # Pourquoi le CI/CD
 # change avec le ML ?
@@ -357,7 +357,7 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 1 · Partie 2
+### Partie 1 · suite
 
 # Spécificités des
 # pipelines ML
@@ -535,10 +535,89 @@ else:
 
 ---
 
+<!-- _class: transition-lime -->
+<!-- _paginate: false -->
+
+### Partie 2 — Infrastructure
+
+# IaC & Environnements
+
+## Terraform crée la plateforme, le CI/CD l'exploite
+
+---
+
+### Ce que Terraform provisionne
+
+# Un environnement complet en une commande
+
+<div style="display:flex;gap:12px;margin-top:12px;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--orange);margin-bottom:8px;">Compute & Serving</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+      <li><code>azurerm_machine_learning_workspace</code></li>
+      <li><code>azurerm_kubernetes_cluster</code> (AKS)</li>
+      <li><code>azurerm_container_registry</code> (ACR)</li>
+    </ul>
+  </div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:14px 16px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--lime);margin-bottom:8px;">Observabilité & Secrets</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+      <li><code>azurerm_application_insights</code></li>
+      <li><code>azurerm_log_analytics_workspace</code></li>
+      <li><code>azurerm_key_vault</code></li>
+    </ul>
+  </div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:10px;padding:14px 16px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--cyan);margin-bottom:8px;">Automatisations RBAC</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+      <li><code>AcrPull</code> pour AKS → ACR</li>
+      <li><code>AcrPull</code> pour AML → ACR</li>
+      <li>Séparation <code>dev</code> / <code>prod</code> par variable</li>
+    </ul>
+  </div>
+</div>
+
+<div style="margin-top:12px;background:rgba(221,255,69,0.06);border:1px solid rgba(221,255,69,0.2);border-radius:8px;padding:10px 14px;font-size:0.65em;color:var(--body);">
+  Un même <code>main.tf</code> déploie <code>dev</code> et <code>prod</code> — seul le fichier <code>.tfvars</code> change. Le backend remote stocke l'état dans un Storage Account Azure.
+</div>
+
+---
+
+### Pourquoi c'est important pour le CI/CD
+
+# L'infra conditionne tout le reste
+
+<div style="display:flex;gap:14px;margin-top:14px;">
+  <div style="flex:1;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.2);border-radius:10px;padding:14px 16px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--orange);margin-bottom:8px;">Sans IaC</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+      <li>Ressources créées manuellement au portail</li>
+      <li>Différences non tracées entre dev et prod</li>
+      <li>Pas de revue de code sur l'infra</li>
+      <li>Impossible de recréer l'environnement</li>
+    </ul>
+  </div>
+  <div style="flex:1;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px 16px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--green);margin-bottom:8px;">Avec IaC (Terraform)</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+      <li><code>terraform plan</code> montre les changements avant</li>
+      <li>Même code → même infra dev & prod</li>
+      <li>PR review sur chaque changement d'infra</li>
+      <li>Rollback possible via l'historique Git</li>
+    </ul>
+  </div>
+</div>
+
+<div style="margin-top:12px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:10px 14px;font-size:0.65em;color:var(--body);">
+  Pour cette formation, l'environnement <code>dev</code> est <strong>déjà provisionné</strong>. Le code Terraform est dans <code>infrastructure/terraform/</code> — consultable à tout moment.
+</div>
+
+---
+
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 1 · Partie 3
+### Partie 3 — CI/CD
 
 # Outils CI/CD :
 # GitHub Actions & Azure Pipelines
@@ -768,10 +847,10 @@ jobs:
 
 ### Takeaway · Sécurité CI/CD
 
-# À retenir avant l'atelier
+# À retenir avant la démo
 
 <div style="background:linear-gradient(135deg,rgba(255,103,69,0.1),rgba(118,87,255,0.07));border:1px solid var(--orange);border-radius:14px;padding:20px 24px;margin-top:14px;">
-  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.55em;text-transform:uppercase;letter-spacing:0.18em;color:var(--orange);margin-bottom:14px;">Points clés · Session 1 théorie</div>
+  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.55em;text-transform:uppercase;letter-spacing:0.18em;color:var(--orange);margin-bottom:14px;">Points clés · Parties 1-3</div>
   <ul style="margin:0;padding-left:1.2em;color:var(--offwhite);font-size:0.76em;line-height:1.9;">
     <li>La CI ML valide le <strong>code ET l'exécution dans Azure ML</strong></li>
     <li>Le quality gate sur les métriques <strong>bloque la CD si le modèle est insuffisant</strong></li>
@@ -786,7 +865,7 @@ jobs:
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 1 · Démo 1
+### Démo guidée · Parties 1-3
 
 # On passe à la démo
 
@@ -1060,7 +1139,7 @@ curl -X POST "$SCORING_URL" \
 
 ## Reprise dans 15 minutes
 
-### Session 2 : Serving · Monitoring · Gouvernance
+### Parties 3-5 : Serving · Monitoring · Gouvernance
 
 ---
 
@@ -1071,7 +1150,7 @@ curl -X POST "$SCORING_URL" \
 
 <img src="./assets/logos/Liora_Logo_White.svg" style="height:42px;margin-bottom:20px;opacity:0.85;">
 
-### Après-midi · 4h
+### Parties 3-5 · Après-midi
 
 # Serving, Monitoring
 # & Gouvernance
@@ -1080,9 +1159,9 @@ curl -X POST "$SCORING_URL" \
 
 <br>
 
-<span class="tag tag-cyan">AKS vs AML</span>&nbsp;
-<span class="tag tag-lime">MLflow</span>&nbsp;
-<span class="tag tag-violet">Drift &amp; KQL</span>
+<span class="tag tag-cyan">Partie 3 · Serving</span>&nbsp;
+<span class="tag tag-lime">Partie 4 · Tracking</span>&nbsp;
+<span class="tag tag-violet">Partie 5 · Gouvernance</span>
 
 <div style="margin-top:24px;display:flex;gap:6px;justify-content:center;">
   <div style="width:40px;height:3px;border-radius:2px;background:var(--cyan);"></div>
@@ -1092,26 +1171,22 @@ curl -X POST "$SCORING_URL" \
 
 ---
 
-### Récap · Matin
+### Récap · Parties 1-3
 
 # Ce qu'on a vu ce matin
 
 <div style="display:flex;gap:10px;margin-top:14px;">
   <div style="flex:1;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.2);border-radius:10px;padding:14px 16px;">
-    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--orange);margin-bottom:6px;">Fondations</div>
+    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--orange);margin-bottom:6px;">Partie 1 · Fondations</div>
     <div style="font-size:0.63em;color:var(--body);line-height:1.6;">La CI ML valide code + pipeline AML. La CD livre un comportement de prédiction, pas juste du code.</div>
   </div>
   <div style="flex:1;background:rgba(221,255,69,0.06);border:1px solid rgba(221,255,69,0.2);border-radius:10px;padding:14px 16px;">
-    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--lime);margin-bottom:6px;">Quality gate</div>
-    <div style="font-size:0.63em;color:var(--body);line-height:1.6;"><code>sys.exit(1)</code> si accuracy < seuil. Le pipeline CI bloque. La CD n'est pas déclenchée.</div>
+    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--lime);margin-bottom:6px;">Partie 2 · Infra</div>
+    <div style="font-size:0.63em;color:var(--body);line-height:1.6;">Terraform provisionne l'environnement complet. Un même <code>main.tf</code> pour dev et prod.</div>
   </div>
   <div style="flex:1;background:rgba(118,87,255,0.08);border:1px solid rgba(118,87,255,0.2);border-radius:10px;padding:14px 16px;">
-    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--violet);margin-bottom:6px;">Sécurité</div>
-    <div style="font-size:0.63em;color:var(--body);line-height:1.6;">OIDC = tokens temporaires ~1h. Aucun mot de passe longue durée dans GitHub Secrets.</div>
-  </div>
-  <div style="flex:1;background:rgba(0,229,238,0.06);border:1px solid rgba(0,229,238,0.2);border-radius:10px;padding:14px 16px;">
-    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--cyan);margin-bottom:6px;">Démo 1</div>
-    <div style="font-size:0.63em;color:var(--body);line-height:1.6;">CI verte → CD dev observé / rejoué → image ACR → pod AKS → curl /predict → JSON ✓</div>
+    <div style="font-size:0.65em;font-family:'Work Sans';font-weight:700;color:var(--violet);margin-bottom:6px;">Partie 3 · CI/CD</div>
+    <div style="font-size:0.63em;color:var(--body);line-height:1.6;">OIDC, quality gate, GH Actions + Démo : CI → CD dev → AKS → curl /predict ✓</div>
   </div>
 </div>
 
@@ -1120,7 +1195,7 @@ curl -X POST "$SCORING_URL" \
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 2 · Partie 1
+### Partie 3 · Serving
 
 # Deux modes de serving
 
@@ -1224,7 +1299,7 @@ curl -X POST "$SCORING_URL" \
 <!-- _class: transition-lime -->
 <!-- _paginate: false -->
 
-### Session 2 · Partie 2
+### Partie 4 — Tracking & Monitoring
 
 # Monitoring multi-niveaux
 
@@ -1309,7 +1384,7 @@ traces
 <!-- _class: transition-lime -->
 <!-- _paginate: false -->
 
-### Session 2 · Partie 3
+### Partie 4 · Versioning
 
 # Registre de modèles
 # & versioning
@@ -1320,22 +1395,24 @@ traces
 
 ### MLflow dans AML
 
-# Tracking automatique avec mlflow.autolog()
+# Tracking manuel avec mlflow.start_run()
 
 ```python
 # mlops/data-science/src/train.py (extrait)
 import mlflow
-
-mlflow.autolog()          # log auto : params, métriques, modèle
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 with mlflow.start_run():
-    model = RandomForestClassifier(n_estimators=100)
-    model.fit(X_train, y_train)
-    # autolog logge : n_estimators, accuracy, F1, le modèle...
-
-    # Log manuel supplémentaire
-    mlflow.log_metric("accuracy", accuracy_score(y_test, y_pred))
-    mlflow.log_param("threshold", ACCURACY_THRESHOLD)
+    model = Pipeline([
+        ("scaler", StandardScaler()),
+        ("classifier", LogisticRegression(max_iter=args.max_iter)),
+    ])
+    model.fit(X, y)
+    acc = accuracy_score(y, model.predict(X))
+    mlflow.log_param("max_iter", args.max_iter)
+    mlflow.log_metric("train_accuracy", acc)
 ```
 
 **Dans AML Studio → Jobs → votre run → Metrics :**
@@ -1407,7 +1484,7 @@ az ml model list --name iris-classifier \
 <!-- _class: transition-lime -->
 <!-- _paginate: false -->
 
-### Session 2 · Partie 4
+### Partie 4 · Drift
 
 # Drift de données
 # & alerting
@@ -1533,7 +1610,7 @@ az ml model list --name iris-classifier \
 <!-- _class: transition -->
 <!-- _paginate: false -->
 
-### Session 2 · Démo 2
+### Démo guidée · Parties 3-5
 
 # On passe à la démo
 
@@ -1881,7 +1958,7 @@ az keyvault secret show --vault-name $KV \
 <!-- _class: transition-lime -->
 <!-- _paginate: false -->
 
-### Session 2 · Partie 5
+### Partie 5 — Gouvernance
 
 # Gouvernance
 
