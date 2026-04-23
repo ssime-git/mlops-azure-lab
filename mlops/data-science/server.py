@@ -17,7 +17,10 @@ if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     except ImportError as exc:
         print(f"App Insights instrumentation disabled: {exc}")
     else:
-        configure_azure_monitor(connection_string=app_insights_connection_string)
+        configure_azure_monitor(
+            connection_string=app_insights_connection_string,
+            enable_live_metrics=True,
+        )
 
 app = flask.Flask(__name__)
 
