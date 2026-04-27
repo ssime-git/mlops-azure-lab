@@ -317,8 +317,17 @@ Vérification rapide après attribution :
 ```bash
 source lab/env/partie2.env
 PRINCIPAL_ID=$(az ad sp list --display-name "$GITHUB_APP_NAME" --query "[0].id" -o tsv)
-az role assignment list --assignee "$PRINCIPAL_ID" --query "[].{role:roleDefinitionName,scope:scope}" -o table
+
+# Verifier les roles sur chaque resource group (filtrer par --resource-group)
+az role assignment list --assignee "$PRINCIPAL_ID" --resource-group "$TFSTATE_RG" \
+  --query "[].{role:roleDefinitionName,scope:scope}" -o table
+
+az role assignment list --assignee "$PRINCIPAL_ID" --resource-group "$AML_RESOURCE_GROUP_DEV" \
+  --query "[].{role:roleDefinitionName,scope:scope}" -o table
 ```
+
+> [!WARNING]
+> Sur Azure CLI récent (≥ 2.80), `az role assignment list --assignee <id>` **sans filtre** ne retourne que les assignments au niveau **subscription**. Les rôles attribués au niveau d'un **resource group** ne s'affichent **que** si vous précisez `--resource-group` (ou `--scope`). Une sortie vide ne signifie donc pas que les rôles n'existent pas.
 
 Vous devez voir au minimum :
 - `Contributor` sur `$TFSTATE_RG`

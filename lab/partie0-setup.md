@@ -41,7 +41,7 @@ az account show --query "{name:name, id:id, state:state}"
 
 # Installer l'extension AML CLI v2
 az extension add -n ml --yes
-az ml --version    # doit afficher une version
+az extension show --name ml    # doit afficher une version
 
 # Installer uv (gestionnaire Python rapide)
 # Voir: https://docs.astral.sh/uv/getting-started/installation/

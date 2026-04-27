@@ -214,9 +214,10 @@ echo "AZURE_SUBSCRIPTION_ID=$(az account show --query id -o tsv)"
 echo "AML_RESOURCE_GROUP_DEV=$AML_RESOURCE_GROUP_DEV"
 echo "AML_WORKSPACE_DEV=$AML_WORKSPACE_DEV"
 echo "AKS_CLUSTER_DEV=$AKS_CLUSTER_DEV"
+echo "LAB_SUFFIX=$LAB_SUFFIX"
 ```
 
-Les 6 secrets à créer :
+Les 7 secrets à créer :
 
 | Secret GitHub | Source |
 |---|---|
@@ -226,6 +227,7 @@ Les 6 secrets à créer :
 | `AML_RESOURCE_GROUP_DEV` | `$AML_RESOURCE_GROUP_DEV` |
 | `AML_WORKSPACE_DEV` | `$AML_WORKSPACE_DEV` |
 | `AKS_CLUSTER_DEV` | `$AKS_CLUSTER_DEV` |
+| `LAB_SUFFIX` | `$LAB_SUFFIX` (préfixe unique par apprenant, utilisé pour rendre le nom du Managed Online Endpoint AML unique par région) |
 
 > [!TIP]
 > Si les rôles viennent d'être ajoutés, attendez 2 à 5 minutes (propagation IAM) avant de relancer le workflow.
