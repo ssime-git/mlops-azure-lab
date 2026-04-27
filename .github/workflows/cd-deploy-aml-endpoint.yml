@@ -83,7 +83,8 @@ jobs:
       - name: Deploy managed endpoint + deployment
         run: |
           TARGET="${{ github.event.inputs.target_env }}"
-          ENDPOINT_NAME="iris-endpoint-${TARGET}"
+          SUFFIX="${{ secrets.LAB_SUFFIX }}"
+          ENDPOINT_NAME="iris-ep-${SUFFIX}-${TARGET}"
           DEPLOYMENT_NAME="iris-deployment-${TARGET}"
 
           az configure --defaults group="$AML_RESOURCE_GROUP" workspace="$AML_WORKSPACE"
@@ -115,7 +116,8 @@ jobs:
       - name: Invoke endpoint smoke test
         run: |
           TARGET="${{ github.event.inputs.target_env }}"
-          ENDPOINT_NAME="iris-endpoint-${TARGET}"
+          SUFFIX="${{ secrets.LAB_SUFFIX }}"
+          ENDPOINT_NAME="iris-ep-${SUFFIX}-${TARGET}"
           DEPLOYMENT_NAME="iris-deployment-${TARGET}"
           REQUEST_FILE=$(mktemp /tmp/iris-request-XXXXXX.json)
 
