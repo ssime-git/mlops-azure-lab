@@ -28,7 +28,7 @@ style: |
     color: var(--light);
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    padding: 48px 68px;
+    padding: 80px 68px 48px;
     line-height: 1.6;
   }
 
@@ -70,6 +70,7 @@ style: |
     align-items: center;
     text-align: center;
     background: radial-gradient(ellipse at 30% 70%, #2A1F40 0%, var(--navy) 65%);
+    padding-top: 48px;
   }
   section.lead h1 { font-size: 3em; }
   section.lead h2 { color: var(--body); font-size: 1.05em; max-width: 620px; }
@@ -80,6 +81,7 @@ style: |
     justify-content: center;
     background: var(--orange);
     color: var(--light);
+    padding-top: 48px;
   }
   section.transition h1 { color: var(--light); font-size: 2.8em; }
   section.transition h2 { color: rgba(255,255,255,0.78); font-weight: 400; }
@@ -92,6 +94,7 @@ style: |
     background: linear-gradient(135deg, #252520 0%, #1A1A15 100%);
     border-left: 6px solid var(--lime);
     color: var(--light);
+    padding-top: 48px;
   }
   section.transition-lime h1 { color: var(--lime); font-size: 2.8em; }
   section.transition-lime h2 { color: rgba(255,255,255,0.78); font-weight: 400; }
@@ -105,6 +108,7 @@ style: |
     text-align: center;
     background: linear-gradient(135deg, #1A1A33 0%, #0A0A1A 100%);
     border: 2px solid var(--border);
+    padding-top: 48px;
   }
   section.break h1 { color: var(--cyan); font-size: 3em; }
   section.break h2 { color: var(--body); font-weight: 400; }
@@ -112,13 +116,17 @@ style: |
   section.session2 {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     background: radial-gradient(ellipse at 70% 30%, #1A2A40 0%, var(--navy) 65%);
+    padding-top: 80px;
   }
-  section.session2 h1 { font-size: 3em; color: var(--cyan); }
+  section.session2 h1 { font-size: 2.4em; color: var(--cyan); line-height: 1.15; margin: 0.1em 0; }
   section.session2 h2 { color: var(--body); font-size: 1.05em; max-width: 620px; }
+
+  section.governance-compact h1 { font-size: 2.15em; line-height: 1.08; margin-bottom: 0.08em; }
+  section.governance-compact svg { margin-top: 6px; margin-bottom: 4px; height: 38px; }
 
   footer { font-size: 0.44em; color: var(--muted); }
   section::after { color: var(--muted); font-size: 0.5em; }
@@ -211,7 +219,7 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 
 ### Objectifs pédagogiques
 
-# Ce que vous allez maîtriser
+# Ce que vous allez approfondir
 
 <div style="background:#252540;border:1px solid #2E2E50;border-radius:12px;padding:20px 24px;margin-top:12px;">
   <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.55em;text-transform:uppercase;letter-spacing:0.18em;color:#DDFF45;margin-bottom:12px;">Objectifs d'apprentissage</div>
@@ -231,13 +239,6 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 ### Plan de la formation
 
 # 5 parties · 8h au total
-
-<div style="display:flex;gap:6px;margin-bottom:16px;">
-  <div style="flex:1;height:4px;border-radius:2px;background:var(--orange);"></div>
-  <div style="flex:1;height:4px;border-radius:2px;background:var(--cyan);"></div>
-  <div style="flex:1;height:4px;border-radius:2px;background:var(--border);"></div>
-  <div style="flex:1;height:4px;border-radius:2px;background:var(--border);"></div>
-</div>
 
 <div style="display:flex;gap:12px;margin-top:4px;">
   <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
@@ -278,10 +279,10 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 
 # Un notebook qui marche… et après ?
 
-<div style="display:flex;gap:16px;margin-top:14px;">
-  <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:16px 18px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.7em;color:#ef4444;margin-bottom:8px;">Situation typique</div>
-    <ul style="margin:0;padding-left:1.2em;font-size:0.7em;color:var(--body);line-height:1.7;">
+<div style="display:flex;gap:14px;margin-top:10px;">
+  <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.64em;color:#ef4444;margin-bottom:6px;">Situation typique</div>
+    <ul style="margin:0;padding-left:1.2em;font-size:0.64em;color:var(--body);line-height:1.6;">
       <li>Notebook qui tourne sur <em>ma machine</em></li>
       <li>Données en local ou dans un Drive</li>
       <li>Évaluation faite <em>une fois</em> à la main</li>
@@ -289,9 +290,9 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
       <li>Monitoring : "on verra si ça plante"</li>
     </ul>
   </div>
-  <div style="flex:1;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:16px 18px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.7em;color:#22c55e;margin-bottom:8px;">Ce qu'on vise</div>
-    <ul style="margin:0;padding-left:1.2em;font-size:0.7em;color:var(--body);line-height:1.7;">
+  <div style="flex:1;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:10px 14px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.64em;color:#22c55e;margin-bottom:6px;">Ce qu'on vise</div>
+    <ul style="margin:0;padding-left:1.2em;font-size:0.64em;color:var(--body);line-height:1.6;">
       <li>Scripts <strong>relancables</strong> sur n'importe quel compute</li>
       <li>Entraînement <strong>tracé et versionné</strong></li>
       <li>Quality gate <strong>automatique</strong></li>
@@ -301,7 +302,9 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
   </div>
 </div>
 
-> Le MLOps commence quand on accepte que ces cinq points ont **autant d'importance que le score du modèle**.
+<div style="margin-top:10px;border-left:3px solid var(--orange);background:var(--card);border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.66em;color:var(--offwhite);font-family:'Work Sans';font-weight:500;">
+  Le MLOps commence quand on accepte que ces cinq points ont <strong>autant d'importance que le score du modèle</strong>.
+</div>
 
 ---
 
@@ -368,18 +371,90 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
 
 ### ML vs logiciel classique
 
-# Ce qui change avec le ML
+<div style="font-size:1em;font-weight:700;color:var(--light);margin-bottom:10px;">Ce qui change avec le ML</div>
 
-| | Projet logiciel classique | Projet ML |
-|---|---|---|
-| Ce qu'on vérifie | Qualité du code + tests | Code **+** pipeline d'entraînement **+** métriques |
-| Ce qu'on livre | Un binaire ou une image | Un comportement de **prédiction** |
-| Quality gate | Tests unitaires / intégration | Accuracy · F1 · seuil configurable |
-| Artefacts | `.jar` · `.whl` · image Docker | Modèle + scaler + métadonnées MLflow |
-| Durée de la CI | Secondes à quelques min | **Plusieurs minutes** (job AML inclus) |
+<table style="font-size:0.62em;line-height:1.4;width:100%;border-collapse:collapse;">
+  <thead>
+    <tr>
+      <th style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;text-align:left;">Aspect</th>
+      <th style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;text-align:left;">Logiciel classique</th>
+      <th style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;text-align:left;">MLOps (bonne pratique)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>CI vérifie</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">Code + tests unitaires</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Code + tests unitaires + smoke tests</strong> (pas d'entraînement complet)</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Pipeline ML</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">N/A</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Entraînement + évaluation + quality gate</strong> (séparé, schedule/event)</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Quality gate</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">Tests passent/fail</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Métriques modèle (accuracy ≥ seuil)</strong> dans pipeline ML</td>
+    </tr>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Artefacts CI</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">Binaire / image Docker</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Image Docker (code only) + modèle (registry séparé)</strong></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Durée CI</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">&lt; 10 min</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>5-10 min</strong></td>
+    </tr>
+    <tr>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>Durée Pipeline ML</strong></td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;">N/A</td>
+      <td style="border:1px solid rgba(255,255,255,0.2);padding:4px 8px;"><strong>30 min - 2h</strong> (compute dédié)</td>
+    </tr>
+  </tbody>
+</table>
 
-<div style="margin-top:12px;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.25);border-radius:8px;padding:10px 14px;font-size:0.68em;color:var(--body);">
-  Une CI ML qui valide seulement le code local ne valide <strong>pas encore</strong> que l'entraînement tourne dans Azure ML.
+<div style="margin-top:8px;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.25);border-radius:8px;padding:8px 12px;font-size:0.64em;color:var(--body);">
+  <strong>Note :</strong> Dans ce repo, <code>ci-train.yml</code> mélange CI et entraînement → anti-pattern expliqué slide suivante.
+</div>
+
+---
+
+<!-- _class: transition-red -->
+
+### Anti-pattern dans le repo
+
+<div style="font-size:0.95em;font-weight:700;color:var(--light);margin-bottom:8px;">Ce qu'on voit dans <code>ci-train.yml</code> … et pourquoi c'est problématique</div>
+
+<div style="display:flex;gap:10px;margin-top:10px;">
+  <div style="flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:#ef4444;margin-bottom:6px;">❌ Ce que fait le workflow actuel</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.60em;color:var(--body);line-height:1.5;">
+      <li><strong>Mélange CI + entraînement</strong> : lint, tests, <em>et</em> pipeline AML</li>
+      <li><strong>Attente bloquante</strong> : runner GitHub attend 20+ min (boucle sleep)</li>
+      <li><strong>Double entraînement</strong> : AML entraîne → puis <code>cd-deploy-dev.yml</code> ré-entraîne localement (lines 42-43)</li>
+      <li><strong>Quality gate indirect</strong> : CI échoue si job AML retourne erreur</li>
+    </ul>
+  </div>
+  
+  <div style="flex:1;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:#22c55e;margin-bottom:6px;">✅ Bonne pratique</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.60em;color:var(--body);line-height:1.5;">
+      <li><strong>CI séparée</strong> : lint + tests + build (5-10 min, <em>sans</em> entraînement)</li>
+      <li><strong>Pipeline ML indépendant</strong> : schedule/event, compute AML dédié</li>
+      <li><strong>Modèle versionné</strong> : Azure ML Model Registry, <em>pas</em> ré-entraîné dans build CD</li>
+      <li><strong>Quality gate clair</strong> : <code>evaluate_model</code> bloque/valide avant enregistrement</li>
+    </ul>
+  </div>
+</div>
+
+<div style="margin-top:8px;background:rgba(255,103,69,0.06);border:1px solid rgba(255,103,69,0.2);border-radius:8px;padding:8px 10px;font-size:0.59em;color:var(--body);">
+  <strong>Pourquoi :</strong> CI rapide pour développeurs. Pipeline ML long mais indépendant — peut échouer sans impacter vélocité du code.
+</div>
+
+<div style="margin-top:6px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:6px 10px;font-size:0.58em;color:var(--body);">
+  <strong>Flexibilité GitHub Actions :</strong> Ce repo montre qu'on peut tout mettre dans un seul workflow, mais ce n'est pas une bonne pratique MLOps. Workflows séparés + triggers différents (push vs schedule) = meilleure séparation.
 </div>
 
 ---
@@ -415,8 +490,6 @@ footer: 'CI/CD appliqué au Machine Learning · 2 × 4h'
   <defs><marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#6B6A8A"/></marker></defs>
 </svg>
 
-<div style="margin-top:14px;">
-
 ```yaml
 # mlops/pipelines/pipeline.yml (extrait)
 jobs:
@@ -430,36 +503,34 @@ jobs:
     inputs: { model: ${{parent.jobs.train_model.outputs.model}} }
 ```
 
-</div>
-
 ---
 
 ### Validation des données
 
 # Ce que `prep.py` vérifie avant d'entraîner
 
-<div style="display:flex;gap:14px;margin-top:14px;">
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--orange);margin-bottom:10px;">Structure attendue</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.65em;color:var(--body);line-height:1.8;">
+<div style="display:flex;gap:14px;margin-top:10px;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.64em;color:var(--orange);margin-bottom:6px;">Structure attendue</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.6;">
       <li>4 features numériques (cm)</li>
       <li>1 colonne <code>target</code> (0, 1, 2)</li>
       <li>Aucune valeur nulle</li>
       <li>150 lignes minimum</li>
     </ul>
   </div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--lime);margin-bottom:10px;">Ce que fait <code>prep.py</code> dans ce repo</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.65em;color:var(--body);line-height:1.8;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.64em;color:var(--lime);margin-bottom:6px;">Ce que fait <code>prep.py</code> dans ce repo</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.6;">
       <li>Charge Iris depuis sklearn</li>
       <li>Renomme les colonnes</li>
       <li>Split 80/20 stratifié</li>
       <li>Sauvegarde <code>train.csv</code> + <code>test.csv</code></li>
     </ul>
   </div>
-  <div style="flex:1;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.3);border-top:3px solid var(--red);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--red);margin-bottom:10px;">En production : vérifier aussi</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.65em;color:var(--body);line-height:1.8;">
+  <div style="flex:1;background:rgba(255,103,69,0.08);border:1px solid rgba(255,103,69,0.3);border-top:3px solid var(--red);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.64em;color:var(--red);margin-bottom:6px;">En production : vérifier aussi</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.6;">
       <li>Plage de valeurs (ex: sepal ∈ [4,8])</li>
       <li>Distribution des classes (déséquilibre ?)</li>
       <li>Schéma : types de colonnes corrects</li>
@@ -478,33 +549,27 @@ jobs:
 
 # Le pipeline peut — et doit — échouer
 
-<div style="display:flex;gap:16px;margin-top:14px;">
-  <div style="flex:1;">
-
-```python
-# evaluate_model/evaluate.py (extrait)
+<div style="display:flex;gap:16px;margin-top:14px;align-items:flex-start;">
+  <pre style="flex:1;margin:0;background:#1e1e2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px 14px;font-size:0.58em;line-height:1.6;color:#cdd6f4;overflow:hidden;"><code><span style="color:#6c7086"># evaluate_model/evaluate.py (extrait)</span>
 accuracy = accuracy_score(y_test, y_pred)
-mlflow.log_metric("accuracy", accuracy)
+mlflow.log_metric(<span style="color:#a6e3a1">"accuracy"</span>, accuracy)
 
-THRESHOLD = float(os.environ.get(
-    "ACCURACY_THRESHOLD", "0.90"
+THRESHOLD = <span style="color:#89b4fa">float</span>(os.environ.get(
+    <span style="color:#a6e3a1">"ACCURACY_THRESHOLD"</span>, <span style="color:#a6e3a1">"0.90"</span>
 ))
 
-if accuracy < THRESHOLD:
-    print(f"FAIL: {accuracy:.3f} < {THRESHOLD}")
-    sys.exit(1)          # fait échouer le job AML
-else:
-    print(f"PASS: {accuracy:.3f} >= {THRESHOLD}")
-```
-
-  </div>
-  <div style="flex:1;">
-    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+<span style="color:#cba6f7">if</span> accuracy &lt; THRESHOLD:
+    <span style="color:#89b4fa">print</span>(<span style="color:#a6e3a1">f"FAIL: {accuracy:.3f} &lt; {THRESHOLD}"</span>)
+    sys.exit(<span style="color:#fab387">1</span>)          <span style="color:#6c7086"># fait échouer le job AML</span>
+<span style="color:#cba6f7">else</span>:
+    <span style="color:#89b4fa">print</span>(<span style="color:#a6e3a1">f"PASS: {accuracy:.3f} >= {THRESHOLD}"</span>)</code></pre>
+  <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+    <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:10px;padding:14px 16px;">
       <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:#22c55e;margin-bottom:4px;">Si accuracy ≥ 0.90</div>
       <div style="font-size:0.65em;color:var(--body);">Job AML → succès<br>CI GitHub → verte<br>CD dev peut être déclenché</div>
     </div>
     <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:#ef4444;margin-bottom:4px;">Si accuracy < 0.90</div>
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:#ef4444;margin-bottom:4px;">Si accuracy &lt; 0.90</div>
       <div style="font-size:0.65em;color:var(--body);"><code>sys.exit(1)</code> → job AML rouge<br>CI GitHub bloquée<br>CD <strong>non déclenché</strong></div>
     </div>
   </div>
@@ -628,43 +693,43 @@ else:
 
 ### Structure GitHub Actions
 
-# Anatomie d'un workflow
+<div style="font-size:1.6em;font-weight:800;color:var(--light);margin:4px 0 10px;">Anatomie d'un workflow</div>
 
-```yaml
-# .github/workflows/ci-train.yml
-name: CI — Train & Evaluate
+<div style="display:flex;gap:12px;margin-top:4px;align-items:flex-start;">
+  <pre style="flex:1;margin:0;background:#1e1e2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;font-size:0.55em;line-height:1.55;color:#cdd6f4;overflow:hidden;"><code><span style="color:#6c7086"># .github/workflows/ci-train.yml</span>
+<span style="color:#89b4fa">name</span>: CI — Train & Evaluate
 
-on:
-  push:
-    branches: [dev]          # déclenché sur push → dev
-  pull_request:
-    branches: [main]         # vérifié sur PR → main
+<span style="color:#89b4fa">on</span>:
+  <span style="color:#89b4fa">push</span>:
+    <span style="color:#89b4fa">branches</span>: [dev]   <span style="color:#6c7086"># push → dev</span>
+  <span style="color:#89b4fa">pull_request</span>:
+    <span style="color:#89b4fa">branches</span>: [main]  <span style="color:#6c7086"># PR → main</span>
 
-permissions:
-  id-token: write            # nécessaire pour OIDC
-  contents: read
+<span style="color:#89b4fa">permissions</span>:
+  <span style="color:#89b4fa">id-token</span>: write   <span style="color:#6c7086"># OIDC</span>
+  <span style="color:#89b4fa">contents</span>: read</code></pre>
 
-jobs:
-  lint-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Lint
-        run: black --check . && flake8 .
-      - name: Tests
-        run: pytest tests/ -v
+  <pre style="flex:1.4;margin:0;background:#1e1e2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;font-size:0.55em;line-height:1.55;color:#cdd6f4;overflow:hidden;"><code><span style="color:#89b4fa">jobs</span>:
+  <span style="color:#cba6f7">lint-and-test</span>:
+    <span style="color:#89b4fa">runs-on</span>: ubuntu-latest
+    <span style="color:#89b4fa">steps</span>:
+      - <span style="color:#89b4fa">uses</span>: actions/checkout@v4
+      - <span style="color:#89b4fa">name</span>: Lint
+        <span style="color:#89b4fa">run</span>: black --check . && flake8 .
+      - <span style="color:#89b4fa">name</span>: Tests
+        <span style="color:#89b4fa">run</span>: pytest tests/ -v
 
-  train:
-    needs: lint-and-test       # dépendance explicite
-    steps:
-      - uses: azure/login@v2   # authentification OIDC
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      - name: Submit AML pipeline
-        run: az ml job create -f mlops/pipelines/pipeline.yml --stream
-```
+  <span style="color:#cba6f7">train</span>:
+    <span style="color:#89b4fa">needs</span>: lint-and-test  <span style="color:#6c7086"># dépendance explicite</span>
+    <span style="color:#89b4fa">steps</span>:
+      - <span style="color:#89b4fa">uses</span>: azure/login@v2  <span style="color:#6c7086"># OIDC</span>
+        <span style="color:#89b4fa">with</span>:
+          <span style="color:#89b4fa">client-id</span>: ${{ secrets.AZURE_CLIENT_ID }}
+          <span style="color:#89b4fa">tenant-id</span>: ${{ secrets.AZURE_TENANT_ID }}
+          <span style="color:#89b4fa">subscription-id</span>: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - <span style="color:#89b4fa">name</span>: Submit AML pipeline
+        <span style="color:#89b4fa">run</span>: az ml job create -f mlops/pipelines/pipeline.yml --stream</code></pre>
+</div>
 
 ---
 
@@ -729,7 +794,7 @@ jobs:
 
 # Pourquoi OIDC plutôt qu'un secret statique ?
 
-<svg width="100%" height="60" viewBox="0 0 640 60" style="margin-top:12px;margin-bottom:4px;">
+<svg width="100%" height="52" viewBox="0 0 640 60" style="margin-top:4px;margin-bottom:2px;">
   <!-- GitHub -->
   <rect x="0" y="10" width="100" height="40" rx="6" fill="#252540" stroke="#2E2E50" stroke-width="1"/>
   <text x="50" y="34" text-anchor="middle" font-family="Work Sans" font-size="10" font-weight="700" fill="#E8E7E1">GitHub</text>
@@ -756,35 +821,36 @@ jobs:
   <defs><marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#6B6A8A"/></marker></defs>
 </svg>
 
-<div style="display:flex;gap:16px;margin-top:14px;">
-  <div style="flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:#ef4444;margin-bottom:8px;">Ancienne pratique</div>
-    <ul style="margin:0;padding-left:1.2em;font-size:0.68em;color:var(--body);line-height:1.7;">
+<div style="display:flex;gap:10px;margin-top:8px;align-items:stretch;">
+  <div style="flex:1;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:#ef4444;margin-bottom:6px;">Ancienne pratique</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.55;">
       <li>Service Principal avec mot de passe</li>
       <li>Secret stocké dans GitHub Secrets</li>
       <li>Valide <strong>indéfiniment</strong> (jusqu'à rotation manuelle)</li>
       <li>Si leaké → accès Azure complet</li>
     </ul>
   </div>
-  <div style="flex:1;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.68em;color:#22c55e;margin-bottom:8px;">Avec OIDC (federated credentials)</div>
-    <ul style="margin:0;padding-left:1.2em;font-size:0.68em;color:var(--body);line-height:1.7;">
+  <div style="flex:1;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:#22c55e;margin-bottom:6px;">Avec OIDC (federated credentials)</div>
+    <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.55;">
       <li>GitHub demande un token temporaire à Entra ID</li>
       <li>Token valide <strong>~1h</strong> · non réutilisable</li>
       <li><strong>Aucun secret longue durée</strong> dans GitHub</li>
       <li>Contexte borné : branche ou environment</li>
     </ul>
   </div>
+  <pre style="flex:1;margin:0;background:#1e1e2e;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 12px;font-size:0.52em;line-height:1.55;color:#cdd6f4;overflow:hidden;"><code><span style="color:#6c7086"># Dans le workflow</span>
+<span style="color:#6c7086"># pas de mot de passe</span>
+- <span style="color:#89b4fa">uses</span>: azure/login@v2
+  <span style="color:#89b4fa">with</span>:
+    <span style="color:#89b4fa">client-id</span>:
+      ${{ secrets.AZURE_CLIENT_ID }}
+    <span style="color:#89b4fa">tenant-id</span>:
+      ${{ secrets.AZURE_TENANT_ID }}
+    <span style="color:#89b4fa">subscription-id</span>:
+      ${{ secrets.AZURE_SUBSCRIPTION_ID }}</code></pre>
 </div>
-
-```yaml
-# Dans le workflow — pas de mot de passe
-- uses: azure/login@v2
-  with:
-    client-id:       ${{ secrets.AZURE_CLIENT_ID }}       # ← ID, pas un secret
-    tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
-    subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-```
 
 ---
 
@@ -792,17 +858,17 @@ jobs:
 
 # Qu'est-ce qu'on stocke dans GitHub Secrets avec OIDC ?
 
-<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-top:12px;">
-  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.6em;text-transform:uppercase;letter-spacing:0.15em;color:var(--purple);margin-bottom:14px;">Question 2 / 4</div>
-  <div style="font-family:'Work Sans';font-weight:600;font-size:0.85em;color:var(--light);margin-bottom:16px;">Avec OIDC configuré, quels éléments se trouvent dans les GitHub Secrets ?</div>
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.7em;color:var(--body);">A · Le mot de passe du Service Principal</div>
-    <div style="background:rgba(221,255,69,0.1);border:1px solid var(--lime);border-radius:8px;padding:10px 14px;font-size:0.7em;color:var(--light);">B · Le Client ID, Tenant ID et Subscription ID (pas de mot de passe)</div>
-    <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.7em;color:var(--body);">C · Rien du tout, les secrets sont dans Key Vault</div>
+<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-top:8px;">
+  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.58em;text-transform:uppercase;letter-spacing:0.15em;color:var(--purple);margin-bottom:10px;">Question 2 / 4</div>
+  <div style="font-family:'Work Sans';font-weight:600;font-size:0.78em;color:var(--light);margin-bottom:12px;">Avec OIDC configuré, quels éléments se trouvent dans les GitHub Secrets ?</div>
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.66em;color:var(--body);">A · Le mot de passe du Service Principal</div>
+    <div style="background:rgba(221,255,69,0.1);border:1px solid var(--lime);border-radius:8px;padding:8px 12px;font-size:0.66em;color:var(--light);">B · Le Client ID, Tenant ID et Subscription ID (pas de mot de passe)</div>
+    <div style="background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:0.66em;color:var(--body);">C · Rien du tout, les secrets sont dans Key Vault</div>
   </div>
 </div>
 
-<div style="margin-top:10px;background:rgba(221,255,69,0.06);border:1px solid rgba(221,255,69,0.2);border-radius:8px;padding:10px 14px;font-size:0.63em;color:var(--body);">
+<div style="margin-top:8px;background:rgba(221,255,69,0.06);border:1px solid rgba(221,255,69,0.2);border-radius:8px;padding:8px 12px;font-size:0.61em;color:var(--body);">
   <strong style="color:var(--lime);">Réponse : B</strong> — Les IDs sont des identifiants, pas des secrets. C'est Azure Entra qui émet le token temporaire à la demande.
 </div>
 
@@ -849,11 +915,12 @@ jobs:
 
 # À retenir avant la démo
 
-<div style="background:linear-gradient(135deg,rgba(255,103,69,0.1),rgba(118,87,255,0.07));border:1px solid var(--orange);border-radius:14px;padding:20px 24px;margin-top:14px;">
-  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.55em;text-transform:uppercase;letter-spacing:0.18em;color:var(--orange);margin-bottom:14px;">Points clés · Parties 1-3</div>
-  <ul style="margin:0;padding-left:1.2em;color:var(--offwhite);font-size:0.76em;line-height:1.9;">
-    <li>La CI ML valide le <strong>code ET l'exécution dans Azure ML</strong></li>
-    <li>Le quality gate sur les métriques <strong>bloque la CD si le modèle est insuffisant</strong></li>
+<div style="background:linear-gradient(135deg,rgba(255,103,69,0.1),rgba(118,87,255,0.07));border:1px solid var(--orange);border-radius:14px;padding:14px 18px;margin-top:10px;">
+  <div style="font-family:'Work Sans',sans-serif;font-weight:700;font-size:0.55em;text-transform:uppercase;letter-spacing:0.18em;color:var(--orange);margin-bottom:10px;">Points clés · Parties 1-3</div>
+  <ul style="margin:0;padding-left:1.2em;color:var(--offwhite);font-size:0.66em;line-height:1.65;">
+    <li>⚠️ <strong>Anti-pattern dans ce repo :</strong> <code>ci-train.yml</code> mélange CI et entraînement AML → bloque les merges 1-2h par commit</li>
+    <li>✅ <strong>Bonne pratique :</strong> CI rapide (5-10 min) séparée du Pipeline ML (30min-2h, déclenché par schedule/event)</li>
+    <li>Le quality gate dans <code>evaluate_model</code> bloque l'enregistrement du modèle, pas directement la CI</li>
     <li>OIDC = <strong>aucun secret longue durée</strong> dans GitHub</li>
     <li><strong>L'identité du pipeline</strong> compte autant que le code du pipeline</li>
     <li>Dans ce repo, le CD dev peut partir <strong>automatiquement</strong> après la CI, mais il est aussi <strong>rejouable manuellement</strong> pour la démonstration</li>
@@ -906,192 +973,57 @@ jobs:
 
 ---
 
-### Démo 1 · Étape 1
+### Démo 1 · Déroulé pédagogique
 
-# Vérifier les prérequis RBAC
+# Ce qu'on observe à chaque étape
 
-<div style="display:flex;gap:16px;margin-top:12px;">
-  <div style="flex:1;">
-
-```bash
-az account show \
-  --query "{name:name, id:id}" -o table
-
-az role assignment list \
-  --resource-group rg-mlopslab-dev \
-  --output table
-
-az ml workspace show \
-  --name aml-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --query "{name:name,location:location}" \
-  -o table
-```
-
-  </div>
-  <div style="flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center;">
-    <div style="display:flex;align-items:flex-start;gap:12px;">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.75em;color:white;flex-shrink:0;">1</div>
-      <div><div style="font-family:'Work Sans';font-weight:600;font-size:0.7em;color:var(--offwhite);">Compte Azure actif</div><div style="font-size:0.62em;color:var(--body);">abonnement + tenant visible</div></div>
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:12px;">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.75em;color:#1A1A33;flex-shrink:0;">2</div>
-      <div><div style="font-family:'Work Sans';font-weight:600;font-size:0.7em;color:var(--offwhite);">Role assignments OK</div><div style="font-size:0.62em;color:var(--body);">Contributor sur rg-mlopslab-dev</div></div>
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:12px;">
-      <div style="min-width:28px;height:28px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.75em;color:#1A1A33;flex-shrink:0;">3</div>
-      <div><div style="font-family:'Work Sans';font-weight:600;font-size:0.7em;color:var(--offwhite);">Workspace AML accessible</div><div style="font-size:0.62em;color:var(--body);">aml-mlopslab-dev visible</div></div>
+<div style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:white;flex-shrink:0;align-self:center;">1</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">Prérequis RBAC</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;">OIDC doit avoir les droits sur <code>rg-mlopslab-dev</code>. <strong>Sans rôle, pas de pipeline</strong>.</div>
     </div>
   </div>
-</div>
-
----
-
-### Démo 1 · Étape 2
-
-# Lire les workflows avant de pousser
-
-```bash
-# Afficher les triggers et jobs de la CI
-grep -E "^on:|branches:|jobs:|needs:" \
-  .github/workflows/ci-train.yml
-
-# Afficher la commande de soumission AML
-grep -A2 "az ml job create" \
-  .github/workflows/ci-train.yml
-```
-
-**Ce qu'on cherche à confirmer :**
-- Sur quelle branche la CI se déclenche
-- Quelle étape dépend de quelle autre (`needs:`)
-- Comment le résultat AML est attendu (`--stream`)
-
-<div style="margin-top:10px;background:rgba(255,103,69,0.06);border:1px solid rgba(255,103,69,0.2);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  Comprendre le workflow avant de le lancer : bonne pratique MLOps et sécurité.
-</div>
-
----
-
-### Démo 1 · Étape 3
-
-# Déclencher la CI avec un push
-
-<div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;">
-  <div style="display:flex;align-items:flex-start;gap:14px;">
-    <div style="min-width:32px;height:32px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.8em;color:white;flex-shrink:0;">1</div>
-    <div style="flex:1;">
-      <div style="font-family:'Work Sans';font-weight:600;font-size:0.72em;color:var(--offwhite);margin-bottom:3px;">Créer une branche feature depuis <code>dev</code></div>
-      <code style="font-size:0.65em;">git checkout dev &amp;&amp; git checkout -b feature/demo-cicd</code>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:white;flex-shrink:0;align-self:center;">2</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">Lire le workflow avant de pousser</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;">Repérer <code>on:</code>, <code>needs:</code>, <code>--stream</code>. <strong>Comprendre avant d'exécuter</strong>.</div>
     </div>
   </div>
-  <div style="display:flex;align-items:flex-start;gap:14px;">
-    <div style="min-width:32px;height:32px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.8em;color:#1A1A33;flex-shrink:0;">2</div>
-    <div style="flex:1;">
-      <div style="font-family:'Work Sans';font-weight:600;font-size:0.72em;color:var(--offwhite);margin-bottom:3px;">Faire un changement traçable</div>
-      <code style="font-size:0.65em;">echo "# demo $(date)" >> mlops/data-science/src/train.py</code>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--navy);flex-shrink:0;align-self:center;">3</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--lime);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">Push → CI déclenchée</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;">Git déclenche un job AML : <code>prep_data</code> → <code>train_model</code> → <code>evaluate_model</code>.</div>
     </div>
   </div>
-  <div style="display:flex;align-items:flex-start;gap:14px;">
-    <div style="min-width:32px;height:32px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.8em;color:#1A1A33;flex-shrink:0;">3</div>
-    <div style="flex:1;">
-      <div style="font-family:'Work Sans';font-weight:600;font-size:0.72em;color:var(--offwhite);margin-bottom:3px;">Committer, pousser, ouvrir une PR vers <code>dev</code></div>
-      <code style="font-size:0.65em;">git add . &amp;&amp; git commit -m "demo" &amp;&amp; git push origin feature/demo-cicd</code>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--navy);flex-shrink:0;align-self:center;">4</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--lime);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">Quality gate en action</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;">MLflow log <code>accuracy</code>. Si ≥ 0.90, le pipeline continue ; sinon <code>sys.exit(1)</code>.</div>
     </div>
   </div>
-  <div style="display:flex;align-items:flex-start;gap:14px;">
-    <div style="min-width:32px;height:32px;border-radius:50%;background:var(--violet);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.8em;color:white;flex-shrink:0;">4</div>
-    <div style="flex:1;">
-      <div style="font-family:'Work Sans';font-weight:600;font-size:0.72em;color:var(--offwhite);margin-bottom:3px;">Observer le déclenchement dans GitHub Actions</div>
-      <div style="font-size:0.62em;color:var(--body);">Onglet <strong>Actions</strong> → workflow <code>CI — Lint + Tests + AML Training Pipeline</code></div>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:var(--navy);flex-shrink:0;align-self:center;">5</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">CD dev : image → ACR → AKS</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;">La chaîne build → push ACR → déploiement pod est rejouée à la demande.</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:stretch;">
+    <div style="min-width:30px;height:30px;border-radius:50%;background:var(--violet);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.68em;color:white;flex-shrink:0;align-self:center;">6</div>
+    <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--violet);border-radius:8px;padding:6px 10px;">
+      <div style="font-family:'Work Sans';font-weight:700;font-size:0.58em;color:var(--offwhite);">Tester le service en live</div>
+      <div style="font-size:0.54em;color:var(--body);line-height:1.35;"><code>curl /predict</code> → JSON : la boucle commit → modèle → API est fermée.</div>
     </div>
   </div>
 </div>
 
----
-
-### Démo 1 · Étape 4
-
-# Ce qu'on voit à l'écran
-
-<div style="display:flex;gap:14px;margin-top:14px;">
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--orange);margin-bottom:8px;">GitHub Actions</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.8;">
-      <li>Jobs : <code>lint</code> → <code>unit-tests</code> → <code>train-pipeline</code></li>
-      <li>Logs du job : <code>az ml job create</code></li>
-      <li>Status poll toutes les 30s</li>
-      <li>✅ vert si quality gate passé</li>
-      <li>❌ rouge si accuracy &lt; 0.90</li>
-    </ul>
-  </div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--lime);margin-bottom:8px;">AML Studio (ml.azure.com)</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.8;">
-      <li><strong>Jobs</strong> → run en cours</li>
-      <li>3 étapes : <code>prep_data</code> → <code>train_model</code> → <code>evaluate_model</code></li>
-      <li><strong>Metrics</strong> : <code>train_accuracy</code> + <code>test_accuracy</code> + <code>test_f1_weighted</code></li>
-      <li>Comparaison de runs sur graphe</li>
-    </ul>
-  </div>
-</div>
-
-<div style="margin-top:12px;background:rgba(196,69,255,0.06);border:1px solid rgba(196,69,255,0.2);border-radius:8px;padding:10px 14px;font-size:0.63em;color:var(--body);">
-  📍 <strong>Point clé à montrer :</strong> le lien entre le run GitHub Actions et le job AML — c'est la même exécution, vue des deux côtés.
-</div>
-
----
-
-### Démo 1 · Étape 5
-
-# Observer ou relancer le CD dev
-
-Après une CI verte, le repo peut lancer le CD dev automatiquement via <code>workflow_run</code>.
-Pour la démo, on peut aussi le relancer manuellement afin de rejouer les logs :
-
-```bash
-# Via GitHub UI : Actions → "CD — Deploy to Dev (ACR build + AKS deploy)" → Run workflow
-# Ou via CLI :
-gh workflow run cd-deploy-dev.yml \
-  --ref dev
-```
-
-**Ce que fait le workflow CD dev :**
-1. Reconstruit le modèle localement
-2. Construit l'image Docker de serving
-3. Pousse l'image dans ACR
-4. Injecte les valeurs dynamiques dans le manifest Kubernetes
-5. Déploie sur AKS dev
-
-<div style="margin-top:10px;background:rgba(255,103,69,0.06);border:1px solid rgba(255,103,69,0.2);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  Point pédagogique : <strong>la chaîne auto existe bien dans le repo</strong>, mais le relancement manuel est pratique en cours pour rejouer proprement la séquence build → ACR → AKS.
-</div>
-
----
-
-### Démo 1 · Étape 6
-
-# Tester le service AKS
-
-```bash
-# Récupérer l'IP externe du service
-kubectl get service iris-scoring-service \
-  --namespace default \
-  -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
-
-# Stocker l'IP
-SCORING_URL="http://<IP_EXTERNE>/predict"
-
-# Envoyer une prédiction normale
-curl -X POST "$SCORING_URL" \
-  -H "Content-Type: application/json" \
-  -d '{"features": [5.1, 3.5, 1.4, 0.2]}'
-
-# Résultat attendu
-# {"prediction": 0, "class": "setosa"}
-```
-
-<div style="margin-top:10px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  Si vous obtenez <code>connection refused</code> → vérifier que le pod AKS est en état <code>Running</code> avec <code>kubectl get pods</code>.
+<div style="margin-top:4px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:4px 8px;font-size:0.52em;color:var(--body);line-height:1.25;">
+  📘 <strong>Commandes détaillées :</strong> <code>lab/partie2.md</code> et <code>lab/partie3.md</code> — les slides donnent le <em>pourquoi</em>, le lab donne le <em>comment</em>.
 </div>
 
 ---
@@ -1137,7 +1069,7 @@ curl -X POST "$SCORING_URL" \
 
 # ☕ Pause
 
-## Reprise dans 15 minutes
+## Reprise dans 1h
 
 ### Parties 3-5 : Serving · Monitoring · Gouvernance
 
@@ -1148,7 +1080,7 @@ curl -X POST "$SCORING_URL" \
 <!-- _header: '' -->
 <!-- _footer: '' -->
 
-<img src="./assets/logos/Liora_Logo_White.svg" style="height:42px;margin-bottom:20px;opacity:0.85;">
+<img src="./assets/logos/Liora_Logo_White.svg" style="height:36px;margin-top:40px;margin-bottom:12px;opacity:0.85;">
 
 ### Parties 3-5 · Après-midi
 
@@ -1157,7 +1089,6 @@ curl -X POST "$SCORING_URL" \
 
 ## Du déploiement à l'exploitation en production
 
-<br>
 
 <span class="tag tag-cyan">Partie 3 · Serving</span>&nbsp;
 <span class="tag tag-lime">Partie 4 · Tracking</span>&nbsp;
@@ -1397,27 +1328,28 @@ traces
 
 # Tracking manuel avec mlflow.start_run()
 
-```python
-# mlops/data-science/src/train.py (extrait)
-import mlflow
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+<div style="display:flex;gap:10px;margin-top:14px;align-items:stretch;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--orange);text-transform:uppercase;margin-bottom:6px;">1. Le run devient observable</div>
+    <div style="font-size:0.6em;color:var(--body);line-height:1.55;">`mlflow.start_run()` crée une frontière claire : ce qui se passe pendant l'entraînement est enregistré comme un <strong>run</strong>.</div>
+  </div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--lime);text-transform:uppercase;margin-bottom:6px;">2. Le run laisse des preuves</div>
+    <div style="font-size:0.6em;color:var(--body);line-height:1.55;">On logge les <strong>paramètres</strong>, les <strong>métriques</strong> et plus tard les <strong>artefacts</strong> pour comparer les essais entre eux.</div>
+  </div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--cyan);text-transform:uppercase;margin-bottom:6px;">3. AML Studio sert à comparer</div>
+    <div style="font-size:0.6em;color:var(--body);line-height:1.55;">Le lab montre ensuite comment retrouver ces runs dans AML Studio pour choisir le bon modèle avant l'enregistrement.</div>
+  </div>
+</div>
 
-with mlflow.start_run():
-    model = Pipeline([
-        ("scaler", StandardScaler()),
-        ("classifier", LogisticRegression(max_iter=args.max_iter)),
-    ])
-    model.fit(X, y)
-    acc = accuracy_score(y, model.predict(X))
-    mlflow.log_param("max_iter", args.max_iter)
-    mlflow.log_metric("train_accuracy", acc)
-```
+<div style="margin-top:10px;border-left:3px solid var(--orange);background:var(--card);border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.62em;color:var(--offwhite);line-height:1.45;">
+  <strong>Message clé :</strong> le tracking ne sert pas à “faire tourner” le modèle, mais à rendre l'entraînement <strong>reproductible</strong>, <strong>comparable</strong> et <strong>auditable</strong>.
+</div>
 
-**Dans AML Studio → Jobs → votre run → Metrics :**
-- Comparer plusieurs runs sur un graphe
-- Identifier le meilleur run avant de l'enregistrer
+<div style="margin-top:8px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:7px 10px;font-size:0.54em;color:var(--body);line-height:1.35;">
+  📘 <strong>Dans le lab :</strong> on ouvre AML Studio pour voir les runs, leurs métriques et les comparer. La slide explique <em>pourquoi</em> c'est important.
+</div>
 
 ---
 
@@ -1425,39 +1357,31 @@ with mlflow.start_run():
 
 # Du run au modèle enregistré
 
-<div style="display:flex;align-items:stretch;gap:0;margin-top:16px;">
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px 0 0 10px;padding:12px 14px;text-align:center;">
-    <div style="font-size:1.5em;margin-bottom:4px;">🧪</div>
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--orange);">Expérimentation</div>
-    <div style="font-size:0.58em;color:var(--body);margin-top:4px;">Runs MLflow dans AML Studio</div>
+<div style="display:flex;align-items:stretch;gap:10px;margin-top:14px;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:1.4em;margin-bottom:4px;">🧪</div>
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--orange);text-transform:uppercase;margin-bottom:5px;">Run</div>
+    <div style="font-size:0.58em;color:var(--body);line-height:1.45;">On observe un essai d'entraînement et ses métriques dans AML Studio.</div>
   </div>
-  <div style="display:flex;align-items:center;padding:0 3px;color:var(--muted);">→</div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:0;padding:12px 14px;text-align:center;">
-    <div style="font-size:1.5em;margin-bottom:4px;">📦</div>
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--lime);">Enregistrement</div>
-    <div style="font-size:0.58em;color:var(--body);margin-top:4px;"><code>az ml model create</code> ou via Managed Endpoint workflow</div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:1.4em;margin-bottom:4px;">📦</div>
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--lime);text-transform:uppercase;margin-bottom:5px;">Registry</div>
+    <div style="font-size:0.58em;color:var(--body);line-height:1.45;">Le modèle retenu devient un <strong>actif versionné</strong> et identifiable.</div>
   </div>
-  <div style="display:flex;align-items:center;padding:0 3px;color:var(--muted);">→</div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:0;padding:12px 14px;text-align:center;">
-    <div style="font-size:1.5em;margin-bottom:4px;">🚀</div>
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--cyan);">Déploiement</div>
-    <div style="font-size:0.58em;color:var(--body);margin-top:4px;">Online endpoint pointant vers une version</div>
-  </div>
-  <div style="display:flex;align-items:center;padding:0 3px;color:var(--muted);">→</div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:0;border-radius:0 10px 10px 0;padding:12px 14px;text-align:center;">
-    <div style="font-size:1.5em;margin-bottom:4px;">🗃️</div>
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--violet);">Archivage</div>
-    <div style="font-size:0.58em;color:var(--body);margin-top:4px;">Versions précédentes accessibles pour rollback</div>
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
+    <div style="font-size:1.4em;margin-bottom:4px;">🚀</div>
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--cyan);text-transform:uppercase;margin-bottom:5px;">Deploy / Rollback</div>
+    <div style="font-size:0.58em;color:var(--body);line-height:1.45;">Le déploiement pointe une version précise, et l'ancien modèle reste disponible en retour arrière.</div>
   </div>
 </div>
 
-```bash
-# Lister les versions d'un modèle enregistré
-az ml model list --name iris-classifier \
-  --workspace-name aml-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --output table
-```
+<div style="margin-top:10px;border-left:3px solid var(--lime);background:var(--card);border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.62em;color:var(--offwhite);line-height:1.45;">
+  <strong>Message clé :</strong> un bon modèle n'est pas seulement un fichier ; c'est une <strong>version de référence</strong> qu'on peut retrouver, déployer et remplacer.
+</div>
+
+<div style="margin-top:8px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:7px 10px;font-size:0.54em;color:var(--body);line-height:1.35;">
+  📘 <strong>Dans le lab :</strong> la commande <code>az ml model list</code> sert à vérifier que la version existe. La slide explique surtout <em>à quoi sert</em> cette étape dans le cycle de vie.
+</div>
 
 ---
 
@@ -1651,243 +1575,69 @@ az ml model list --name iris-classifier \
 
 ---
 
-### Démo 2 · Étape 1
+### Démo 2 · Déroulé pédagogique
 
-# Déployer le Managed Endpoint AML
+# Ce qu'on observe à chaque étape
 
-```bash
-# Via GitHub UI : Actions → "CD — Deploy AML Managed Endpoint"
-# → Run workflow → branch dev
-gh workflow run cd-deploy-aml-endpoint.yml --ref dev
-
-# Suivre le déploiement
-gh run list --workflow=cd-deploy-aml-endpoint.yml \
-  --limit 1
-
-# Vérifier l'endpoint créé
-az ml online-endpoint show \
-  --name iris-endpoint-dev \
-  --workspace-name aml-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --query "{name:name, scoring_uri:scoring_uri, state:provisioning_state}" \
-  -o table
-```
-
-<div style="margin-top:10px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  Ce workflow enregistre automatiquement <code>iris-classifier</code> dans le registre AML workspace.
-</div>
-
----
-
-### Démo 2 · Étape 2
-
-# Vérifier le modèle dans le registre
-
-```bash
-# Lister les versions du modèle enregistré
-az ml model list \
-  --name iris-classifier \
-  --workspace-name aml-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --output table
-
-# Voir les détails d'une version spécifique
-az ml model show \
-  --name iris-classifier \
-  --version 1 \
-  --workspace-name aml-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --query "{name:name, version:version, run_id:run_id}" \
-  -o table
-```
-
-**Dans AML Studio → Models :** le modèle `iris-classifier` doit apparaître avec son numéro de version et le lien vers le run MLflow d'origine.
-
----
-
-### Démo 2 · Étape 3
-
-# Configurer l'alerte Azure Monitor
-
-```bash
-# Récupérer l'ID App Insights
-AI_ID=$(az monitor app-insights component show \
-  --app appi-mlopslab-dev \
-  --resource-group rg-mlopslab-dev \
-  --query id -o tsv)
-
-# Créer l'alerte
-az monitor metrics alert create \
-  --name "alert-failed-requests-dev" \
-  --resource-group rg-mlopslab-dev \
-  --scopes "$AI_ID" \
-  --condition "count requests/failed > 5" \
-  --window-size 5m \
-  --evaluation-frequency 1m \
-  --description "Failed requests > 5 en 5 min"
-
-# Vérifier la création
-az monitor metrics alert show \
-  --name "alert-failed-requests-dev" \
-  --resource-group rg-mlopslab-dev \
-  --query "{name:name, enabled:enabled}" -o table
-```
-
----
-
-### Démo 2 · Étape 4
-
-# Simuler du trafic normal
-
-```bash
-# Stocker l'URL de scoring AKS
-SCORING_URL="http://<IP_AKS>/predict"
-
-# Envoyer 10 prédictions normales (fleur iris réelle)
-for i in {1..10}; do
-  curl -s -X POST "$SCORING_URL" \
-    -H "Content-Type: application/json" \
-    -d '{"features": [5.1, 3.5, 1.4, 0.2]}' \
-  | python3 -c "import sys,json; r=json.load(sys.stdin); print(f'Pred: {r[\"class\"]}')"
-done
-```
-
-**Résultat attendu :**
-```
-Pred: setosa
-Pred: setosa
-...
-```
-
-<div style="margin-top:10px;background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  Ces 10 requêtes doivent apparaître dans App Insights dans les 2-3 minutes.
-</div>
-
----
-
-### Démo 2 · `generate-drift.py`
-
-# Comprendre le script avant de le lancer
-
-<div style="display:flex;gap:14px;margin-top:14px;">
-  <div style="flex:1;">
-
-```python
-# scripts/generate-drift.py (logique essentielle)
-NORMAL = {
-  "sepal_length": (4.3, 7.9),
-  "sepal_width":  (2.0, 4.4),
-  "petal_length": (1.0, 6.9),
-  "petal_width":  (0.1, 2.5),
-}
-
-def sample(drifted=False):
-    return [
-        round(
-          random.uniform(lo, hi)
-          * (random.uniform(1.5, 2.5) if drifted else 1.0),
-          2
-        )
-        for lo, hi in NORMAL.values()
-    ]
-```
-
-  </div>
-  <div style="flex:1;">
-    <div style="background:rgba(221,255,69,0.07);border:1px solid rgba(221,255,69,0.2);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
-      <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--lime);margin-bottom:6px;">Données normales</div>
-      <div style="font-size:0.62em;color:var(--body);">[5.1, 3.5, 1.4, 0.2]<br>dans la distribution d'entraînement</div>
+<div style="display:flex;gap:10px;margin-top:6px;align-items:flex-start;">
+  <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--navy);flex-shrink:0;align-self:center;">1</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">Managed Endpoint AML</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">Azure gère la scale/scoring. Deux runtimes de serving, même modèle.</div>
+      </div>
     </div>
-    <div style="background:rgba(196,69,255,0.08);border:1px solid rgba(196,69,255,0.3);border-radius:10px;padding:14px 16px;">
-      <div style="font-family:'Work Sans';font-weight:700;font-size:0.65em;color:var(--purple);margin-bottom:6px;">Données driftées (facteur ×1.5–2.5)</div>
-      <div style="font-size:0.62em;color:var(--body);">[9.3, 7.1, 11.2, 0.8]<br><em>hors distribution</em> — réponse HTTP 200 quand même</div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--cyan);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--navy);flex-shrink:0;align-self:center;">2</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--cyan);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">Model Registry = source de vérité</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">Versions, tags, lineage : on sait quel commit a produit quel modèle.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--navy);flex-shrink:0;align-self:center;">3</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--lime);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">Alerte Azure Monitor</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">Elle voit les erreurs techniques, pas un drift métier silencieux.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--navy);flex-shrink:0;align-self:center;">4</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--lime);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">Trafic normal → baseline</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">On établit la référence latence + succès dans App Insights.</div>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:white;flex-shrink:0;align-self:center;">5</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">Drift simulé</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;"><code>generate-drift.py</code> envoie des valeurs hors plage ; l'API répond encore 200 OK.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:white;flex-shrink:0;align-self:center;">6</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">App Insights</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">Les requêtes montent, mais le drift ne se voit pas sans logger les features.</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <div style="min-width:26px;height:26px;border-radius:50%;background:var(--violet);display:flex;align-items:center;justify-content:center;font-family:'Work Sans';font-weight:700;font-size:0.62em;color:white;flex-shrink:0;align-self:center;">7</div>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--violet);border-radius:8px;padding:5px 10px;">
+        <div style="font-family:'Work Sans';font-weight:700;font-size:0.56em;color:var(--offwhite);">RBAC & Key Vault</div>
+        <div style="font-size:0.5em;color:var(--body);line-height:1.25;">OIDC pour la CI, Key Vault pour les secrets, MSI pour les services.</div>
+      </div>
     </div>
   </div>
 </div>
 
----
-
-### Démo 2 · Étape 5
-
-# Simuler un drift de données
-
-```bash
-# Exécuter le script de simulation de drift
-python scripts/generate-drift.py \
-  --endpoint "$SCORING_URL" \
-  --n_normal 50 \
-  --n_drifted 20
-
-# Ce que le script fait :
-# → 50 requêtes normales (valeurs dans la distribution)
-# → 20 requêtes driftées (valeurs ×1.5 à ×2.5)
-# → l'API répond 200 OK pour TOUTES
-# → drift invisible pour une alerte HTTP classique
-```
-
-<div style="margin-top:10px;background:rgba(196,69,255,0.08);border:1px solid rgba(196,69,255,0.25);border-radius:8px;padding:10px 14px;font-size:0.64em;color:var(--body);">
-  <strong>Observation clé :</strong> HTTP 200 ≠ prédiction fiable. Le drift de données n'est pas détectable par une alerte sur les failed requests.
+<div style="margin-top:4px;background:rgba(0,229,238,0.05);border:1px solid rgba(0,229,238,0.2);border-radius:8px;padding:4px 8px;font-size:0.5em;color:var(--body);line-height:1.2;">
+  📘 <strong>Dans le lab :</strong> chaque étape est détaillée avec les commandes. Ici, on retient le <em>rôle</em> de chaque étape dans le cycle de vie.
 </div>
-
----
-
-### Démo 2 · Étape 6
-
-# Observer dans App Insights
-
-**Dans Azure Portal → App Insights → Logs :**
-
-```kusto
-// Comparer trafic normal vs drifté
-requests
-| where timestamp > ago(1h)
-| summarize count() by bin(timestamp, 5m), success
-| order by timestamp asc
-
-// Voir les traces avec les valeurs de features
-traces
-| where timestamp > ago(1h)
-| where message contains "features"
-| project timestamp, message
-| order by timestamp desc
-| take 30
-```
-
-**Ce qu'on cherche :**
-- Les 10 requêtes normales : toutes en `success = true`
-- Les 20 requêtes driftées : aussi en `success = true` — **c'est le point pédagogique**
-
----
-
-### Démo 2 · Étape 7
-
-# RBAC et Key Vault
-
-```bash
-# Afficher / créer le groupe mlops-team
-az ad group show --group "mlops-team" --query id -o tsv
-# ou créer un groupe de test :
-az ad group create --display-name "mlops-team" \
-  --mail-nickname "mlops-team"
-
-# Assigner les rôles minimaux
-GROUP_ID=$(az ad group show --group "mlops-team" \
-  --query id -o tsv)
-bash scripts/setup-rbac.sh dev "$GROUP_ID"
-
-# Vérifier les rôles assignés
-az role assignment list \
-  --assignee "$GROUP_ID" --all \
-  --query "[].{role:roleDefinitionName,scope:scope}" \
-  -o table
-
-# Tester Key Vault
-KV="kv-mlopslab-dev"
-az keyvault secret set --vault-name $KV \
-  --name "model-api-key" --value "secret-key-123"
-az keyvault secret show --vault-name $KV \
-  --name "model-api-key" --query value -o tsv
-```
 
 ---
 
@@ -1895,13 +1645,14 @@ az keyvault secret show --vault-name $KV \
 
 # Ce qu'on vient de voir
 
-<div style="display:flex;gap:10px;margin-top:12px;">
+<div style="display:flex;gap:10px;margin-top:14px;">
   <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
     <div style="font-size:0.55em;color:var(--cyan);font-family:'Work Sans';font-weight:700;text-transform:uppercase;margin-bottom:6px;">Serving</div>
     <ul style="margin:0;padding-left:1.1em;font-size:0.62em;color:var(--body);line-height:1.8;">
-      <li>Managed Endpoint déployé ✓</li>
-      <li>iris-classifier dans le registre ✓</li>
-      <li>AKS vs AML : différence claire ✓</li>
+      <li>Managed Endpoint AML déployé ✓</li>
+      <li>Modèle enregistré dans le registry ✓</li>
+      <li>Lineage job → modèle → endpoint ✓</li>
+      <li>curl /score → prédiction JSON ✓</li>
     </ul>
   </div>
   <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">
@@ -1966,11 +1717,12 @@ az keyvault secret show --vault-name $KV \
 
 ---
 
+<!-- _class: governance-compact -->
 ### Gouvernance — les 3 piliers
 
 # Ce qui rend une plateforme ML crédible en entreprise
 
-<svg width="100%" height="46" viewBox="0 0 680 46" style="margin-top:10px;margin-bottom:8px;">
+<svg width="100%" height="38" viewBox="0 0 680 46" style="margin-top:6px;margin-bottom:4px;">
   <!-- dev env -->
   <rect x="0" y="4" width="140" height="38" rx="6" fill="#252540" stroke="#2E2E50" stroke-width="1"/>
   <text x="70" y="20" text-anchor="middle" font-family="Work Sans" font-size="9" font-weight="700" fill="#B0AFCC">rg-mlopslab-dev</text>
@@ -2003,28 +1755,28 @@ az keyvault secret show --vault-name $KV \
   <defs><marker id="arr4" markerWidth="5" markerHeight="5" refX="3" refY="2.5" orient="auto"><path d="M0,0 L0,5 L5,2.5 z" fill="#6B6A8A"/></marker></defs>
 </svg>
 
-<div style="display:flex;gap:12px;margin-top:4px;">
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.7em;color:var(--orange);margin-bottom:8px;">RBAC — Moindre privilège</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+<div style="display:flex;gap:10px;margin-top:2px;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--orange);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--orange);margin-bottom:6px;">RBAC — Moindre privilège</div>
+    <ul style="margin:0;padding-left:1.05em;font-size:0.58em;color:var(--body);line-height:1.45;">
       <li><code>AzureML Data Scientist</code> → scope RG</li>
       <li><code>AKS Cluster User Role</code> → scope AKS seulement</li>
       <li><code>Key Vault Secrets User</code> → scope KV seulement</li>
       <li>Pipeline CI/CD : <code>Contributor</code> scope RG, <strong>pas subscription</strong></li>
     </ul>
   </div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.7em;color:var(--lime);margin-bottom:8px;">Key Vault — Centralisation des secrets</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--lime);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--lime);margin-bottom:6px;">Key Vault — Centralisation des secrets</div>
+    <ul style="margin:0;padding-left:1.05em;font-size:0.58em;color:var(--body);line-height:1.45;">
       <li>Secrets API, connexions DB, clés</li>
       <li>Rotation possible sans changer le code</li>
       <li>Audit trail intégré</li>
       <li>Jamais de secret en clair dans le code</li>
     </ul>
   </div>
-  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:10px;padding:14px 16px;">
-    <div style="font-family:'Work Sans';font-weight:700;font-size:0.7em;color:var(--cyan);margin-bottom:8px;">Séparation dev / prod</div>
-    <ul style="margin:0;padding-left:1.1em;font-size:0.63em;color:var(--body);line-height:1.7;">
+  <div style="flex:1;background:var(--card);border:1px solid var(--border);border-top:3px solid var(--cyan);border-radius:10px;padding:10px 12px;">
+    <div style="font-family:'Work Sans';font-weight:700;font-size:0.62em;color:var(--cyan);margin-bottom:6px;">Séparation dev / prod</div>
+    <ul style="margin:0;padding-left:1.05em;font-size:0.58em;color:var(--body);line-height:1.45;">
       <li>Resource groups séparés</li>
       <li>GitHub Environment <code>production</code></li>
       <li>Approbation manuelle obligatoire</li>

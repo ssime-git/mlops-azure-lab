@@ -94,6 +94,20 @@ Ce qui est conservé précisément :
 - les fichiers `environments/dev.tfvars` et `environments/prod.tfvars`
 - le backend distant `tfstate`
 
+> [!INFO]
+> Ouvrez `infrastructure/terraform/main.tf`, `variables.tf` et `outputs.tf`, puis repérez :
+> - où le backend distant est défini
+> - comment `dev.tfvars` et `prod.tfvars` séparent les environnements
+> - quels `outputs` seront réutilisés plus loin dans le lab
+>
+> Les **anti-patterns** à noter ici sont : state local, `apply` sans lecture du `plan`, et variables mélangées entre environnements.
+> Les **bonnes pratiques** à retenir sont : backend distant, `terraform plan` avant chaque changement, et configuration séparée par environnement.
+
+> [!INFO]
+> Ouvrez `mlops/data-science/src/train.py`, `evaluate.py` et `mlops/data-science/environment/train-env.yml` : repérez les chemins par défaut et les plages de versions (`>=`).
+> Les **anti-patterns** à noter ici sont : chemins codés en dur, et dépendances non verrouillées qui peuvent varier entre runs.
+> Les **bonnes pratiques** à retenir sont : configuration centralisée par environnement, et versions exactes de dépendances.
+
 Ce qui n'est pas conservé comme chemin principal :
 - la démo Bicep du début de la Partie 2 (utile pédagogiquement mais pas retenue comme socle pour les Parties 3/4/5)
 

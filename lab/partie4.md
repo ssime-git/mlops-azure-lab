@@ -31,6 +31,11 @@ Donc :
 - pour `kubectl get svc iris-classifier-svc`, c'est le workflow `CD dev vers AKS` qui compte
 - ces deux parties sont **complémentaires** mais ne se remplacent pas
 
+> [!INFO]
+> Avant de continuer, ouvrez le workflow `CD — Deploy AML Managed Endpoint`, puis comparez-le avec le chemin AKS : qu'est-ce qui alimente le registre de modèles, qu'est-ce qui alimente App Insights, et qu'est-ce qui ne se mélange pas ?
+> Les **anti-patterns** à repérer ici sont : confondre le serving AKS avec l'enregistrement AML, et conclure qu'un simple `200 OK` prouve l'absence de drift métier.
+> Les **bonnes pratiques** correspondantes sont : séparer le chemin de serving applicatif du chemin de registry / tracking, et utiliser le registre AML + App Insights / KQL pour observer respectivement les versions de modèle et la télémétrie technique.
+
 > [!NOTE]
 > **Point d'architecture** : l'image AKS de serving doit rester légère et orientée inférence. Elle n'a pas besoin d'embarquer toutes les dépendances du training ou du tracking MLflow. Dans ce dépôt, la partie serving AKS utilise des dépendances dédiées et séparées du runtime de training.
 
@@ -268,6 +273,11 @@ Interprétation :
 > **Dépannage** :
 > - si `EXTERNAL-IP` est vide : attendez que le Load Balancer Azure soit provisionné, ou revenez à la Partie 3 pour vérifier le workflow CD `dev`
 > - si vous ne voyez toujours pas de requêtes dans App Insights : vérifiez que `CD — Deploy to Dev` a bien été relancé après mise à jour de l'instrumentation, puis attendez 1 à 3 minutes de propagation
+
+> [!INFO]
+> Ouvrez `mlops/data-science/src/evaluate.py` et `scripts/generate-drift.py` : qu'est-ce qui est mesuré, et qu'est-ce qui ne l'est pas ?
+> Les **anti-patterns** à noter ici sont : seule l'accuracy est suivie, et le drift métier n'est pas détecté même si beaucoup de requêtes répondent en `200`.
+> Les **bonnes pratiques** à retenir sont : suivre la distribution des features et des prédictions, et distinguer drift métier de drift technique (HTTP 200 ≠ absence de drift).
 
 ## Checkpoint Partie 4
 - [ ] 2 runs comparés dans AML Studio

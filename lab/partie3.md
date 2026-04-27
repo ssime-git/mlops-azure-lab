@@ -132,6 +132,11 @@ flowchart LR
     G --> H[Promotion prod]
 ```
 
+> [!INFO]
+> Ouvrez `.github/workflows/ci-train.yml`, `cd-deploy-dev.yml`, `cd-deploy-prod.yml` et `mlops/pipelines/pipeline.yml` : qu'est-ce qui est exécuté automatiquement, qu'est-ce qui reste manuel, et qu'est-ce qui est couplé trop tôt ?
+> Les **anti-patterns** à repérer ici sont : modèle embarqué dans l'image Docker au build, absence d'enregistrement du modèle dans le pipeline AML, et promotion vers `prod` trop proche de la construction technique.
+> Les **bonnes pratiques** correspondantes sont : séparation training / serving, enregistrement du modèle comme artefact versionné, et promotion explicite avec validation avant passage d'environnement.
+
 En pratique, le script Python `prep.py` est très rapide. Si l'étape `prep_data` semble longue, le temps est souvent consommé par :
 - le réveil du compute AML
 - la préparation du conteneur
@@ -158,6 +163,11 @@ flowchart LR
 > - premier run après création du compute : plus lent
 > - runs suivants : souvent plus rapides grâce au cache AML
 > - ce qui paraît « lent » n'est pas forcément un bug, surtout au premier passage
+
+> [!INFO]
+> Ouvrez `.github/workflows/ci-train.yml` et repérez la boucle `for attempt in $(seq 1 40)` qui interroge AML toutes les 30 secondes : qu'est-ce qui se passe si le job dépasse 20 minutes ?
+> L'**anti-pattern** ici est le polling actif : le workflow bloque un runner GitHub pendant toute la durée du job AML, consomme du quota CI et peut rater la fin si le job dépasse le timeout.
+> La **bonne pratique** est de découpler : déclencher le job AML, puis laisser un événement (webhook Azure Event Grid ou `workflow_run`) notifier GitHub quand c'est terminé, sans maintenir un runner ouvert.
 
 > [!NOTE]
 > **Positionnement de `bootstrap-aml.sh`** : il prépare les assets AML après création de l'infrastructure. Le meilleur moment pour le lancer manuellement est en fin de Partie 2. Dans la Partie 3, avec un dépôt à jour, le workflow CI sait normalement faire le nécessaire sans bootstrap manuel. Si un environnement a été créé avant les derniers correctifs, relancer `bootstrap-aml.sh` reste un bon outil de rattrapage.
@@ -303,6 +313,11 @@ Ce que fait exactement ce workflow :
 Ce qu'il **ne fait pas** :
 - il n'enregistre pas `iris-classifier` dans le registre de modèles AML
 - il ne crée pas de `Managed Endpoint` Azure ML
+
+> [!INFO]
+> Ouvrez `cd-deploy-dev.yml` et cherchez la ligne qui relance `train.py` dans le runner GitHub, puis ouvrez `Dockerfile` et cherchez `COPY outputs/model` : qu'est-ce que ça implique ?
+> Les **anti-patterns** ici sont : le modèle est ré-entraîné une deuxième fois dans le CD (différent du modèle AML), et embarqué directement dans l'image Docker — ce qui couple le modèle au cycle de vie du code.
+> La **bonne pratique** est : le pipeline AML enregistre le modèle dans le registre, le CD télécharge ce modèle versionné depuis le registre, et l'image ne contient que le code de serving. Le CD est alors déclenché soit par un push de code, soit par un événement "nouveau modèle enregistré".
 
 ### 5. Tester l'endpoint AKS (15 min)
 

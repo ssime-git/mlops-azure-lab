@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#1A1A33"/>
+  <rect x="70" y="70" width="1140" height="580" rx="24" fill="none" stroke="#6B6A8A" stroke-width="3"/>
+  <text x="95" y="110" fill="#B0AFCC" font-family="Inter, sans-serif" font-size="22">Resource Group</text>
+  <rect x="140" y="160" width="520" height="240" rx="22" fill="#252540" stroke="#2E2E50" stroke-width="3"/>
+  <text x="180" y="220" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="42" font-weight="800">Machine Learning</text>
+  <text x="180" y="270" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="42" font-weight="800">Workspace</text>
+  <rect x="170" y="455" width="220" height="120" rx="18" fill="#252540" stroke="#FF6745" stroke-width="3"/>
+  <text x="200" y="510" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="28" font-weight="700">Compute</text>
+  <text x="200" y="545" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="28" font-weight="700">Cluster</text>
+  <rect x="430" y="455" width="220" height="120" rx="18" fill="#252540" stroke="#DDFF45" stroke-width="3"/>
+  <text x="465" y="510" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="28" font-weight="700">Compute</text>
+  <text x="470" y="545" fill="#FFFFFF" font-family="Work Sans, sans-serif" font-size="28" font-weight="700">Instance</text>
+  <line x1="660" y1="250" x2="960" y2="250" stroke="#B0AFCC" stroke-width="3"/>
+  <line x1="760" y1="250" x2="760" y2="340" stroke="#00E5EE" stroke-width="3"/>
+  <line x1="845" y1="250" x2="845" y2="340" stroke="#00E5EE" stroke-width="3"/>
+  <line x1="930" y1="250" x2="930" y2="340" stroke="#00E5EE" stroke-width="3"/>
+  <line x1="1015" y1="250" x2="1015" y2="340" stroke="#00E5EE" stroke-width="3"/>
+  <rect x="710" y="340" width="90" height="90" rx="14" fill="#252540" stroke="#00E5EE" stroke-width="3"/>
+  <rect x="800" y="340" width="90" height="90" rx="14" fill="#252540" stroke="#DDFF45" stroke-width="3"/>
+  <rect x="890" y="340" width="90" height="90" rx="14" fill="#252540" stroke="#FF6745" stroke-width="3"/>
+  <rect x="980" y="340" width="90" height="90" rx="14" fill="#252540" stroke="#7657FF" stroke-width="3"/>
+  <text x="714" y="455" fill="#B0AFCC" font-family="Inter, sans-serif" font-size="22">Storage</text>
+  <text x="807" y="455" fill="#B0AFCC" font-family="Inter, sans-serif" font-size="22">Identity</text>
+  <text x="903" y="455" fill="#B0AFCC" font-family="Inter, sans-serif" font-size="22">Secrets</text>
+  <text x="987" y="455" fill="#B0AFCC" font-family="Inter, sans-serif" font-size="22">Observability</text>
+</svg>

@@ -22,6 +22,11 @@ Le setup précédent ne crée pas de groupe Entra ID. Pour l'exercice RBAC, vous
 
 Dans les exemples ci-dessous, le groupe utilisé est `mlops-team`.
 
+> [!INFO]
+> Ouvrez `scripts/setup-rbac.sh` puis relisez les commandes `az role assignment list` et `az keyvault secret set/show` : qu'est-ce qui est donné au groupe, qu'est-ce qui est stocké dans Key Vault, et qu'est-ce qui ne doit jamais être mis en clair ?
+> Les **anti-patterns** à repérer ici sont : droits trop larges au niveau de la subscription, secret ou mot de passe stocké dans le code, et usage d'identifiants longue durée là où un accès éphémère suffit.
+> Les **bonnes pratiques** correspondantes sont : moindre privilège, séparation claire des rôles, secrets centralisés dans Key Vault, et authentification GitHub → Azure via OIDC plutôt qu'un secret statique.
+
 ## Atelier
 
 ### 1. Inspecter les role assignments existants (5 min)
@@ -137,6 +142,11 @@ Questions de compréhension :
 ### 5. Checklist Standards Équipe (20 min)
 
 Parcourez cette checklist en groupe pour valider que le lab respecte les bonnes pratiques MLOps.
+
+> [!INFO]
+> Ouvrez `mlops/data-science/environment/train-env.yml`, `inference-env.yml` et `mlops/data-science/src/register.py` : comparez les versions de paquets entre training et serving, et repérez la gestion des variables d'environnement.
+> Les **anti-patterns** à noter ici sont : versions non verrouillées (`>=`) entre training et serving, et chaînes vides par défaut pour les variables d'authentification.
+> Les **bonnes pratiques** à retenir sont : verrouiller les versions exactes dans tous les environnements, et échouer explicitement si une variable critique est manquante.
 
 **Infrastructure**
 - [ ] Les ressources du lab sont gérées principalement via Terraform
