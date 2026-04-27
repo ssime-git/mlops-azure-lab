@@ -66,16 +66,16 @@ jobs:
 
       - name: Train local model and run quality gate
         run: |
-          python mlops/data-science/src/prep.py --output_dir /tmp/iris-endpoint
-          python mlops/data-science/src/train.py --data_dir /tmp/iris-endpoint --model_dir /tmp/model-endpoint
-          python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-endpoint --model_dir /tmp/model-endpoint --min_accuracy 0.90
+          uv run python mlops/data-science/src/prep.py --output_dir /tmp/iris-endpoint
+          uv run python mlops/data-science/src/train.py --data_dir /tmp/iris-endpoint --model_dir /tmp/model-endpoint
+          uv run python mlops/data-science/src/evaluate.py --data_dir /tmp/iris-endpoint --model_dir /tmp/model-endpoint --min_accuracy 0.90
 
       - name: Register model in AML
         run: |
           export AML_RESOURCE_GROUP="$AML_RESOURCE_GROUP"
           export AML_WORKSPACE="$AML_WORKSPACE"
           export AZURE_SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-          python mlops/data-science/src/register.py \
+          uv run python mlops/data-science/src/register.py \
             --model_dir /tmp/model-endpoint \
             --environment "${{ github.event.inputs.target_env }}" \
             --accuracy "0.90"
@@ -83,9 +83,8 @@ jobs:
       - name: Deploy managed endpoint + deployment
         run: |
           TARGET="${{ github.event.inputs.target_env }}"
-          SUFFIX="${{ secrets.LAB_SUFFIX }}"
-          ENDPOINT_NAME="iris-ep-${SUFFIX}-${TARGET}"
-          DEPLOYMENT_NAME="iris-deployment-${TARGET}"
+          ENDPOINT_NAME="iris-endpoint-${TARGET}-${LAB_SUFFIX}"
+          DEPLOYMENT_NAME="iris-deployment-${TARGET}-${LAB_SUFFIX}"
 
           az configure --defaults group="$AML_RESOURCE_GROUP" workspace="$AML_WORKSPACE"
 

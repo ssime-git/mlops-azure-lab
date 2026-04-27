@@ -1,0 +1,6 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+code: mlops/data-science/src
+command: python prep.py --output_dir outputs/health
+environment: azureml:iris-train-env@latest
+compute: azureml:cpu-cluster
+experiment_name: aml-bootstrap-health
