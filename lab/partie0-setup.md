@@ -3,6 +3,22 @@
 Ce lab 0 prend environ 45 minutes. À faire seul avant la première session.
 Si tu bloques sur une étape, note l'erreur exacte et apporte-la en J1.
 
+## Prérequis
+
+Avant de commencer, assure-toi d'avoir installé :
+
+### 1. Azure CLI
+- **Windows** : [Télécharger le MSI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- **macOS** : `brew install azure-cli`
+- **Linux** : [Instructions officielles](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+- Vérifier l'installation : `az --version`
+
+### 2. UV (gestionnaire Python rapide)
+- **Toutes plateformes** : [Installation officielle](https://docs.astral.sh/uv/getting-started/installation/)
+- Vérifier l'installation : `uv --version`
+
+---
+
 ## Ce que tu vas configurer
 1. Accès Azure + outils locaux
 2. App Registration Azure (l'identité de ton pipeline)
@@ -34,6 +50,8 @@ uv --version
 # Cloner le repo
 git clone https://github.com/TON_ORG/mlops-azure-lab.git
 cd mlops-azure-lab
+# Basculer sur la branche dev
+git checkout dev
 uv venv --python 3.10
 source .venv/bin/activate
 uv pip install -r requirements.txt
